@@ -1,416 +1,904 @@
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-
+fit=cover"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="Vinyl Suite"/>
 <meta name="theme-color" content="#0f0f0f"/>
 <title>Vinyl Suite</title>
 <style>
-:root{--gold:#f4a261;--gold2:#e76f51;--bg:#0f0f0f;--card:#1a1a1a;--border:#252525;--dim:#444;--muted:#888}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{background:var(--bg);color:#fff;font-family:Georgia,serif;min-height:100vh;overscroll-behavior:none}
+:root{--gold:#f4a261;--gold2:#e76f51;--bg:#0f0f0f;--card:#1a1a1a;--
+border:#252525;--dim:#444;--muted:#888}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-
+color:transparent}
+html,body{background:var(--bg);color:#fff;font-family:Georgia,serif;min-
+height:100vh;overscroll-behavior:none}
 button,input,textarea,select{font-family:inherit;outline:none}
 input,textarea,select{color:#fff}
 select option{background:#1a1a1a}
-::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
-#hdr{position:sticky;top:0;z-index:50;background:#111;border-bottom:1px solid var(--border);padding:env(safe-area-inset-top,0) 0 0}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#333;border-
+radius:2px}
+#hdr{position:sticky;top:0;z-index:50;background:#111;border-bottom:1px solid
+var(--border);padding:env(safe-area-inset-top,0) 0 0}
 #hdr-inner{max-width:700px;margin:0 auto;padding:14px 18px 0}
 #hdr-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 #tabs{display:flex;overflow-x:auto;scrollbar-width:none}
 #tabs::-webkit-scrollbar{display:none}
-.tab{background:none;border:none;border-bottom:2px solid transparent;padding:8px 14px;font-size:12px;color:var(--dim);white-space:nowrap;transition:all .15s;cursor:pointer}
+.tab{background:none;border:none;border-bottom:2px solid transparent;padding:8px
+14px;font-size:12px;color:var(--dim);white-space:nowrap;transition:all
+.15s;cursor:pointer}
 .tab.on{color:var(--gold);border-bottom-color:var(--gold);font-weight:700}
 #body{max-width:700px;margin:0 auto;padding:24px 18px 100px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
-.card{background:var(--card);border-radius:12px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:transform .15s}
+.grid{display:grid;grid-template-columns:repeat(auto-
+fill,minmax(130px,1fr));gap:10px}
+.card{background:var(--card);border-radius:12px;overflow:hidden;border:1px solid
+var(--border);cursor:pointer;transition:transform .15s}
 .card:active{transform:scale(.96)}
 .card-img-wrap{position:relative}
 .card-img,.card-ph{width:100%;aspect-ratio:1;display:block}
 .card-img{object-fit:cover}
-.card-ph{display:flex;align-items:center;justify-content:center;font-size:34px;background:linear-gradient(135deg,#111,#1e1e1e)}
-.yr-badge{position:absolute;top:6px;right:6px;font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px;color:#000}
+.card-ph{display:flex;align-items:center;justify-content:center;font-
+size:34px;background:linear-gradient(135deg,#111,#1e1e1e)}
+.yr-badge{position:absolute;top:6px;right:6px;font-size:9px;font-
+weight:800;padding:2px 7px;border-radius:20px;color:#000}
 .card-info{padding:9px 10px}
-.card-title{font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card-sub{font-size:10px;color:var(--dim);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sbox{width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px}
-.tag{background:var(--card);color:#bbb;padding:3px 11px;border-radius:20px;font-size:11px;font-weight:700;border:none;display:inline-block}
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:20px}
-.sbox2{background:var(--card);border-radius:14px;padding:16px 18px;border:1px solid var(--border)}
+.card-title{font-size:11px;font-weight:700;white-
+space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-sub{font-size:10px;color:var(--dim);margin-top:1px;white-
+space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sbox{width:100%;background:var(--card);border:1px solid var(--border);border-
+radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px}
+.tag{background:var(--card);color:#bbb;padding:3px 11px;border-radius:20px;font-
+size:11px;font-weight:700;border:none;display:inline-block}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-
+fit,minmax(120px,1fr));gap:10px;margin-bottom:20px}
+.sbox2{background:var(--card);border-radius:14px;padding:16px 18px;border:1px
+solid var(--border)}
 .sv{font-size:30px;font-weight:900;color:var(--gold)}
 .sl{font-size:12px;font-weight:700;margin-top:2px}
 .ss{font-size:10px;color:var(--dim);margin-top:1px}
-.section-hdr{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;margin-bottom:14px}
+.section-hdr{font-size:10px;color:var(--muted);font-weight:700;letter-
+spacing:1px;margin-bottom:14px}
 .bar-row{margin-bottom:9px}
-.bar-top{display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px}
+.bar-top{display:flex;justify-content:space-between;margin-bottom:4px;font-
+size:12px}
 .bar-trk{height:5px;background:#2a2a2a;border-radius:3px}
 .bar-fill{height:100%;border-radius:3px;background:var(--gold)}
 .dec-bars{display:flex;gap:6px;align-items:flex-end;height:80px}
 .dbc{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
 .db{width:100%;border-radius:4px}
-.list-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px}
+.list-row{display:flex;justify-content:space-between;padding:5px 0;border-
+bottom:1px solid var(--border);font-size:12px}
 @keyframes sp{to{transform:rotate(360deg)}}
-.disc{border-radius:50%;background:radial-gradient(circle,#111 25%,#252525 26%,#111 34%,#1e1e1e 35%,#0a0a0a 60%,#111 61%);border:3px solid #2a2a2a;display:flex;align-items:center;justify-content:center}
+.disc{border-radius:50%;background:radial-gradient(circle,#111 25%,#252525
+26%,#111 34%,#1e1e1e 35%,#0a0a0a 60%,#111 61%);border:3px solid
+#2a2a2a;display:flex;align-items:center;justify-content:center}
 .disc.spin{animation:sp 1.8s linear infinite}
 .ddot{border-radius:50%;background:var(--gold);border:2px solid #111}
-.btn-g{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border:none;border-radius:50px;padding:13px 44px;font-size:15px;font-weight:800;box-shadow:0 4px 24px rgba(244,162,97,.35);cursor:pointer}
+.btn-g{background:linear-gradient(135deg,var(--gold),var(--
+gold2));color:#000;border:none;border-radius:50px;padding:13px 44px;font-
+size:15px;font-weight:800;box-shadow:0 4px 24px
+rgba(244,162,97,.35);cursor:pointer}
 .btn-g:disabled{background:#222;color:#555;box-shadow:none}
-.btn-f{width:100%;border-radius:12px;padding:13px;font-size:14px;font-weight:800;border:none;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;box-shadow:0 4px 20px rgba(244,162,97,.3);cursor:pointer}
+.btn-f{width:100%;border-radius:12px;padding:13px;font-size:14px;font-
+weight:800;border:none;background:linear-gradient(135deg,var(--gold),var(--
+gold2));color:#000;box-shadow:0 4px 20px rgba(244,162,97,.3);cursor:pointer}
 .btn-f:disabled{background:#222;color:#555;box-shadow:none}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
-.chip{background:transparent;border:1px solid var(--border);color:var(--dim);border-radius:20px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
-.chip.on{border-color:var(--gold);background:rgba(244,162,97,.12);color:var(--gold)}
-#modal{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.chip{background:transparent;border:1px solid var(--border);color:var(--
+dim);border-radius:20px;padding:7px 16px;font-size:12px;font-
+weight:600;cursor:pointer;transition:all .15s}
+.chip.on{border-color:var(--gold);background:rgba(244,162,97,.12);color:var(--
+gold)}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.88);z-
+index:100;display:none;align-items:flex-end;justify-content:center}
 #modal.open{display:flex}
-@keyframes su{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
-#modal-inner{background:#161616;border-radius:22px 22px 0 0;width:100%;max-width:700px;max-height:92vh;overflow-y:auto;animation:su .28s ease}
+@keyframes
+su{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+#modal-inner{background:#161616;border-radius:22px 22px 0 0;width:100%;max-
+width:700px;max-height:92vh;overflow-y:auto;animation:su .28s ease}
 #mhero{position:relative;height:220px;overflow:hidden;background:#0a0a0a}
-#mbg{width:100%;height:100%;object-fit:cover;filter:brightness(.4) blur(2px);transform:scale(1.05);display:block}
-#mgrad{position:absolute;inset:0;background:linear-gradient(to top,#161616 0%,transparent 55%)}
-#mcls{position:absolute;top:14px;right:14px;background:rgba(0,0,0,.65);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:16px;cursor:pointer}
-#minfo{position:absolute;bottom:0;left:0;padding:0 20px 18px;display:flex;gap:14px;align-items:flex-end}
-#mcover{width:70px;height:70px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#111}
+#mbg{width:100%;height:100%;object-fit:cover;filter:brightness(.4)
+blur(2px);transform:scale(1.05);display:block}
+#mgrad{position:absolute;inset:0;background:linear-gradient(to top,#161616
+0%,transparent 55%)}
+#mcls{position:absolute;top:14px;right:14px;background:rgba(0,0,0,.65);border:none;color:#fff;w
+radius:50%;font-size:16px;cursor:pointer}
+#minfo{position:absolute;bottom:0;left:0;padding:0 20px
+18px;display:flex;gap:14px;align-items:flex-end}
+#mcover{width:70px;height:70px;border-radius:10px;object-fit:cover;flex-
+shrink:0;background:#111}
 #mbody{padding:20px 20px 44px}
-.slbl{font-size:10px;font-weight:700;letter-spacing:1.2px;color:var(--gold);margin-bottom:10px}
+.slbl{font-size:10px;font-weight:700;letter-spacing:1.2px;color:var(--
+gold);margin-bottom:10px}
 .cur{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
-.cnum{width:22px;height:22px;border-radius:50%;background:var(--gold);color:#000;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cnum{width:22px;height:22px;border-radius:50%;background:var(--
+gold);color:#000;font-size:10px;font-weight:800;display:flex;align-
+items:center;justify-content:center;flex-shrink:0}
 .igrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
-.ibox{background:var(--card);border-radius:12px;padding:14px 16px;border:1px solid var(--border)}
-.de{background:var(--card);border-radius:14px;padding:14px;border:1px solid var(--border);display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
-.spinner{display:inline-block;width:26px;height:26px;border:3px solid #333;border-top-color:var(--gold);border-radius:50%;animation:sp .8s linear infinite}
-.dform{background:var(--card);border-radius:16px;padding:18px;margin-bottom:20px;border:1px solid rgba(244,162,97,.2)}
-.field{width:100%;background:#111;border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:12px;color:#fff}
+.ibox{background:var(--card);border-radius:12px;padding:14px 16px;border:1px solid
+var(--border)}
+.de{background:var(--card);border-radius:14px;padding:14px;border:1px solid var(--
+border);display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+.spinner{display:inline-block;width:26px;height:26px;border:3px solid #333;border-
+top-color:var(--gold);border-radius:50%;animation:sp .8s linear infinite}
+.dform{background:var(--card);border-radius:16px;padding:18px;margin-
+bottom:20px;border:1px solid rgba(244,162,97,.2)}
+.field{width:100%;background:#111;border:1px solid var(--border);border-
+radius:10px;padding:10px 14px;font-size:13px;margin-bottom:12px;color:#fff}
 textarea.field{resize:vertical;min-height:80px}
-.hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px;margin-bottom:12px}
-.hcard{background:#111;border:1px solid var(--border);border-radius:10px;padding:7px;cursor:pointer;text-align:center}
+.hgrid{display:grid;grid-template-columns:repeat(auto-
+fill,minmax(78px,1fr));gap:8px;margin-bottom:12px}
+.hcard{background:#111;border:1px solid var(--border);border-
+radius:10px;padding:7px;cursor:pointer;text-align:center}
 .hcard.sel{border-color:var(--gold);background:rgba(244,162,97,.1)}
 .hcard img,.hcard .hph{width:100%;aspect-ratio:1;border-radius:6px;display:block}
-.hph{display:flex;align-items:center;justify-content:center;font-size:22px;background:#1e1e1e}
-.hlbl{font-size:9px;color:#aaa;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.prow{display:flex;gap:10px;align-items:center;background:#111;border-radius:10px;padding:10px;margin-bottom:12px}
+.hph{display:flex;align-items:center;justify-content:center;font-
+size:22px;background:#1e1e1e}
+.hlbl{font-size:9px;color:#aaa;margin-top:4px;overflow:hidden;text-
+overflow:ellipsis;white-space:nowrap}
+.prow{display:flex;gap:10px;align-items:center;background:#111;border-
+radius:10px;padding:10px;margin-bottom:12px}
 .prow img{width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0}
 .empty{text-align:center;padding:60px 0;color:var(--dim)}
-.mtbox{background:rgba(244,162,97,.08);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--gold);font-style:italic;margin-bottom:12px}
+.mtbox{background:rgba(244,162,97,.08);border-radius:10px;padding:10px 14px;font-
+size:12px;color:var(--gold);font-style:italic;margin-bottom:12px}
 </style>
 </head>
 <body>
 <div id="hdr"><div id="hdr-inner">
-  <div id="hdr-top">
-    <span style="font-size:22px">🎵</span>
-    <div><div style="font-size:16px;font-weight:800;letter-spacing:-.5px">Vinyl Suite</div>
-    <div style="font-size:10px;color:var(--dim);margin-top:2px">144 discos · @veeteen</div></div>
-  </div>
-  <div id="tabs">
-    <button class="tab on" onclick="go('coleccion')">🎵 Colección</button>
-    <button class="tab" onclick="go('ruleta')">🎲 Ruleta</button>
-    <button class="tab" onclick="go('stats')">📊 Stats</button>
-    <button class="tab" onclick="go('ia')">✦ IA</button>
-    <button class="tab" onclick="go('diario')">📖 Diario</button>
-  </div>
+<div id="hdr-top">
+<span style="font-size:22px"> </span>
+<div><div style="font-size:16px;font-weight:800;letter-spacing:-.5px">Vinyl
+Suite</div>
+<div style="font-size:10px;color:var(--dim);margin-top:2px">144 discos ·
+@veeteen</div></div>
+</div>
+<div id="tabs">
+<button class="tab on" onclick="go('coleccion')"> Colección</button>
+<button class="tab" onclick="go('ruleta')"> Ruleta</button>
+<button class="tab" onclick="go('stats')"> Stats</button>
+<button class="tab" onclick="go('ia')">✦ IA</button>
+<button class="tab" onclick="go('diario')"> Diario</button>
+</div>
 </div></div>
 <div id="body">
-  <div id="p-coleccion"></div>
-  <div id="p-ruleta" style="display:none"></div>
-  <div id="p-stats" style="display:none"></div>
-  <div id="p-ia" style="display:none"></div>
-  <div id="p-diario" style="display:none"></div>
+<div id="p-coleccion"></div>
+<div id="p-ruleta" style="display:none"></div>
+<div id="p-stats" style="display:none"></div>
+<div id="p-ia" style="display:none"></div>
+<div id="p-diario" style="display:none"></div>
 </div>
 <div id="modal"><div id="modal-inner">
-  <div id="mhero">
-    <img id="mbg" src="" alt=""/>
-    <div id="mgrad"></div>
-    <button id="mcls" onclick="closeModal()">✕</button>
-    <div id="minfo">
-      <img id="mcover" src="" alt=""/>
-      <div><div id="mt" style="font-size:19px;font-weight:800;line-height:1.2"></div>
-      <div id="ma" style="font-size:13px;color:#aaa;margin-top:3px"></div>
-      <div id="mtags" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px"></div></div>
-    </div>
-  </div>
-  <div id="mbody"><div id="mc"></div></div>
+<div id="mhero">
+<img id="mbg" src="" alt=""/>
+<div id="mgrad"></div>
+<button id="mcls" onclick="closeModal()">✕</button>
+<div id="minfo">
+<img id="mcover" src="" alt=""/>
+<div><div id="mt" style="font-size:19px;font-weight:800;line-height:1.2">
+</div>
+<div id="ma" style="font-size:13px;color:#aaa;margin-top:3px"></div>
+<div id="mtags" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+</div></div>
+</div>
+</div>
+<div id="mbody"><div id="mc"></div></div>
 </div></div>
 <script>
 const TOK='OaIBaINfVTOtDcDutdCJLoQiaomGvctptDQSiaMd';
-const COL=[{"a":"Sting","t":"...Nothing Like The Sun","y":"1987","l":"A&M Records","f":"2xLP","id":"1989018","d":"2024-12-15"},{"a":"Supertramp","t":"Free As A Bird","y":"1987","l":"A&M Records","f":"LP","id":"2683138","d":"2025-02-16"},{"a":"Sting","t":"The Soul Cages","y":"1991","l":"A&M Records","f":"LP","id":"2342084","d":"2024-12-15"},{"a":"Supertramp","t":"Crime Of The Century","y":"1974","l":"A&M Records","f":"LP","id":"1460333","d":"2024-12-15"},{"a":"The Police","t":"Zenyatta Mondatta","y":"1980","l":"A&M Records","f":"LP","id":"1582193","d":"2024-12-15"},{"a":"The Police","t":"Ghost In The Machine","y":"1981","l":"A&M Records","f":"LP","id":"1734217","d":"2024-12-15"},{"a":"The Police","t":"Synchronicity","y":"1983","l":"A&M Records","f":"LP","id":"2063224","d":"2025-04-14"},{"a":"Amaro Ferreiro","t":"Personajes Secundarios","y":"2020","l":"Amaro Ferreiro","f":"LP","id":"14929920","d":"2024-12-15"},{"a":"The Beatles","t":"Let It Be","y":"1976","l":"Apple Records","f":"LP","id":"1055006","d":"2025-02-16"},{"a":"John Lennon / The Plastic Ono Band","t":"John Lennon / Plastic Ono Band","y":"2015","l":"Apple Records","f":"LP","id":"7381008","d":"2024-12-15"},{"a":"The Beatles","t":"1962-1966","y":"2023","l":"Apple Records","f":"3xLP","id":"28761430","d":"2025-04-12"},{"a":"The Beatles","t":"1967-1970","y":"2023","l":"Apple Records","f":"3xLP","id":"28836724","d":"2025-04-12"},{"a":"Stray Cats","t":"Stray Cats","y":"1981","l":"Arista","f":"LP","id":"11245536","d":"2024-12-15"},{"a":"The Beach Boys","t":"Pet Sounds","y":"2016","l":"Capitol Records","f":"LP","id":"27229236","d":"2025-11-10"},{"a":"Terence Trent D'Arby","t":"Introducing The Hardline According To Terence Trent D'Arby","y":"1987","l":"CBS","f":"LP","id":"1964470","d":"2024-12-15"},{"a":"Jethro Tull","t":"Songs From The Vault 1975-1978","y":"2025","l":"Chrysalis","f":"2xLP","id":"33671505","d":"2025-04-14"},{"a":"Harry Styles","t":"Harry’s House","y":"2022","l":"Columbia","f":"LP","id":"26128271","d":"2024-12-15"},{"a":"Miles Davis","t":"Kind Of Blue","y":"","l":"Columbia","f":"LP","id":"27267321","d":"2024-12-15"},{"a":"Duke Ellington","t":"(From The Soundtrack Of The Motion Picture) Otto Preminger's Anatomy Of A Murder","y":"2013","l":"Columbia","f":"LP","id":"4515283","d":"2025-04-14"},{"a":"Morgan (81)","t":"Hotel Morgan   ","y":"2025","l":"Cultura Rock Records","f":"LP","id":"33051516","d":"2025-02-09"},{"a":"Love Of Lesbian","t":"El Astronauta Que Vio A Elvis / Charlize SolTherón","y":"2022","l":"DRO","f":"7\"","id":"22991795","d":"2024-12-15"},{"a":"Love Of Lesbian","t":"V.E.H.N.","y":"2021","l":"DRO","f":"2xLP","id":"18318850","d":"2024-12-15"},{"a":"Coque Malla","t":"La Hora de Los Gigantes","y":"2021","l":"DRO","f":"LP","id":"23776136","d":"2024-12-15"},{"a":"Coque Malla","t":"El Último Hombre En La Tierra","y":"2016","l":"DRO","f":"LP","id":"8139555","d":"2024-12-15"},{"a":"Anita Baker","t":"Rapture","y":"1986","l":"Elektra","f":"LP","id":"8926363","d":"2024-12-15"},{"a":"George Michael","t":"Listen Without Prejudice Vol. 1","y":"1990","l":"Epic","f":"LP","id":"1739011","d":"2024-12-15"},{"a":"Sade","t":"Stronger Than Pride","y":"1988","l":"Epic","f":"LP","id":"860780","d":"2024-12-15"},{"a":"Gloria Estefan","t":"Cuts Both Ways","y":"1989","l":"Epic","f":"LP","id":"1714232","d":"2024-12-15"},{"a":"Sade","t":"Promise","y":"1985","l":"Epic","f":"LP","id":"10716980","d":"2024-12-15"},{"a":"Michael Jackson","t":"Thriller 40","y":"2022","l":"Epic","f":"LP","id":"25192156","d":"2024-12-15"},{"a":"Jaco Pastorius","t":"Jaco Pastorius","y":"2010","l":"Epic","f":"LP","id":"2506261","d":"2025-11-10"},{"a":"Sade","t":"Lovers Rock","y":"2024","l":"Epic","f":"LP","id":"31772342","d":"2025-02-04"},{"a":"Sade","t":"Soldier Of Love","y":"2024","l":"Epic","f":"LP","id":"31772393","d":"2024-12-15"},{"a":"Sade","t":"Diamond Life","y":"2020","l":"Epic","f":"LP","id":"35291230","d":"2025-11-10"},{"a":"Sade","t":"Love Deluxe","y":"2024","l":"Epic","f":"LP","id":"31756259","d":"2024-12-15"},{"a":"Xoel López","t":"Caldo Espírito","y":"2023","l":"Esmerarte","f":"LP","id":"28531045","d":"2025-02-09"},{"a":"Xoel López","t":"Atlántico","y":"2025","l":"Esmerarte","f":"LP","id":"33144486","d":"2025-02-27"},{"a":"Xoel López","t":"Paramales","y":"2025","l":"EsmerArte","f":"2xLP","id":"33234180","d":"2025-02-27"},{"a":"Guillermo Galván","t":"Madrid, Ext. (Banda Sonora Original)","y":"2025","l":"Esmerarte","f":"LP","id":"35269288","d":"2025-11-10"},{"a":"Xoel López","t":"Sueños Y Pan","y":"2017","l":"EsmerArte","f":"LP","id":"11280655","d":"2025-02-27"},{"a":"Bill Evans / Eddie Gomez","t":"Intuition","y":"1975","l":"Fantasy","f":"LP","id":"1822774","d":"2024-12-15"},{"a":"Zahara","t":"Lento Ternura","y":"2025","l":"G.O.Z.Z. Records","f":"LP","id":"33320517","d":"2025-04-06"},{"a":"Zahara","t":"Puta","y":"2025","l":"G.O.Z.Z. Records","f":"LP","id":"35444413","d":"2026-01-11"},{"a":"Mikel Erentxun","t":"Altxerri","y":"2025","l":"Gasa","f":"LP","id":"33715638","d":"2025-11-10"},{"a":"Mikel Erentxun","t":"Septiembre","y":"2023","l":"Gasa","f":"2xLP","id":"28392304","d":"2024-12-15"},{"a":"Steely Dan","t":"Katy Lied","y":"2025","l":"Geffen Records","f":"LP","id":"33005481","d":"2025-02-04"},{"a":"Steely Dan","t":"Countdown To Ecstasy","y":"2023","l":"Geffen Records","f":"LP","id":"27181434","d":"2025-02-04"},{"a":"Billie Holiday","t":"Lady Sings The Blues","y":"1986","l":"Giants Of Jazz","f":"LP","id":"16151852","d":"2025-02-04"},{"a":"Al Green","t":"Al Green Gets Next To You","y":"1971","l":"Hi Records","f":"LP","id":"1431301","d":"2022-12-04"},{"a":"John Coltrane","t":"A Love Supreme","y":"2020","l":"Impulse!","f":"LP","id":"16026339","d":"2024-12-14"},{"a":"Rufus T. Firefly","t":"Todas las cosas buenas","y":"2025","l":"Lago Naranja Records","f":"2xLP","id":"33842712","d":"2025-11-10"},{"a":"Tears For Fears","t":"Songs From The Big Chair","y":"2022","l":"Mercury","f":"LP","id":"25896853","d":"2024-12-15"},{"a":"Cometa (10)","t":"Fanfarria clandestina","y":"2024","l":"Mont Ventoux","f":"LP","id":"32162100","d":"2024-12-15"},{"a":"Stevie Wonder","t":"Songs In The Key Of Life","y":"1976","l":"Motown","f":"2xLP","id":"1846615","d":"2024-12-15"},{"a":"Stevie Wonder","t":"The Original Musiquarium I","y":"1982","l":"Motown","f":"2xLP","id":"25778821","d":"2024-12-15"},{"a":"Stevie Wonder","t":"Hotter Than July","y":"1980","l":"Motown","f":"LP","id":"10806217","d":"2024-12-15"},{"a":"Ann Peebles","t":"The Hi Singles A's & B's","y":"2011","l":"Music On Vinyl","f":"3xLP","id":"4039935","d":"2026-03-01"},{"a":"Duke Ellington","t":"(From The Soundtrack Of The Motion Picture) Otto Preminger's Anatomy Of A Murder ","y":"2019","l":"Music On Vinyl","f":"LP","id":"13762803","d":"2025-11-10"},{"a":"Wilco","t":"Yankee Hotel Foxtrot","y":"2002","l":"Nonesuch","f":"2xLP","id":"23407112","d":"2024-12-15"},{"a":"Nina Simone","t":"Little Girl Blue","y":"2025","l":"Number One Essentials","f":"LP","id":"33625998","d":"2025-11-10"},{"a":"Nunatak","t":"Nunatak y la Isla Invisible","y":"2023","l":"Nunatak","f":"LP","id":"27525132","d":"2024-12-15"},{"a":"Billie Holiday","t":"Body And Soul","y":"2022","l":"Ober Entertainment","f":"LP","id":"24689861","d":"2024-12-15"},{"a":"The Beatles","t":"Revolver","y":"1966","l":"Odeon","f":"LP","id":"6611316","d":"2024-12-15"},{"a":"The Beatles","t":"Que Noche La De Aquel Día","y":"","l":"Odeon","f":"LP","id":"1870189","d":"2024-12-15"},{"a":"The Beatles","t":"Abbey Road","y":"1969","l":"Odeon","f":"LP","id":"15212723","d":"2024-12-15"},{"a":"Egon Soda","t":"Bellaurora","y":"2022","l":"Panda Artist Management","f":"2xLP","id":"22288123","d":"2024-12-15"},{"a":"Fleetwood Mac","t":"Life Becoming A Landslide 1975","y":"2016","l":"Parachute Recording Company","f":"2xLP","id":"9571439","d":"2025-11-10"},{"a":"Coldplay","t":"Everyday Life","y":"2019","l":"Parlophone","f":"CD","id":"14421702","d":"2025-11-10"},{"a":"Coldplay","t":"Parachutes","y":"2024","l":"Parlophone","f":"LP","id":"31728419","d":"2024-12-14"},{"a":"Coldplay","t":"A Rush Of Blood To The Head","y":"2025","l":"Parlophone","f":"LP","id":"34818848","d":"2025-11-30"},{"a":"The Beatles","t":"Rubber Soul","y":"","l":"Parlophone","f":"LP","id":"32021516","d":"2025-02-16"},{"a":"David Bowie","t":"\"Heroes\"","y":"2018","l":"Parlophone","f":"LP","id":"11606339","d":"2025-03-02"},{"a":"Los Ronaldos","t":"Saca la lengua ","y":"2021","l":"Parlophone","f":"LP","id":"29708956","d":"2025-02-04"},{"a":"Vetusta Morla","t":"Un Día En El Mundo","y":"2009","l":"PequeñoSaltoMortal","f":"LP","id":"2693659","d":"2024-12-15"},{"a":"Vetusta Morla","t":"Mapas","y":"2017","l":"PequeñoSaltoMortal","f":"2xLP","id":"10783833","d":"2024-12-15"},{"a":"Vetusta Morla","t":"La Deriva","y":"2014","l":"PequeñoSaltoMortal","f":"2xLP","id":"6387728","d":"2024-12-15"},{"a":"Vetusta Morla","t":"MSDL - Canciones Dentro de Canciones","y":"2020","l":"PequeñoSaltoMortal","f":"LP","id":"15349450","d":"2024-12-15"},{"a":"Vetusta Morla","t":"Cable A Tierra","y":"2021","l":"PequeñoSaltoMortal","f":"LP","id":"21135226","d":"2024-12-15"},{"a":"Vetusta Morla","t":"Puentes Y Catedrales","y":"2024","l":"PequeñoSaltoMortal","f":"7\"","id":"30169691","d":"2024-12-15"},{"a":"Vetusta Morla","t":"Figurantes","y":"2024","l":"PequeñoSaltoMortal","f":"LP","id":"31050239","d":"2024-12-15"},{"a":"The Style Council","t":"Café Bleu","y":"1984","l":"Polydor","f":"LP","id":"2712195","d":"2024-12-15"},{"a":"Nacha Pop","t":"Dibujos Animados","y":"1985","l":"Polydor","f":"LP","id":"1923410","d":"2024-12-15"},{"a":"The Style Council","t":"Confessions Of A Pop Group","y":"1988","l":"Polydor","f":"LP","id":"3399545","d":"2024-12-15"},{"a":"The Style Council","t":"Our Favourite Shop","y":"1985","l":"Polydor","f":"LP","id":"381487","d":"2024-12-15"},{"a":"Miles Davis","t":"Workin' And Steamin'","y":"1976","l":"Prestige","f":"2xLP","id":"3650389","d":"2025-02-09"},{"a":"Summer Fiction","t":"Himalaya","y":"2017","l":"Pretty Olivia Records","f":"LP","id":"10429277","d":"2024-12-15"},{"a":"Fleetwood Mac","t":"Fleetwood Mac","y":"1975","l":"Reprise Records","f":"LP","id":"13552836","d":"2025-11-10"},{"a":"Taylor Swift","t":"Folklore","y":"2020","l":"Republic Records","f":"2xLP","id":"16242480","d":"2024-12-14"},{"a":"The Rolling Stones","t":"Still Life (American Concert 1981)","y":"1982","l":"Rolling Stones Records","f":"LP","id":"2564909","d":"2024-12-15"},{"a":"The Empty Bottles (2)","t":"Love, Peace & Chicken Grease ","y":"2016","l":"Rufus Recordings","f":"LP","id":"9221366","d":"2024-12-15"},{"a":"Billie Holiday","t":"Stay With Me","y":"2024","l":"Second Records","f":"LP","id":"33535743","d":"2025-11-10"},{"a":"Madonna","t":"Like A Prayer","y":"1989","l":"Sire","f":"LP","id":"8703986","d":"2024-12-15"},{"a":"Leiva (2)","t":"Cuando Te Muerdes El Labio","y":"2021","l":"Sony Music","f":"2xLP","id":"21227218","d":"2024-12-15"},{"a":"Arde Bogotá","t":"El Tiempo y la Actitud","y":"2023","l":"Sony Music","f":"10\"","id":"28896877","d":"2024-12-15"},{"a":"Arde Bogotá","t":"La Torre Picasso","y":"2024","l":"Sony Music","f":"10\"","id":"32502849","d":"2024-12-15"},{"a":"Leiva (2)","t":"Gigante","y":"2025","l":"Sony Music","f":"CD","id":"33610881","d":"2025-04-06"},{"a":"Leiva (2)","t":"Gigante","y":"2025","l":"Sony Music","f":"2xLP","id":"33636204","d":"2025-11-10"},{"a":"Leiva (2)","t":"Monstruos","y":"2016","l":"Sony Music","f":"LP","id":"9128559","d":"2024-12-15"},{"a":"Manolo García","t":"Arena En Los Bolsillos","y":"2015","l":"Sony Music","f":"2xLP","id":"7251594","d":"2024-12-15"},{"a":"Leiva (2)","t":"Diciembre","y":"2020","l":"Sony Music","f":"LP","id":"15522489","d":"2024-12-15"},{"a":"Arde Bogotá","t":"Cowboys De La A3","y":"2023","l":"Sony Music","f":"LP","id":"27063390","d":"2025-02-09"},{"a":"Jamiroquai","t":"1999 Remixes","y":"1999","l":"Sony Soho Square","f":"4x12\"","id":"20628","d":"2024-12-15"},{"a":"Stevie Wonder","t":"Music Of My Mind","y":"","l":"Tamla","f":"LP","id":"31939852","d":"2024-12-15"},{"a":"Marvin Gaye","t":"What's Going On","y":"1971","l":"Tamla","f":"LP","id":"26197826","d":"2024-12-15"},{"a":"Prince & The New Power Generation","t":"Diamonds And Pearls","y":"2023","l":"The Prince Estate","f":"2xLP","id":"28722691","d":"2024-12-15"},{"a":"Elton John","t":"A Single Man","y":"1978","l":"The Rocket Record Company","f":"LP","id":"1451581","d":"2025-11-10"},{"a":"Adi Oasis","t":"Lotus Glow (Deluxe)","y":"2025","l":"Unity Group","f":"2xLP","id":"34589581","d":"2026-03-11"},{"a":"Nacha Pop","t":"Nacha Pop 80 88","y":"2021","l":"Universal","f":"2xLP","id":"20748103","d":"2025-02-04"},{"a":"L.A. (13)","t":"Heavenly Hell","y":"2023","l":"Universal Music Group","f":"LP","id":"26234375","d":"2024-12-15"},{"a":"The Beatles","t":"Sgt. Pepper's Lonely Hearts Club Band","y":"2017","l":"Universal Music Group International","f":"LP","id":"22334011","d":"2024-12-14"},{"a":"Viva Suecia","t":"El Amor De La Clase Que Sea","y":"2022","l":"Universal Music Spain","f":"LP","id":"24927335","d":"2024-12-15"},{"a":"Viva Suecia","t":"Hecho En Tiempos De Paz","y":"2025","l":"Universal Music Spain","f":"LP","id":"35358112","d":"2025-11-10"},{"a":"Amy Winehouse","t":"Back To Black","y":"2017","l":"Universal Records","f":"LP","id":"11557309","d":"2024-12-15"},{"a":"Nina Simone","t":"You've Got To Learn","y":"2023","l":"Verve Records","f":"LP","id":"27732810","d":"2025-11-10"},{"a":"Ella Fitzgerald","t":"Clap Hands, Here Comes Charlie!","y":"2024","l":"Verve Records","f":"LP","id":"30286007","d":"2024-12-15"},{"a":"Peter Gabriel","t":"So","y":"1986","l":"Virgin","f":"LP","id":"2394229","d":"2025-02-16"},{"a":"Miles Davis","t":"Tutu","y":"1986","l":"Warner Bros. Records","f":"LP","id":"2315604","d":"2025-02-09"},{"a":"Fleetwood Mac","t":"Rumours","y":"1977","l":"Warner Bros. Records","f":"LP","id":"16158797","d":"2024-12-15"},{"a":"Fleetwood Mac","t":"Mirage","y":"1982","l":"Warner Bros. Records","f":"LP","id":"7081893","d":"2026-03-01"},{"a":"a-ha","t":"Hunting High And Low","y":"1985","l":"Warner Bros. Records","f":"LP","id":"176226","d":"2024-12-15"},{"a":"Bill Evans","t":"You Must Believe In Spring","y":"1981","l":"Warner Bros. Records","f":"LP","id":"22960730","d":"2025-03-10"},{"a":"George Benson","t":"The George Benson Collection","y":"1981","l":"Warner Bros. Records","f":"2xLP","id":"541179","d":"2025-11-30"},{"a":"Los Ronaldos","t":"Los Ronaldos","y":"2023","l":"Warner Media Spain","f":"LP","id":"26901839","d":"2025-02-04"},{"a":"Love Of Lesbian","t":"1999","y":"2021","l":"Warner Music Spain","f":"LP","id":"23122742","d":"2024-12-15"},{"a":"Deluxe (11)","t":"Fin De Un Viaje Infinito","y":"2024","l":"Warner Music Spain","f":"LP","id":"32985402","d":"2025-11-10"},{"a":"Love Of Lesbian","t":"Ejército De Salvación","y":"2024","l":"Warner Music Spain","f":"LP","id":"31986917","d":"2024-12-15"},{"a":"Iván Ferreiro","t":"Puede Que Madrid Sea Una Trinchera Pop","y":"2024","l":"Warner Music Spain","f":"3xLP","id":"32549121","d":"2024-12-14"},{"a":"Sidecars","t":"Trece","y":"2022","l":"Warner Music Spain","f":"LP","id":"24621092","d":"2024-12-15"},{"a":"Coque Malla","t":"Aunque Estemos Muertos","y":"2023","l":"Warner Music Spain","f":"LP","id":"29007814","d":"2024-12-15"},{"a":"Sidecars","t":"Everest","y":"2025","l":"Warner Music Spain","f":"LP","id":"35692024","d":"2025-11-30"},{"a":"Los Piratas","t":"Manual para los fieles","y":"2022","l":"Warner Music Spain S.L.","f":"2xLP","id":"29045728","d":"2024-12-15"},{"a":"Ella Fitzgerald & Louis Armstrong","t":"Ella & Louis","y":"2025","l":"WaxTime","f":"LP","id":"33194070","d":"2025-11-10"},{"a":"Billie Holiday","t":"Songs For Distingué Lovers","y":"2011","l":"WaxTime","f":"LP","id":"3464753","d":"2025-02-27"},{"a":"Presuntos Implicados","t":"Alma De Blues","y":"1989","l":"WEA","f":"LP","id":"1554550","d":"2024-12-15"},{"a":"Simply Red","t":"A New Flame","y":"1989","l":"WEA","f":"LP","id":"1919703","d":"2024-12-15"},{"a":"Iván Ferreiro","t":"Confesiones De Un Artista De Mierda","y":"2017","l":"WEA","f":"2xLP","id":"11189676","d":"2024-12-15"},{"a":"The Smiths","t":"The Queen Is Dead","y":"2012","l":"WEA","f":"LP","id":"3564656","d":"2024-12-15"},{"a":"Los Piratas","t":"Ultrasónica","y":"2024","l":"WEA","f":"LP","id":"32985687","d":"2025-11-10"},{"a":"Iván Ferreiro","t":"Trinchera Pop","y":"2023","l":"WEA","f":"LP","id":"26380346","d":"2024-12-15"},{"a":"Miguel Bosé","t":"Los Chicos No Lloran","y":"1990","l":"WEA","f":"LP","id":"1130629","d":"2024-12-15"},{"a":"Deluxe (11)","t":"RECONSTRUCCION","y":"2023","l":"WEA","f":"LP","id":"27450534","d":"2025-11-10"},{"a":"Prince","t":"Sign \"O\" The Times","y":"1987","l":"WEA","f":"2xLP","id":"6135578","d":"2024-12-15"},{"a":"Radiohead","t":"The Bends","y":"","l":"XL Recordings","f":"LP","id":"29987029","d":"2025-11-10"},{"a":"Radiohead","t":"OK Computer","y":"2016","l":"XL Recordings","f":"2xLP","id":"8690850","d":"2025-03-02"}];
-
+const COL=[{"a":"Sting","t":"...Nothing Like The Sun","y":"1987","l":"A&M
+Records","f":"2xLP","id":"1989018","d":"2024-12-15"},{"a":"Supertramp","t":"Free
+As A Bird","y":"1987","l":"A&M Records","f":"LP","id":"2683138","d":"2025-02-16"},
+{"a":"Sting","t":"The Soul Cages","y":"1991","l":"A&M
+Records","f":"LP","id":"2342084","d":"2024-12-15"},{"a":"Supertramp","t":"Crime Of
+The Century","y":"1974","l":"A&M Records","f":"LP","id":"1460333","d":"2024-12-
+15"},{"a":"The Police","t":"Zenyatta Mondatta","y":"1980","l":"A&M
+Records","f":"LP","id":"1582193","d":"2024-12-15"},{"a":"The Police","t":"Ghost In
+The Machine","y":"1981","l":"A&M Records","f":"LP","id":"1734217","d":"2024-12-
+15"},{"a":"The Police","t":"Synchronicity","y":"1983","l":"A&M
+Records","f":"LP","id":"2063224","d":"2025-04-14"},{"a":"Amaro
+Ferreiro","t":"Personajes Secundarios","y":"2020","l":"Amaro
+Ferreiro","f":"LP","id":"14929920","d":"2024-12-15"},{"a":"The Beatles","t":"Let
+It Be","y":"1976","l":"Apple Records","f":"LP","id":"1055006","d":"2025-02-16"},
+{"a":"John Lennon / The Plastic Ono Band","t":"John Lennon / Plastic Ono
+Band","y":"2015","l":"Apple Records","f":"LP","id":"7381008","d":"2024-12-15"},
+{"a":"The Beatles","t":"1962-1966","y":"2023","l":"Apple
+Records","f":"3xLP","id":"28761430","d":"2025-04-12"},{"a":"The
+Beatles","t":"1967-1970","y":"2023","l":"Apple
+Records","f":"3xLP","id":"28836724","d":"2025-04-12"},{"a":"Stray Cats","t":"Stray
+Cats","y":"1981","l":"Arista","f":"LP","id":"11245536","d":"2024-12-15"},{"a":"The
+Beach Boys","t":"Pet Sounds","y":"2016","l":"Capitol
+Records","f":"LP","id":"27229236","d":"2025-11-10"},{"a":"Terence Trent
+D'Arby","t":"Introducing The Hardline According To Terence Trent
+D'Arby","y":"1987","l":"CBS","f":"LP","id":"1964470","d":"2024-12-15"},
+{"a":"Jethro Tull","t":"Songs From The Vault 1975-
+1978","y":"2025","l":"Chrysalis","f":"2xLP","id":"33671505","d":"2025-04-14"},
+{"a":"Harry Styles","t":"Harry’s
+House","y":"2022","l":"Columbia","f":"LP","id":"26128271","d":"2024-12-15"},
+{"a":"Miles Davis","t":"Kind Of
+Blue","y":"","l":"Columbia","f":"LP","id":"27267321","d":"2024-12-15"},{"a":"Duke
+Ellington","t":"(From The Soundtrack Of The Motion Picture) Otto Preminger's
+Anatomy Of A Murder","y":"2013","l":"Columbia","f":"LP","id":"4515283","d":"2025-
+04-14"},{"a":"Morgan (81)","t":"Hotel Morgan ","y":"2025","l":"Cultura Rock
+Records","f":"LP","id":"33051516","d":"2025-02-09"},{"a":"Love Of Lesbian","t":"El
+Astronauta Que Vio A Elvis / Charlize
+SolTherón","y":"2022","l":"DRO","f":"7\"","id":"22991795","d":"2024-12-15"},
+{"a":"Love Of
+Lesbian","t":"V.E.H.N.","y":"2021","l":"DRO","f":"2xLP","id":"18318850","d":"2024-
+12-15"},{"a":"Coque Malla","t":"La Hora de Los
+Gigantes","y":"2021","l":"DRO","f":"LP","id":"23776136","d":"2024-12-15"},
+{"a":"Coque Malla","t":"El Último Hombre En La
+Tierra","y":"2016","l":"DRO","f":"LP","id":"8139555","d":"2024-12-15"},{"a":"Anita
+Baker","t":"Rapture","y":"1986","l":"Elektra","f":"LP","id":"8926363","d":"2024-
+12-15"},{"a":"George Michael","t":"Listen Without Prejudice Vol.
+1","y":"1990","l":"Epic","f":"LP","id":"1739011","d":"2024-12-15"},
+{"a":"Sade","t":"Stronger Than
+Pride","y":"1988","l":"Epic","f":"LP","id":"860780","d":"2024-12-15"},{"a":"Gloria
+Estefan","t":"Cuts Both
+Ways","y":"1989","l":"Epic","f":"LP","id":"1714232","d":"2024-12-15"},
+{"a":"Sade","t":"Promise","y":"1985","l":"Epic","f":"LP","id":"10716980","d":"2024-
+12-15"},{"a":"Michael Jackson","t":"Thriller
+40","y":"2022","l":"Epic","f":"LP","id":"25192156","d":"2024-12-15"},{"a":"Jaco
+Pastorius","t":"Jaco
+Pastorius","y":"2010","l":"Epic","f":"LP","id":"2506261","d":"2025-11-10"},
+{"a":"Sade","t":"Lovers
+Rock","y":"2024","l":"Epic","f":"LP","id":"31772342","d":"2025-02-04"},
+{"a":"Sade","t":"Soldier Of
+Love","y":"2024","l":"Epic","f":"LP","id":"31772393","d":"2024-12-15"},
+{"a":"Sade","t":"Diamond
+Life","y":"2020","l":"Epic","f":"LP","id":"35291230","d":"2025-11-10"},
+{"a":"Sade","t":"Love
+Deluxe","y":"2024","l":"Epic","f":"LP","id":"31756259","d":"2024-12-15"},
+{"a":"Xoel López","t":"Caldo
+Espírito","y":"2023","l":"Esmerarte","f":"LP","id":"28531045","d":"2025-02-09"},
+{"a":"Xoel
+López","t":"Atlántico","y":"2025","l":"Esmerarte","f":"LP","id":"33144486","d":"2025-
+02-27"},{"a":"Xoel
+López","t":"Paramales","y":"2025","l":"EsmerArte","f":"2xLP","id":"33234180","d":"2025-
+02-27"},{"a":"Guillermo Galván","t":"Madrid, Ext. (Banda Sonora
+Original)","y":"2025","l":"Esmerarte","f":"LP","id":"35269288","d":"2025-11-10"},
+{"a":"Xoel López","t":"Sueños Y
+Pan","y":"2017","l":"EsmerArte","f":"LP","id":"11280655","d":"2025-02-27"},
+{"a":"Bill Evans / Eddie
+Gomez","t":"Intuition","y":"1975","l":"Fantasy","f":"LP","id":"1822774","d":"2024-
+12-15"},{"a":"Zahara","t":"Lento Ternura","y":"2025","l":"G.O.Z.Z.
+Records","f":"LP","id":"33320517","d":"2025-04-06"},
+{"a":"Zahara","t":"Puta","y":"2025","l":"G.O.Z.Z.
+Records","f":"LP","id":"35444413","d":"2026-01-11"},{"a":"Mikel
+Erentxun","t":"Altxerri","y":"2025","l":"Gasa","f":"LP","id":"33715638","d":"2025-
+11-10"},{"a":"Mikel
+Erentxun","t":"Septiembre","y":"2023","l":"Gasa","f":"2xLP","id":"28392304","d":"2024-
+12-15"},{"a":"Steely Dan","t":"Katy Lied","y":"2025","l":"Geffen
+Records","f":"LP","id":"33005481","d":"2025-02-04"},{"a":"Steely
+Dan","t":"Countdown To Ecstasy","y":"2023","l":"Geffen
+Records","f":"LP","id":"27181434","d":"2025-02-04"},{"a":"Billie
+Holiday","t":"Lady Sings The Blues","y":"1986","l":"Giants Of
+Jazz","f":"LP","id":"16151852","d":"2025-02-04"},{"a":"Al Green","t":"Al Green
+Gets Next To You","y":"1971","l":"Hi Records","f":"LP","id":"1431301","d":"2022-
+12-04"},{"a":"John Coltrane","t":"A Love
+Supreme","y":"2020","l":"Impulse!","f":"LP","id":"16026339","d":"2024-12-14"},
+{"a":"Rufus T. Firefly","t":"Todas las cosas buenas","y":"2025","l":"Lago Naranja
+Records","f":"2xLP","id":"33842712","d":"2025-11-10"},{"a":"Tears For
+Fears","t":"Songs From The Big
+Chair","y":"2022","l":"Mercury","f":"LP","id":"25896853","d":"2024-12-15"},
+{"a":"Cometa (10)","t":"Fanfarria clandestina","y":"2024","l":"Mont
+Ventoux","f":"LP","id":"32162100","d":"2024-12-15"},{"a":"Stevie
+Wonder","t":"Songs In The Key Of
+Life","y":"1976","l":"Motown","f":"2xLP","id":"1846615","d":"2024-12-15"},
+{"a":"Stevie Wonder","t":"The Original Musiquarium
+I","y":"1982","l":"Motown","f":"2xLP","id":"25778821","d":"2024-12-15"},
+{"a":"Stevie Wonder","t":"Hotter Than
+July","y":"1980","l":"Motown","f":"LP","id":"10806217","d":"2024-12-15"},{"a":"Ann
+Peebles","t":"The Hi Singles A's & B's","y":"2011","l":"Music On
+Vinyl","f":"3xLP","id":"4039935","d":"2026-03-01"},{"a":"Duke Ellington","t":"
+(From The Soundtrack Of The Motion Picture) Otto Preminger's Anatomy Of A Murder
+","y":"2019","l":"Music On Vinyl","f":"LP","id":"13762803","d":"2025-11-10"},
+{"a":"Wilco","t":"Yankee Hotel
+Foxtrot","y":"2002","l":"Nonesuch","f":"2xLP","id":"23407112","d":"2024-12-15"},
+{"a":"Nina Simone","t":"Little Girl Blue","y":"2025","l":"Number One
+Essentials","f":"LP","id":"33625998","d":"2025-11-10"},{"a":"Nunatak","t":"Nunatak
+y la Isla Invisible","y":"2023","l":"Nunatak","f":"LP","id":"27525132","d":"2024-
+12-15"},{"a":"Billie Holiday","t":"Body And Soul","y":"2022","l":"Ober
+Entertainment","f":"LP","id":"24689861","d":"2024-12-15"},{"a":"The
+Beatles","t":"Revolver","y":"1966","l":"Odeon","f":"LP","id":"6611316","d":"2024-
+12-15"},{"a":"The Beatles","t":"Que Noche La De Aquel
+Día","y":"","l":"Odeon","f":"LP","id":"1870189","d":"2024-12-15"},{"a":"The
+Beatles","t":"Abbey
+Road","y":"1969","l":"Odeon","f":"LP","id":"15212723","d":"2024-12-15"},{"a":"Egon
+Soda","t":"Bellaurora","y":"2022","l":"Panda Artist
+Management","f":"2xLP","id":"22288123","d":"2024-12-15"},{"a":"Fleetwood
+Mac","t":"Life Becoming A Landslide 1975","y":"2016","l":"Parachute Recording
+Company","f":"2xLP","id":"9571439","d":"2025-11-10"},{"a":"Coldplay","t":"Everyday
+Life","y":"2019","l":"Parlophone","f":"CD","id":"14421702","d":"2025-11-10"},
+{"a":"Coldplay","t":"Parachutes","y":"2024","l":"Parlophone","f":"LP","id":"31728419","d":"2024
+12-14"},{"a":"Coldplay","t":"A Rush Of Blood To The
+Head","y":"2025","l":"Parlophone","f":"LP","id":"34818848","d":"2025-11-30"},
+{"a":"The Beatles","t":"Rubber
+Soul","y":"","l":"Parlophone","f":"LP","id":"32021516","d":"2025-02-16"},
+{"a":"David
+Bowie","t":"\"Heroes\"","y":"2018","l":"Parlophone","f":"LP","id":"11606339","d":"2025-
+03-02"},{"a":"Los Ronaldos","t":"Saca la lengua
+","y":"2021","l":"Parlophone","f":"LP","id":"29708956","d":"2025-02-04"},
+{"a":"Vetusta Morla","t":"Un Día En El
+Mundo","y":"2009","l":"PequeñoSaltoMortal","f":"LP","id":"2693659","d":"2024-12-
+15"},{"a":"Vetusta
+Morla","t":"Mapas","y":"2017","l":"PequeñoSaltoMortal","f":"2xLP","id":"10783833","d":"2024-
+12-15"},{"a":"Vetusta Morla","t":"La
+Deriva","y":"2014","l":"PequeñoSaltoMortal","f":"2xLP","id":"6387728","d":"2024-
+12-15"},{"a":"Vetusta Morla","t":"MSDL - Canciones Dentro de
+Canciones","y":"2020","l":"PequeñoSaltoMortal","f":"LP","id":"15349450","d":"2024-
+12-15"},{"a":"Vetusta Morla","t":"Cable A
+Tierra","y":"2021","l":"PequeñoSaltoMortal","f":"LP","id":"21135226","d":"2024-12-
+15"},{"a":"Vetusta Morla","t":"Puentes Y
+Catedrales","y":"2024","l":"PequeñoSaltoMortal","f":"7\"","id":"30169691","d":"2024-
+12-15"},{"a":"Vetusta
+Morla","t":"Figurantes","y":"2024","l":"PequeñoSaltoMortal","f":"LP","id":"31050239","d":"2024-
+12-15"},{"a":"The Style Council","t":"Café
+Bleu","y":"1984","l":"Polydor","f":"LP","id":"2712195","d":"2024-12-15"},
+{"a":"Nacha Pop","t":"Dibujos
+Animados","y":"1985","l":"Polydor","f":"LP","id":"1923410","d":"2024-12-15"},
+{"a":"The Style Council","t":"Confessions Of A Pop
+Group","y":"1988","l":"Polydor","f":"LP","id":"3399545","d":"2024-12-15"},
+{"a":"The Style Council","t":"Our Favourite
+Shop","y":"1985","l":"Polydor","f":"LP","id":"381487","d":"2024-12-15"},
+{"a":"Miles Davis","t":"Workin' And
+Steamin'","y":"1976","l":"Prestige","f":"2xLP","id":"3650389","d":"2025-02-09"},
+{"a":"Summer Fiction","t":"Himalaya","y":"2017","l":"Pretty Olivia
+Records","f":"LP","id":"10429277","d":"2024-12-15"},{"a":"Fleetwood
+Mac","t":"Fleetwood Mac","y":"1975","l":"Reprise
+Records","f":"LP","id":"13552836","d":"2025-11-10"},{"a":"Taylor
+Swift","t":"Folklore","y":"2020","l":"Republic
+Records","f":"2xLP","id":"16242480","d":"2024-12-14"},{"a":"The Rolling
+Stones","t":"Still Life (American Concert 1981)","y":"1982","l":"Rolling Stones
+Records","f":"LP","id":"2564909","d":"2024-12-15"},{"a":"The Empty Bottles
+(2)","t":"Love, Peace & Chicken Grease ","y":"2016","l":"Rufus
+Recordings","f":"LP","id":"9221366","d":"2024-12-15"},{"a":"Billie
+Holiday","t":"Stay With Me","y":"2024","l":"Second
+Records","f":"LP","id":"33535743","d":"2025-11-10"},{"a":"Madonna","t":"Like A
+Prayer","y":"1989","l":"Sire","f":"LP","id":"8703986","d":"2024-12-15"},
+{"a":"Leiva (2)","t":"Cuando Te Muerdes El Labio","y":"2021","l":"Sony
+Music","f":"2xLP","id":"21227218","d":"2024-12-15"},{"a":"Arde Bogotá","t":"El
+Tiempo y la Actitud","y":"2023","l":"Sony
+Music","f":"10\"","id":"28896877","d":"2024-12-15"},{"a":"Arde Bogotá","t":"La
+Torre Picasso","y":"2024","l":"Sony Music","f":"10\"","id":"32502849","d":"2024-
+12-15"},{"a":"Leiva (2)","t":"Gigante","y":"2025","l":"Sony
+Music","f":"CD","id":"33610881","d":"2025-04-06"},{"a":"Leiva
+(2)","t":"Gigante","y":"2025","l":"Sony
+Music","f":"2xLP","id":"33636204","d":"2025-11-10"},{"a":"Leiva
+(2)","t":"Monstruos","y":"2016","l":"Sony
+Music","f":"LP","id":"9128559","d":"2024-12-15"},{"a":"Manolo García","t":"Arena
+En Los Bolsillos","y":"2015","l":"Sony Music","f":"2xLP","id":"7251594","d":"2024-
+12-15"},{"a":"Leiva (2)","t":"Diciembre","y":"2020","l":"Sony
+Music","f":"LP","id":"15522489","d":"2024-12-15"},{"a":"Arde Bogotá","t":"Cowboys
+De La A3","y":"2023","l":"Sony Music","f":"LP","id":"27063390","d":"2025-02-09"},
+{"a":"Jamiroquai","t":"1999 Remixes","y":"1999","l":"Sony Soho
+Square","f":"4x12\"","id":"20628","d":"2024-12-15"},{"a":"Stevie
+Wonder","t":"Music Of My
+Mind","y":"","l":"Tamla","f":"LP","id":"31939852","d":"2024-12-15"},{"a":"Marvin
+Gaye","t":"What's Going
+On","y":"1971","l":"Tamla","f":"LP","id":"26197826","d":"2024-12-15"},{"a":"Prince
+& The New Power Generation","t":"Diamonds And Pearls","y":"2023","l":"The Prince
+Estate","f":"2xLP","id":"28722691","d":"2024-12-15"},{"a":"Elton John","t":"A
+Single Man","y":"1978","l":"The Rocket Record
+Company","f":"LP","id":"1451581","d":"2025-11-10"},{"a":"Adi Oasis","t":"Lotus
+Glow (Deluxe)","y":"2025","l":"Unity Group","f":"2xLP","id":"34589581","d":"2026-
+03-11"},{"a":"Nacha Pop","t":"Nacha Pop 80
+88","y":"2021","l":"Universal","f":"2xLP","id":"20748103","d":"2025-02-04"},
+{"a":"L.A. (13)","t":"Heavenly Hell","y":"2023","l":"Universal Music
+Group","f":"LP","id":"26234375","d":"2024-12-15"},{"a":"The Beatles","t":"Sgt.
+Pepper's Lonely Hearts Club Band","y":"2017","l":"Universal Music Group
+International","f":"LP","id":"22334011","d":"2024-12-14"},{"a":"Viva
+Suecia","t":"El Amor De La Clase Que Sea","y":"2022","l":"Universal Music
+Spain","f":"LP","id":"24927335","d":"2024-12-15"},{"a":"Viva Suecia","t":"Hecho En
+Tiempos De Paz","y":"2025","l":"Universal Music
+Spain","f":"LP","id":"35358112","d":"2025-11-10"},{"a":"Amy Winehouse","t":"Back
+To Black","y":"2017","l":"Universal Records","f":"LP","id":"11557309","d":"2024-
+12-15"},{"a":"Nina Simone","t":"You've Got To Learn","y":"2023","l":"Verve
+Records","f":"LP","id":"27732810","d":"2025-11-10"},{"a":"Ella
+Fitzgerald","t":"Clap Hands, Here Comes Charlie!","y":"2024","l":"Verve
+Records","f":"LP","id":"30286007","d":"2024-12-15"},{"a":"Peter
+Gabriel","t":"So","y":"1986","l":"Virgin","f":"LP","id":"2394229","d":"2025-02-
+16"},{"a":"Miles Davis","t":"Tutu","y":"1986","l":"Warner Bros.
+Records","f":"LP","id":"2315604","d":"2025-02-09"},{"a":"Fleetwood
+Mac","t":"Rumours","y":"1977","l":"Warner Bros.
+Records","f":"LP","id":"16158797","d":"2024-12-15"},{"a":"Fleetwood
+Mac","t":"Mirage","y":"1982","l":"Warner Bros.
+Records","f":"LP","id":"7081893","d":"2026-03-01"},{"a":"a-ha","t":"Hunting High
+And Low","y":"1985","l":"Warner Bros. Records","f":"LP","id":"176226","d":"2024-
+12-15"},{"a":"Bill Evans","t":"You Must Believe In Spring","y":"1981","l":"Warner
+Bros. Records","f":"LP","id":"22960730","d":"2025-03-10"},{"a":"George
+Benson","t":"The George Benson Collection","y":"1981","l":"Warner Bros.
+Records","f":"2xLP","id":"541179","d":"2025-11-30"},{"a":"Los Ronaldos","t":"Los
+Ronaldos","y":"2023","l":"Warner Media Spain","f":"LP","id":"26901839","d":"2025-
+02-04"},{"a":"Love Of Lesbian","t":"1999","y":"2021","l":"Warner Music
+Spain","f":"LP","id":"23122742","d":"2024-12-15"},{"a":"Deluxe (11)","t":"Fin De
+Un Viaje Infinito","y":"2024","l":"Warner Music
+Spain","f":"LP","id":"32985402","d":"2025-11-10"},{"a":"Love Of
+Lesbian","t":"Ejército De Salvación","y":"2024","l":"Warner Music
+Spain","f":"LP","id":"31986917","d":"2024-12-15"},{"a":"Iván Ferreiro","t":"Puede
+Que Madrid Sea Una Trinchera Pop","y":"2024","l":"Warner Music
+Spain","f":"3xLP","id":"32549121","d":"2024-12-14"},
+{"a":"Sidecars","t":"Trece","y":"2022","l":"Warner Music
+Spain","f":"LP","id":"24621092","d":"2024-12-15"},{"a":"Coque Malla","t":"Aunque
+Estemos Muertos","y":"2023","l":"Warner Music
+Spain","f":"LP","id":"29007814","d":"2024-12-15"},
+{"a":"Sidecars","t":"Everest","y":"2025","l":"Warner Music
+Spain","f":"LP","id":"35692024","d":"2025-11-30"},{"a":"Los Piratas","t":"Manual
+para los fieles","y":"2022","l":"Warner Music Spain
+S.L.","f":"2xLP","id":"29045728","d":"2024-12-15"},{"a":"Ella Fitzgerald & Louis
+Armstrong","t":"Ella &
+Louis","y":"2025","l":"WaxTime","f":"LP","id":"33194070","d":"2025-11-10"},
+{"a":"Billie Holiday","t":"Songs For Distingué
+Lovers","y":"2011","l":"WaxTime","f":"LP","id":"3464753","d":"2025-02-27"},
+{"a":"Presuntos Implicados","t":"Alma De
+Blues","y":"1989","l":"WEA","f":"LP","id":"1554550","d":"2024-12-15"},{"a":"Simply
+Red","t":"A New Flame","y":"1989","l":"WEA","f":"LP","id":"1919703","d":"2024-12-
+15"},{"a":"Iván Ferreiro","t":"Confesiones De Un Artista De
+Mierda","y":"2017","l":"WEA","f":"2xLP","id":"11189676","d":"2024-12-15"},
+{"a":"The Smiths","t":"The Queen Is
+Dead","y":"2012","l":"WEA","f":"LP","id":"3564656","d":"2024-12-15"},{"a":"Los
+Piratas","t":"Ultrasónica","y":"2024","l":"WEA","f":"LP","id":"32985687","d":"2025-
+11-10"},{"a":"Iván Ferreiro","t":"Trinchera
+Pop","y":"2023","l":"WEA","f":"LP","id":"26380346","d":"2024-12-15"},{"a":"Miguel
+Bosé","t":"Los Chicos No
+Lloran","y":"1990","l":"WEA","f":"LP","id":"1130629","d":"2024-12-15"},
+{"a":"Deluxe
+(11)","t":"RECONSTRUCCION","y":"2023","l":"WEA","f":"LP","id":"27450534","d":"2025-
+11-10"},{"a":"Prince","t":"Sign \"O\" The
+Times","y":"1987","l":"WEA","f":"2xLP","id":"6135578","d":"2024-12-15"},
+{"a":"Radiohead","t":"The Bends","y":"","l":"XL
+Recordings","f":"LP","id":"29987029","d":"2025-11-10"},{"a":"Radiohead","t":"OK
+Computer","y":"2016","l":"XL Recordings","f":"2xLP","id":"8690850","d":"2025-03-
+02"}];
 const CC={};
 async function cov(id){
 if(CC[id]!==undefined)return CC[id];
 try{
-const r=await fetch(‘https://api.discogs.com/releases/’+id,{headers:{‘Authorization’:‘Discogs token=’+TOK,‘User-Agent’:‘VinylSuite/1.0’}});
+const r=await fetch('https://api.discogs.com/releases/'+id,{headers:
+{'Authorization':'Discogs token='+TOK,'User-Agent':'VinylSuite/1.0'}});
 const d=await r.json();
 const u=d.images?.[0]?.uri||d.thumb||null;
 CC[id]=u; return u;
 }catch{CC[id]=null;return null;}
 }
 function dc(y){
-if(!y)return’#adb5bd’;const n=parseInt(y);
-if(n<1970)return’#e63946’;if(n<1980)return’#f4a261’;if(n<1990)return’#e9c46a’;
-if(n<2000)return’#8ecae6’;if(n<2010)return’#a8dadc’;if(n<2020)return’#06d6a0’;return’#8338ec’;
+if(!y)return'#adb5bd';const n=parseInt(y);
+if(n<1970)return'#e63946';if(n<1980)return'#f4a261';if(n<1990)return'#e9c46a';
+if(n<2000)return'#8ecae6';if(n<2010)return'#a8dadc';if(n<2020)return'#06d6a0';return'#8338ec';
 }
-function esc(s){return String(s||’’).replace(/&/g,’&’).replace(/</g,’<’).replace(/>/g,’>’);}
-function loadDiary(){try{return JSON.parse(localStorage.getItem(‘vsd’)||’[]’);}catch{return[];}}
-function saveDiary(d){try{localStorage.setItem(‘vsd’,JSON.stringify(d));}catch{}}
-let diary=loadDiary(), curTab=‘coleccion’, spinActive=false, iaMood=’’, iaEra=’’, diaryPicked=null;
-
+function esc(s){return
+String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function loadDiary(){try{return
+JSON.parse(localStorage.getItem('vsd')||'[]');}catch{return[];}}
+function saveDiary(d){try{localStorage.setItem('vsd',JSON.stringify(d));}catch{}}
+let diary=loadDiary(), curTab='coleccion', spinActive=false, iaMood='', iaEra='',
+diaryPicked=null;
 function go(t){
 curTab=t;
-document.querySelectorAll(’.tab’).forEach((b,i)=>b.classList.toggle(‘on’,[‘coleccion’,‘ruleta’,‘stats’,‘ia’,‘diario’][i]===t));
-[‘coleccion’,‘ruleta’,‘stats’,‘ia’,‘diario’].forEach(n=>document.getElementById(‘p-’+n).style.display=n===t?’’:‘none’);
-if(t===‘coleccion’)rCol();
-if(t===‘ruleta’)rRul();
-if(t===‘stats’)rStats();
-if(t===‘ia’)rIA();
-if(t===‘diario’)rDiario();
+document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',
+['coleccion','ruleta','stats','ia','diario'][i]===t));
+['coleccion','ruleta','stats','ia','diario'].forEach(n=>document.getElementById('p-
+'+n).style.display=n===t?'':'none');
+if(t==='coleccion')rCol();
+if(t==='ruleta')rRul();
+if(t==='stats')rStats();
+if(t==='ia')rIA();
+if(t==='diario')rDiario();
 }
-
 // IMG helper
 function imgDiv(id,w,h,r,onclick){
-const d=document.createElement(‘div’);
-d.style.cssText=‘width:’+w+‘px;height:’+h+‘px;border-radius:’+r+‘px;background:#111;flex-shrink:0;overflow:hidden;’+(onclick?‘cursor:pointer’:’’);
+const d=document.createElement('div');
+d.style.cssText='width:'+w+'px;height:'+h+'px;border-
+radius:'+r+'px;background:#111;flex-shrink:0;overflow:hidden;'+
+(onclick?'cursor:pointer':'');
 if(onclick)d.onclick=onclick;
-cov(id).then(u=>{if(u&&d.isConnected){const i=document.createElement(‘img’);i.src=u;i.style.cssText=‘width:100%;height:100%;object-fit:cover;display:block’;d.appendChild(i);}});
+cov(id).then(u=>{if(u&&d.isConnected){const
+i=document.createElement('img');i.src=u;i.style.cssText='width:100%;height:100%;object-
+fit:cover;display:block';d.appendChild(i);}});
 return d;
 }
-
 // MODAL
 function openModal(r){
-document.getElementById(‘mt’).textContent=r.t;
-document.getElementById(‘ma’).textContent=r.a;
-const tags=document.getElementById(‘mtags’);tags.innerHTML=’’;
-if(r.y){const s=document.createElement(‘span’);s.className=‘tag’;s.style.background=dc(r.y);s.style.color=’#000’;s.textContent=r.y;tags.appendChild(s);}
-if(r.f){const s=document.createElement(‘span’);s.className=‘tag’;s.textContent=r.f.split(’,’)[0];tags.appendChild(s);}
-document.getElementById(‘mc’).innerHTML=’<div style="text-align:center;padding:40px 0"><div class="spinner"></div><p style="color:#555;font-size:13px;margin-top:14px">Buscando información…</p></div>’;
-document.getElementById(‘mbg’).src=’’; document.getElementById(‘mcover’).src=’’;
-cov(r.id).then(u=>{if(u){document.getElementById(‘mbg’).src=u;document.getElementById(‘mcover’).src=u;}});
-document.getElementById(‘modal’).classList.add(‘open’);
-document.body.style.overflow=‘hidden’;
-const p=‘Eres un experto en música. Busca información sobre el álbum “’+r.t+’” de ‘+r.a+(r.y?’ (’+r.y+’)’:’’)+’.\nResponde SOLO en JSON sin markdown:\n{“descripcion”:“2-3 frases”,“curiosidades”:[“c1”,“c2”,“c3”],“grabacion”:“dónde/cuándo/productor”,“legado”:“impacto cultural”}’;
-fetch(‘https://api.anthropic.com/v1/messages’,{method:‘POST’,headers:{‘Content-Type’:‘application/json’},
-body:JSON.stringify({model:‘claude-sonnet-4-20250514’,max_tokens:600,tools:[{type:‘web_search_20250305’,name:‘web_search’}],messages:[{role:‘user’,content:p}]})
+document.getElementById('mt').textContent=r.t;
+document.getElementById('ma').textContent=r.a;
+const tags=document.getElementById('mtags');tags.innerHTML='';
+if(r.y){const
+s=document.createElement('span');s.className='tag';s.style.background=dc(r.y);s.style.color='#0
+if(r.f){const
+s=document.createElement('span');s.className='tag';s.textContent=r.f.split(',')
+[0];tags.appendChild(s);}
+document.getElementById('mc').innerHTML='<div style="text-
+align:center;padding:40px 0"><div class="spinner"></div><p style="color:#555;font-
+size:13px;margin-top:14px">Buscando información…</p></div>';
+document.getElementById('mbg').src=''; document.getElementById('mcover').src='';
+cov(r.id).then(u=>{if(u)
+{document.getElementById('mbg').src=u;document.getElementById('mcover').src=u;}});
+document.getElementById('modal').classList.add('open');
+document.body.style.overflow='hidden';
+const p='Eres un experto en música. Busca información sobre el álbum "'+r.t+'"
+de '+r.a+(r.y?' ('+r.y+')':'')+'.\nResponde SOLO en JSON sin
+markdown:\n{"descripcion":"2-3 frases","curiosidades":
+["c1","c2","c3"],"grabacion":"dónde/cuándo/productor","legado":"impacto
+cultural"}';
+fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-
+Type':'application/json'},
+body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,tools:
+[{type:'web_search_20250305',name:'web_search'}],messages:
+[{role:'user',content:p}]})
 }).then(x=>x.json()).then(d=>{
-const txt=(d.content||[]).map(b=>b.text||’’).join(’’).replace(/`json|`/g,’’).trim();
-try{renderModal(JSON.parse(txt),r);}catch{document.getElementById(‘mc’).innerHTML=’<p style="color:#555;text-align:center">No se pudo cargar.</p>’;}
-}).catch(()=>{document.getElementById(‘mc’).innerHTML=’<p style="color:#555;text-align:center">Error de conexión.</p>’;});
+const txt=(d.content||
+[]).map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+try{renderModal(JSON.parse(txt),r);}catch{document.getElementById('mc').innerHTML='<p
+style="color:#555;text-align:center">No se pudo cargar.</p>';}
+}).catch(()=>{document.getElementById('mc').innerHTML='<p
+style="color:#555;text-align:center">Error de conexión.</p>';});
 }
 function renderModal(info,r){
-const color=dc(r.y);let h=’’;
-if(info.descripcion)h+=’<div class="slbl">SOBRE EL ÁLBUM</div><p style="font-size:14px;color:#ccc;line-height:1.7;margin-bottom:18px">’+esc(info.descripcion)+’</p>’;
+const color=dc(r.y);let h='';
+if(info.descripcion)h+='<div class="slbl">SOBRE EL ÁLBUM</div><p style="font-
+size:14px;color:#ccc;line-height:1.7;margin-
+bottom:18px">'+esc(info.descripcion)+'</p>';
 if(info.curiosidades?.length){
-h+=’<div style="background:#1c1c1e;border-radius:14px;padding:16px 18px;margin-bottom:16px;border:1px solid '+color+'33"><div class="slbl">✦ CURIOSIDADES</div>’;
-info.curiosidades.forEach((c,i)=>h+=’<div class="cur"><div class="cnum" style="background:'+color+'">’+(i+1)+’</div><p style="font-size:13px;color:#bbb;line-height:1.6;margin:0">’+esc(c)+’</p></div>’);
-h+=’</div>’;
+h+='<div style="background:#1c1c1e;border-radius:14px;padding:16px
+18px;margin-bottom:16px;border:1px solid '+color+'33"><div class="slbl">✦
+CURIOSIDADES</div>';
+info.curiosidades.forEach((c,i)=>h+='<div class="cur"><div class="cnum"
+style="background:'+color+'">'+(i+1)+'</div><p style="font-
+size:13px;color:#bbb;line-height:1.6;margin:0">'+esc(c)+'</p></div>');
+h+='</div>';
 }
-h+=’<div class="igrid">’;
-if(info.grabacion)h+=’<div class="ibox"><div class="slbl" style="color:#888">🎙 GRABACIÓN</div><p style="font-size:12px;color:#bbb;line-height:1.6;margin:0">’+esc(info.grabacion)+’</p></div>’;
-if(info.legado)h+=’<div class="ibox"><div class="slbl" style="color:#888">🏆 LEGADO</div><p style="font-size:12px;color:#bbb;line-height:1.6;margin:0">’+esc(info.legado)+’</p></div>’;
-h+=’</div>’;
-document.getElementById(‘mc’).innerHTML=h;
+h+='<div class="igrid">';
+if(info.grabacion)h+='<div class="ibox"><div class="slbl" style="color:#888">
+GRABACIÓN</div><p style="font-size:12px;color:#bbb;line-
+height:1.6;margin:0">'+esc(info.grabacion)+'</p></div>';
+if(info.legado)h+='<div class="ibox"><div class="slbl" style="color:#888">
+LEGADO</div><p style="font-size:12px;color:#bbb;line-
+height:1.6;margin:0">'+esc(info.legado)+'</p></div>';
+h+='</div>';
+document.getElementById('mc').innerHTML=h;
 }
-function closeModal(){document.getElementById(‘modal’).classList.remove(‘open’);document.body.style.overflow=’’;}
-document.getElementById(‘modal’).addEventListener(‘click’,e=>{if(e.target===document.getElementById(‘modal’))closeModal();});
-
+function closeModal()
+{document.getElementById('modal').classList.remove('open');document.body.style.overflow='';}
+document.getElementById('modal').addEventListener('click',e=>
+{if(e.target===document.getElementById('modal'))closeModal();});
 // COLECCIÓN
 function rCol(){
-const el=document.getElementById(‘p-coleccion’);
-el.innerHTML=’<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px"><h2 style="font-size:22px;font-weight:800">Colección</h2><span id="cc" style="font-size:12px;color:#555"></span></div><input class="sbox" id="csrch" placeholder="Buscar disco o artista…" oninput="fCol()"/><div class="grid" id="cgrid"></div>’;
+const el=document.getElementById('p-coleccion');
+el.innerHTML='<div style="display:flex;justify-content:space-between;align-
+items:baseline;margin-bottom:18px"><h2 style="font-size:22px;font-
+weight:800">Colección</h2><span id="cc" style="font-size:12px;color:#555"></span>
+</div><input class="sbox" id="csrch" placeholder="Buscar disco o artista…"
+oninput="fCol()"/><div class="grid" id="cgrid"></div>';
 fCol();
 }
 function fCol(){
-const q=(document.getElementById(‘csrch’)?.value||’’).toLowerCase();
-const f=q?COL.filter(r=>(r.t+’ ‘+r.a).toLowerCase().includes(q)):COL;
-document.getElementById(‘cc’).textContent=f.length+’ discos’;
-const g=document.getElementById(‘cgrid’);g.innerHTML=’’;
+const q=(document.getElementById('csrch')?.value||'').toLowerCase();
+const f=q?COL.filter(r=>(r.t+' '+r.a).toLowerCase().includes(q)):COL;
+document.getElementById('cc').textContent=f.length+' discos';
+const g=document.getElementById('cgrid');g.innerHTML='';
 f.forEach(r=>{
 const color=dc(r.y);
-const card=document.createElement(‘div’);card.className=‘card’;card.onclick=()=>openModal(r);
-const iw=document.createElement(‘div’);iw.className=‘card-img-wrap’;
-const ph=document.createElement(‘div’);ph.className=‘card-ph’;ph.textContent=‘🎵’;iw.appendChild(ph);
-cov(r.id).then(u=>{if(u){const img=document.createElement(‘img’);img.className=‘card-img’;img.src=u;img.alt=’’;ph.replaceWith(img);}});
-const badge=document.createElement(‘span’);badge.className=‘yr-badge’;badge.style.background=color;badge.textContent=r.y||’?’;iw.appendChild(badge);
-const info=document.createElement(‘div’);info.className=‘card-info’;
-info.innerHTML=’<div class="card-title">’+esc(r.t)+’</div><div class="card-sub">’+esc(r.a)+’</div>’;
+const card=document.createElement('div');card.className='card';card.onclick=
+()=>openModal(r);
+const iw=document.createElement('div');iw.className='card-img-wrap';
+const ph=document.createElement('div');ph.className='card-
+ph';ph.textContent=' ';iw.appendChild(ph);
+cov(r.id).then(u=>{if(u){const
+img=document.createElement('img');img.className='card-
+img';img.src=u;img.alt='';ph.replaceWith(img);}});
+const badge=document.createElement('span');badge.className='yr-
+badge';badge.style.background=color;badge.textContent=r.y||'?';iw.appendChild(badge);
+const info=document.createElement('div');info.className='card-info';
+info.innerHTML='<div class="card-title">'+esc(r.t)+'</div><div class="card-
+sub">'+esc(r.a)+'</div>';
 card.appendChild(iw);card.appendChild(info);g.appendChild(card);
 });
 }
-
 // RULETA
 function rRul(){
-document.getElementById(‘p-ruleta’).innerHTML=’<div style="max-width:420px;margin:0 auto;text-align:center"><h2 style="font-size:22px;font-weight:800;margin-bottom:6px">¿Qué escucho hoy?</h2><p style="color:#555;font-size:13px;margin-bottom:36px">Deja que el azar elija por ti</p><div style="display:flex;justify-content:center;margin-bottom:32px"><div id="rdisc" class="disc" style="width:110px;height:110px"><div class="ddot" style="width:18px;height:18px"></div></div></div><button class="btn-g" id="rbtn" onclick="girar()">¡Gira el vinilo!</button><div id="rres" style="display:none;margin-top:36px;background:var(--card);border-radius:20px;overflow:hidden;border:1px solid #333;cursor:pointer"><div id="rimg" style="background:#111"></div><div id="rbody" style="padding:18px 20px;text-align:left"></div></div></div>’;
+document.getElementById('p-ruleta').innerHTML='<div style="max-
+width:420px;margin:0 auto;text-align:center"><h2 style="font-size:22px;font-
+weight:800;margin-bottom:6px">¿Qué escucho hoy?</h2><p style="color:#555;font-
+size:13px;margin-bottom:36px">Deja que el azar elija por ti</p><div
+style="display:flex;justify-content:center;margin-bottom:32px"><div id="rdisc"
+class="disc" style="width:110px;height:110px"><div class="ddot"
+style="width:18px;height:18px"></div></div></div><button class="btn-g" id="rbtn"
+onclick="girar()">¡Gira el vinilo!</button><div id="rres"
+style="display:none;margin-top:36px;background:var(--card);border-
+radius:20px;overflow:hidden;border:1px solid #333;cursor:pointer"><div id="rimg"
+style="background:#111"></div><div id="rbody" style="padding:18px 20px;text-
+align:left"></div></div></div>';
 }
 function girar(){
 if(spinActive)return; spinActive=true;
-const disc=document.getElementById(‘rdisc’),btn=document.getElementById(‘rbtn’),res=document.getElementById(‘rres’);
-disc.classList.add(‘spin’);btn.disabled=true;btn.textContent=‘Girando…’;res.style.display=‘none’;
+const
+disc=document.getElementById('rdisc'),btn=document.getElementById('rbtn'),res=document.getEleme
+disc.classList.add('spin');btn.disabled=true;btn.textContent='Girando…';res.style.display='none
 setTimeout(()=>{
 const r=COL[Math.floor(Math.random()*COL.length)];
-disc.classList.remove(‘spin’);btn.disabled=false;btn.textContent=’¡Gira el vinilo!’;spinActive=false;
+disc.classList.remove('spin');btn.disabled=false;btn.textContent='¡Gira el
+vinilo!';spinActive=false;
 const color=dc(r.y);
-res.style.cssText=‘display:block;margin-top:36px;background:var(–card);border-radius:20px;overflow:hidden;border:1px solid ‘+color+‘44;cursor:pointer’;
+res.style.cssText='display:block;margin-top:36px;background:var(--
+card);border-radius:20px;overflow:hidden;border:1px solid
+'+color+'44;cursor:pointer';
 res.onclick=()=>openModal(r);
-const rimgWrap=document.getElementById(‘rimg’);rimgWrap.innerHTML=’’;
-cov(r.id).then(u=>{if(u){const img=document.createElement(‘img’);img.src=u;img.style.cssText=‘width:100%;max-height:260px;object-fit:cover;display:block’;rimgWrap.appendChild(img);}});
-document.getElementById(‘rbody’).innerHTML=’<div style="font-size:19px;font-weight:800">’+esc(r.t)+’</div><div style="font-size:13px;color:#888;margin:4px 0 14px">’+esc(r.a)+’</div>’+(r.y?’<span class="tag" style="background:'+color+';color:#000">’+r.y+’</span> ‘:’’)+’ <span class="tag">’+esc(r.f||’’)+’</span><div style="font-size:12px;color:var(--gold);font-weight:600;margin-top:14px">Toca para ver curiosidades →</div>’;
+const rimgWrap=document.getElementById('rimg');rimgWrap.innerHTML='';
+cov(r.id).then(u=>{if(u){const
+img=document.createElement('img');img.src=u;img.style.cssText='width:100%;max-
+height:260px;object-fit:cover;display:block';rimgWrap.appendChild(img);}});
+document.getElementById('rbody').innerHTML='<div style="font-size:19px;font-
+weight:800">'+esc(r.t)+'</div><div style="font-size:13px;color:#888;margin:4px 0
+14px">'+esc(r.a)+'</div>'+(r.y?'<span class="tag"
+style="background:'+color+';color:#000">'+r.y+'</span> ':'')+' <span
+class="tag">'+esc(r.f||'')+'</span><div style="font-size:12px;color:var(--
+gold);font-weight:600;margin-top:14px">Toca para ver curiosidades →</div>';
 },1900);
 }
-
 // STATS
 function rStats(){
-const el=document.getElementById(‘p-stats’);
+const el=document.getElementById('p-stats');
 const bA={},bD={},bL={};
-const DC={‘60s’:’#e63946’,‘70s’:’#f4a261’,‘80s’:’#e9c46a’,‘90s’:’#8ecae6’,‘00s’:’#a8dadc’,‘10s’:’#06d6a0’,‘20s+’:’#8338ec’};
+const DC=
+{'60s':'#e63946','70s':'#f4a261','80s':'#e9c46a','90s':'#8ecae6','00s':'#a8dadc','10s':'#06d6a0
 COL.forEach(r=>{
 bA[r.a]=(bA[r.a]||0)+1;
-const y=parseInt(r.y),d=!y||isNaN(y)?’?’:y<1970?‘60s’:y<1980?‘70s’:y<1990?‘80s’:y<2000?‘90s’:y<2010?‘00s’:y<2020?‘10s’:‘20s+’;
+const
+y=parseInt(r.y),d=!y||isNaN(y)?'?':y<1970?'60s':y<1980?'70s':y<1990?'80s':y<2000?'90s':y<2010?'
 bD[d]=(bD[d]||0)+1;
-const l=r.l.split(’,’)[0].trim();bL[l]=(bL[l]||0)+1;
+const l=r.l.split(',')[0].trim();bL[l]=(bL[l]||0)+1;
 });
 const topA=Object.entries(bA).sort((a,b)=>b[1]-a[1]).slice(0,10);
 const topL=Object.entries(bL).sort((a,b)=>b[1]-a[1]).slice(0,6);
-const decs=[‘60s’,‘70s’,‘80s’,‘90s’,‘00s’,‘10s’,‘20s+’].map(d=>[d,bD[d]||0]);
-const maxD=Math.max(…decs.map(d=>d[1]),1),maxA=topA[0]?.[1]||1;
+const decs=['60s','70s','80s','90s','00s','10s','20s+'].map(d=>[d,bD[d]||0]);
+const maxD=Math.max(...decs.map(d=>d[1]),1),maxA=topA[0]?.[1]||1;
 const ys=COL.map(r=>parseInt(r.y)).filter(y=>y>1900);
-const avgY=ys.length?Math.round(ys.reduce((a,b)=>a+b,0)/ys.length):’?’;
+const avgY=ys.length?Math.round(ys.reduce((a,b)=>a+b,0)/ys.length):'?';
 const newest=COL.filter(r=>r.d).sort((a,b)=>b.d.localeCompare(a.d)).slice(0,3);
-let h=’<h2 style="font-size:22px;font-weight:800;margin-bottom:4px">Tu colección</h2><p style="color:#555;font-size:12px;margin-bottom:22px">@veeteen · Discogs</p>’;
-h+=’<div class="stat-grid">’;
-[[COL.length,‘discos’,‘en colección’],[Object.keys(bA).length,‘artistas’,‘distintos’],[avgY,‘año medio’,’’],[topA[0]?.[0].split(’ ‘)[0],‘artista top’,topA[0]?.[1]+’ discos’]].forEach(([v,l,s])=>{
-h+=’<div class="sbox2"><div class="sv">’+v+’</div><div class="sl">’+l+’</div>’+(s?’<div class="ss">’+s+’</div>’:’’)+’</div>’;
+let h='<h2 style="font-size:22px;font-weight:800;margin-bottom:4px">Tu
+colección</h2><p style="color:#555;font-size:12px;margin-bottom:22px">@veeteen ·
+Discogs</p>';
+h+='<div class="stat-grid">';
+[[COL.length,'discos','en colección'],
+[Object.keys(bA).length,'artistas','distintos'],[avgY,'año medio',''],[topA[0]?.
+[0].split(' ')[0],'artista top',topA[0]?.[1]+' discos']].forEach(([v,l,s])=>{
+h+='<div class="sbox2"><div class="sv">'+v+'</div><div
+class="sl">'+l+'</div>'+(s?'<div class="ss">'+s+'</div>':'')+'</div>';
 });
-h+=’</div>’;
-h+=’<div class="sbox2" style="margin-bottom:12px"><div class="section-hdr">POR DÉCADA</div><div class="dec-bars">’;
+h+='</div>';
+h+='<div class="sbox2" style="margin-bottom:12px"><div class="section-hdr">POR
+DÉCADA</div><div class="dec-bars">';
 decs.forEach(([d,n])=>{
 const hh=maxD>0?Math.max((n/maxD)*60,n>0?4:0):0;
-h+=’<div class="dbc"><div style="font-size:9px;color:var(--gold);font-weight:700">’+(n||’’)+’</div><div class="db" style="height:'+hh+'px;background:'+(DC[d]||'#333')+'"></div><div style="font-size:9px;color:var(--dim)">’+d+’</div></div>’;
+h+='<div class="dbc"><div style="font-size:9px;color:var(--gold);font-
+weight:700">'+(n||'')+'</div><div class="db" style="height:'+hh+'px;background:'+
+(DC[d]||'#333')+'"></div><div style="font-size:9px;color:var(--dim)">'+d+'</div>
+</div>';
 });
-h+=’</div></div>’;
-h+=’<div class="sbox2" style="margin-bottom:12px"><div class="section-hdr">TOP ARTISTAS</div>’;
-topA.forEach(([a,n])=>h+=’<div class="bar-row"><div class="bar-top"><span style="color:#ccc">’+esc(a)+’</span><span style="color:var(--dim)">’+n+’</span></div><div class="bar-trk"><div class="bar-fill" style="width:'+(n/maxA*100)+'%"></div></div></div>’);
-h+=’</div>’;
-h+=’<div class="sbox2" style="margin-bottom:12px"><div class="section-hdr">TOP SELLOS</div>’;
-topL.forEach(([l,n])=>h+=’<div class="list-row"><span style="color:#bbb">’+esc(l)+’</span><span style="color:var(--gold);font-weight:700">’+n+’</span></div>’);
-h+=’</div>’;
-h+=’<div class="sbox2"><div class="section-hdr">ÚLTIMAS ADQUISICIONES</div><div id="newest-wrap"></div></div>’;
+h+='</div></div>';
+h+='<div class="sbox2" style="margin-bottom:12px"><div class="section-hdr">TOP
+ARTISTAS</div>';
+topA.forEach(([a,n])=>h+='<div class="bar-row"><div class="bar-top"><span
+style="color:#ccc">'+esc(a)+'</span><span style="color:var(--dim)">'+n+'</span>
+</div><div class="bar-trk"><div class="bar-fill" style="width:'+(n/maxA*100)+'%">
+</div></div></div>');
+h+='</div>';
+h+='<div class="sbox2" style="margin-bottom:12px"><div class="section-hdr">TOP
+SELLOS</div>';
+topL.forEach(([l,n])=>h+='<div class="list-row"><span
+style="color:#bbb">'+esc(l)+'</span><span style="color:var(--gold);font-
+weight:700">'+n+'</span></div>');
+h+='</div>';
+h+='<div class="sbox2"><div class="section-hdr">ÚLTIMAS ADQUISICIONES</div><div
+id="newest-wrap"></div></div>';
 el.innerHTML=h;
-const nw=document.getElementById(‘newest-wrap’);
+const nw=document.getElementById('newest-wrap');
 newest.forEach(r=>{
-const row=document.createElement(‘div’);row.style.cssText=‘display:flex;gap:12px;align-items:center;margin-bottom:10px’;
+const
+row=document.createElement('div');row.style.cssText='display:flex;gap:12px;align-
+items:center;margin-bottom:10px';
 const img=imgDiv(r.id,44,44,8,()=>openModal(r));
 row.appendChild(img);
-row.innerHTML+=’<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">’+esc(r.t)+’</div><div style="font-size:11px;color:#555">’+esc(r.a)+’</div></div><div style="font-size:10px;color:#444;flex-shrink:0">’+r.d+’</div>’;
+row.innerHTML+='<div style="flex:1;min-width:0"><div style="font-
+size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-
+space:nowrap">'+esc(r.t)+'</div><div style="font-
+size:11px;color:#555">'+esc(r.a)+'</div></div><div style="font-
+size:10px;color:#444;flex-shrink:0">'+r.d+'</div>';
 nw.appendChild(row);
 });
 }
-
 // IA
 function rIA(){
-const moods=[‘Chill’,‘Energético’,‘Melancólico’,‘Fiesta’,‘Íntimo’,‘Épico’,‘Nocturno’,‘Alegre’];
-const eras=[‘60s’,‘70s’,‘80s’,‘90s’,‘00s’,‘10s’,‘20s’];
-const EC={‘60s’:’#e63946’,‘70s’:’#f4a261’,‘80s’:’#e9c46a’,‘90s’:’#8ecae6’,‘00s’:’#a8dadc’,‘10s’:’#06d6a0’,‘20s’:’#8338ec’};
-let h=’<div style="max-width:480px;margin:0 auto"><h2 style="font-size:22px;font-weight:800;margin-bottom:6px">Recomendador IA</h2><p style="color:#555;font-size:13px;margin-bottom:24px">Cuéntame cómo estás y te digo qué poner</p>’;
-h+=’<div style="font-size:10px;color:#666;font-weight:700;letter-spacing:1.2px;margin-bottom:10px">ESTADO DE ÁNIMO</div><div class="chips" id="mchips">’;
-moods.forEach(m=>h+=’<button class="chip'+(iaMood===m?' on':'')+'" onclick="tMood(''+m+'')">’+m+’</button>’);
-h+=’</div>’;
-h+=’<div style="font-size:10px;color:#666;font-weight:700;letter-spacing:1.2px;margin-bottom:10px">ÉPOCA</div><div class="chips" id="echips">’;
-eras.forEach(d=>{const c=EC[d];h+=’<button class="chip'+(iaEra===d?' on':'')+'" style="'+(iaEra===d?'border-color:'+c+';background:'+c+'20;color:'+c:'')+'" onclick="tEra(''+d+'',''+c+'')">’+d+’</button>’;});
-h+=’</div>’;
-h+=’<button class="btn-f" id="iabtn" onclick="askIA()">✦ Recomiéndame algo</button>’;
-h+=’<div id="iares" style="display:none;margin-top:24px"></div></div>’;
-document.getElementById(‘p-ia’).innerHTML=h;
+const moods=
+['Chill','Energético','Melancólico','Fiesta','Íntimo','Épico','Nocturno','Alegre'];
+const eras=['60s','70s','80s','90s','00s','10s','20s'];
+const EC=
+{'60s':'#e63946','70s':'#f4a261','80s':'#e9c46a','90s':'#8ecae6','00s':'#a8dadc','10s':'#06d6a0
+let h='<div style="max-width:480px;margin:0 auto"><h2 style="font-
+size:22px;font-weight:800;margin-bottom:6px">Recomendador IA</h2><p
+style="color:#555;font-size:13px;margin-bottom:24px">Cuéntame cómo estás y te digo
+qué poner</p>';
+h+='<div style="font-size:10px;color:#666;font-weight:700;letter-
+spacing:1.2px;margin-bottom:10px">ESTADO DE ÁNIMO</div><div class="chips"
+id="mchips">';
+moods.forEach(m=>h+='<button class="chip'+(iaMood===m?' on':'')+'"
+onclick="tMood(''+m+'')">'+m+'</button>');
+h+='</div>';
+h+='<div style="font-size:10px;color:#666;font-weight:700;letter-
+spacing:1.2px;margin-bottom:10px">ÉPOCA</div><div class="chips" id="echips">';
+eras.forEach(d=>{const c=EC[d];h+='<button class="chip'+(iaEra===d?' on':'')+'"
+style="'+(iaEra===d?'border-color:'+c+';background:'+c+'20;color:'+c:'')+'"
+onclick="tEra(''+d+'',''+c+'')">'+d+'</button>';});
+h+='</div>';
+h+='<button class="btn-f" id="iabtn" onclick="askIA()">✦ Recomiéndame
+algo</button>';
+h+='<div id="iares" style="display:none;margin-top:24px"></div></div>';
+document.getElementById('p-ia').innerHTML=h;
 }
-function tMood(m){iaMood=iaMood===m?’’:m;document.querySelectorAll(’#mchips .chip’).forEach(b=>{b.classList.toggle(‘on’,b.textContent===iaMood);b.style.cssText=’’;}); }
-function tEra(d,c){iaEra=iaEra===d?’’:d;document.querySelectorAll(’#echips .chip’).forEach(b=>{const on=b.textContent===iaEra;b.classList.toggle(‘on’,on);b.style.cssText=on?‘border-color:’+c+’;background:’+c+‘20;color:’+c:’’;}); }
+function tMood(m){iaMood=iaMood===m?'':m;document.querySelectorAll('#mchips
+.chip').forEach(b=>
+{b.classList.toggle('on',b.textContent===iaMood);b.style.cssText='';}); }
+function tEra(d,c){iaEra=iaEra===d?'':d;document.querySelectorAll('#echips
+.chip').forEach(b=>{const
+on=b.textContent===iaEra;b.classList.toggle('on',on);b.style.cssText=on?'border-
+color:'+c+';background:'+c+'20;color:'+c:'';}); }
 async function askIA(){
-const btn=document.getElementById(‘iabtn’),res=document.getElementById(‘iares’);
-btn.disabled=true;btn.textContent=‘Pensando…’;res.style.display=‘none’;
-const sample=COL.slice(0,60).map(r=>’”’+r.t+’” de ‘+r.a+’ (’+(r.y||’?’)+’)’).join(’; ‘);
-const p=‘Eres un experto en música. El usuario tiene esta colección de vinilos: ‘+sample+’.\n’+(iaMood?‘Estado de ánimo: ‘+iaMood+’.’:’’)+(iaEra?’ Le apetece música de los ‘+iaEra+’.’:’’)+’ Recomienda UN disco de su colección que encaje perfectamente ahora.\nResponde SOLO en JSON sin markdown:\n{“title”:”…”,“artist”:”…”,“razon”:“2-3 frases íntimas”,“momento”:“descripción poética del momento ideal”}’;
+const btn=document.getElementById('iabtn'),res=document.getElementById('iares');
+btn.disabled=true;btn.textContent='Pensando…';res.style.display='none';
+const sample=COL.slice(0,60).map(r=>'"'+r.t+'" de '+r.a+' ('+
+(r.y||'?')+')').join('; ');
+const p='Eres un experto en música. El usuario tiene esta colección de vinilos:
+'+sample+'.\n'+(iaMood?'Estado de ánimo: '+iaMood+'.':'')+(iaEra?' Le apetece
+música de los '+iaEra+'.':'')+' Recomienda UN disco de su colección que encaje
+perfectamente ahora.\nResponde SOLO en JSON sin
+markdown:\n{"title":"...","artist":"...","razon":"2-3 frases
+íntimas","momento":"descripción poética del momento ideal"}';
 try{
-const resp=await fetch(‘https://api.anthropic.com/v1/messages’,{method:‘POST’,headers:{‘Content-Type’:‘application/json’},body:JSON.stringify({model:‘claude-sonnet-4-20250514’,max_tokens:400,messages:[{role:‘user’,content:p}]})});
+const resp=await fetch('https://api.anthropic.com/v1/messages',
+{method:'POST',headers:{'Content-
+Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-
+20250514',max_tokens:400,messages:[{role:'user',content:p}]})});
 const data=await resp.json();
-const txt=(data.content||[]).map(b=>b.text||’’).join(’’).replace(/`json|`/g,’’).trim();
+const txt=(data.content||
+[]).map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
 const parsed=JSON.parse(txt);
-const match=COL.find(r=>r.t.toLowerCase().includes(parsed.title.toLowerCase().slice(0,10))||parsed.title.toLowerCase().includes(r.t.toLowerCase().slice(0,10)));
+const
+match=COL.find(r=>r.t.toLowerCase().includes(parsed.title.toLowerCase().slice(0,10))||parsed.ti
 const color=dc(match?.y);
-res.style.cssText=‘display:block;margin-top:24px;background:var(–card);border-radius:20px;overflow:hidden;border:1px solid ‘+color+‘44;’+(match?‘cursor:pointer’:’’);
+res.style.cssText='display:block;margin-top:24px;background:var(--
+card);border-radius:20px;overflow:hidden;border:1px solid '+color+'44;'+
+(match?'cursor:pointer':'');
 if(match)res.onclick=()=>openModal(match);
-let h=’’;
+let h='';
 if(match){
-const iw=document.createElement(‘div’);iw.style.cssText=‘background:#111’;
-cov(match.id).then(u=>{if(u){const img=document.createElement(‘img’);img.src=u;img.style.cssText=‘width:100%;max-height:220px;object-fit:cover;display:block’;iw.appendChild(img);}});
+const iw=document.createElement('div');iw.style.cssText='background:#111';
+cov(match.id).then(u=>{if(u){const
+img=document.createElement('img');img.src=u;img.style.cssText='width:100%;max-
+height:220px;object-fit:cover;display:block';iw.appendChild(img);}});
 res.appendChild(iw);
 }
-const bd=document.createElement(‘div’);bd.style.padding=‘18px 20px’;
-bd.innerHTML=’<div style="font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1.2px;margin-bottom:8px">✦ MI RECOMENDACIÓN</div><div style="font-size:19px;font-weight:800">’+esc(parsed.title)+’</div><div style="font-size:13px;color:#888;margin:3px 0 14px">’+esc(parsed.artist)+’</div><p style="font-size:13px;color:#ccc;line-height:1.65;margin-bottom:12px">’+esc(parsed.razon)+’</p><div class="mtbox">🕯 ‘+esc(parsed.momento)+’</div>’+(match?’<div style="font-size:12px;color:var(--dim);font-weight:600">Toca para ver curiosidades →</div>’:’’);
+const bd=document.createElement('div');bd.style.padding='18px 20px';
+bd.innerHTML='<div style="font-size:10px;color:var(--gold);font-
+weight:700;letter-spacing:1.2px;margin-bottom:8px">✦ MI RECOMENDACIÓN</div><div
+style="font-size:19px;font-weight:800">'+esc(parsed.title)+'</div><div
+style="font-size:13px;color:#888;margin:3px 0 14px">'+esc(parsed.artist)+'</div><p
+style="font-size:13px;color:#ccc;line-height:1.65;margin-
+bottom:12px">'+esc(parsed.razon)+'</p><div class="mtbox">
+'+esc(parsed.momento)+'</div>'+(match?'<div style="font-size:12px;color:var(--
+dim);font-weight:600">Toca para ver curiosidades →</div>':'');
 res.appendChild(bd);
-}catch{res.style.display=‘block’;res.innerHTML=’<p style="color:#e63946;text-align:center;padding:20px">Error. Inténtalo de nuevo.</p>’;}
-btn.disabled=false;btn.textContent=‘✦ Recomiéndame algo’;
+}catch{res.style.display='block';res.innerHTML='<p style="color:#e63946;text-
+align:center;padding:20px">Error. Inténtalo de nuevo.</p>';}
+btn.disabled=false;btn.textContent='✦ Recomiéndame algo';
 }
-
 // DIARIO
 function rDiario(){
-const el=document.getElementById(‘p-diario’);
-let h=’<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px"><div><h2 style="font-size:22px;font-weight:800;margin:0">Diario</h2><p style="color:#555;font-size:12px;margin-top:3px">’+diary.length+’ sesión’+(diary.length!==1?‘es’:’’)+’ guardada’+(diary.length!==1?‘s’:’’)+’</p></div><button class="btn-f" style="width:auto;padding:9px 16px;font-size:12px;border-radius:10px" onclick="tDForm()">+ Registrar</button></div>’;
-h+=’<div id="dform-wrap" style="display:none"></div><div id="dentries">’;
-if(!diary.length)h+=’<div class="empty"><div style="font-size:48px;margin-bottom:12px">📖</div><div style="font-size:14px">Sin sesiones aún</div><div style="font-size:12px;color:#333;margin-top:4px">Pulsa “+ Registrar” después de cada escucha</div></div>’;
+const el=document.getElementById('p-diario');
+let h='<div style="display:flex;justify-content:space-between;align-
+items:center;margin-bottom:22px"><div><h2 style="font-size:22px;font-
+weight:800;margin:0">Diario</h2><p style="color:#555;font-size:12px;margin-
+top:3px">'+diary.length+' sesión'+(diary.length!==1?'es':'')+' guardada'+
+(diary.length!==1?'s':'')+'</p></div><button class="btn-f"
+style="width:auto;padding:9px 16px;font-size:12px;border-radius:10px"
+onclick="tDForm()">+ Registrar</button></div>';
+h+='<div id="dform-wrap" style="display:none"></div><div id="dentries">';
+if(!diary.length)h+='<div class="empty"><div style="font-size:48px;margin-
+bottom:12px"> </div><div style="font-size:14px">Sin sesiones aún</div><div
+style="font-size:12px;color:#333;margin-top:4px">Pulsa "+ Registrar" después de
+cada escucha</div></div>';
 else diary.forEach(e=>h+=deHTML(e));
-h+=’</div>’;
+h+='</div>';
 el.innerHTML=h;
 diary.forEach(e=>{if(e.record)loadDE(e);});
 }
 function deHTML(e){
-const d=new Date(e.date).toLocaleDateString(‘es-ES’,{day:‘numeric’,month:‘long’,year:‘numeric’,hour:‘2-digit’,minute:‘2-digit’});
-const rc=e.record?JSON.stringify(e.record).replace(/”/g,’"’):‘null’;
-return ‘<div class="de"><div id=“dei-’+e.id+’” style=“width:54px;height:54px;border-radius:8px;background:#111;flex-shrink:0;overflow:hidden;cursor:pointer” ‘+(e.record?‘onclick=‘openModal(’+rc+’)’’:’’)+’></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">’+esc(e.record?.t||’-’)+’</div><div style="font-size:11px;color:#666">’+esc(e.record?.a||’’)+’</div><div style="font-size:10px;color:#444;margin-top:2px">’+d+’</div>’+(e.nota?’<p style="font-size:12px;color:#aaa;line-height:1.5;margin:8px 0 0">’+esc(e.nota)+’</p>’:’’)+’</div><button onclick="delDE('+e.id+')" style="background:none;border:none;color:#444;font-size:16px;cursor:pointer">✕</button></div>’;
+const d=new Date(e.date).toLocaleDateString('es-ES',
+{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+const rc=e.record?JSON.stringify(e.record).replace(/"/g,'&quot;'):'null';
+return '<div class="de"><div id="dei-'+e.id+'"
+style="width:54px;height:54px;border-radius:8px;background:#111;flex-
+shrink:0;overflow:hidden;cursor:pointer" '+
+(e.record?'onclick='openModal('+rc+')'':'')+'></div><div style="flex:1;min-
+width:0"><div style="font-size:13px;font-weight:700">'+esc(e.record?.t||'-
+')+'</div><div style="font-size:11px;color:#666">'+esc(e.record?.a||'')+'</div>
+<div style="font-size:10px;color:#444;margin-top:2px">'+d+'</div>'+(e.nota?'<p
+style="font-size:12px;color:#aaa;line-height:1.5;margin:8px 0
+0">'+esc(e.nota)+'</p>':'')+'</div><button onclick="delDE('+e.id+')"
+style="background:none;border:none;color:#444;font-
+size:16px;cursor:pointer">✕</button></div>';
 }
 function loadDE(e){
-cov(e.record.id).then(u=>{const w=document.getElementById(‘dei-’+e.id);if(u&&w){const img=document.createElement(‘img’);img.src=u;img.style.cssText=‘width:100%;height:100%;object-fit:cover’;w.appendChild(img);}});
+cov(e.record.id).then(u=>{const w=document.getElementById('dei-'+e.id);if(u&&w)
+{const
+img=document.createElement('img');img.src=u;img.style.cssText='width:100%;height:100%;object-
+fit:cover';w.appendChild(img);}});
 }
 function delDE(id){diary=diary.filter(e=>e.id!==id);saveDiary(diary);rDiario();}
 let dFormOpen=false;
 function tDForm(){
 dFormOpen=!dFormOpen;diaryPicked=null;
-const w=document.getElementById(‘dform-wrap’);
-if(!dFormOpen){w.style.display=‘none’;return;}
-w.style.display=‘block’;
-w.innerHTML=’<div class="dform"><div style="font-size:10px;color:#666;font-weight:700;letter-spacing:1px;margin-bottom:10px">BUSCA EL DISCO</div><input class="field" id="dsrch" placeholder="Título o artista…" oninput="fDSearch()"/><div class="hgrid" id="dhits" style="display:none"></div><div id="dpicked" style="display:none"></div><textarea class="field" id="dnota" placeholder="¿Cómo fue? ¿Dónde estabas? ¿Qué sentiste?…"></textarea><button class="btn-f" id="dsavebtn" disabled style="background:#222;color:#555;box-shadow:none" onclick="saveDE()">Guardar sesión</button></div>’;
+const w=document.getElementById('dform-wrap');
+if(!dFormOpen){w.style.display='none';return;}
+w.style.display='block';
+w.innerHTML='<div class="dform"><div style="font-size:10px;color:#666;font-
+weight:700;letter-spacing:1px;margin-bottom:10px">BUSCA EL DISCO</div><input
+class="field" id="dsrch" placeholder="Título o artista…" oninput="fDSearch()"/>
+<div class="hgrid" id="dhits" style="display:none"></div><div id="dpicked"
+style="display:none"></div><textarea class="field" id="dnota" placeholder="¿Cómo
+fue? ¿Dónde estabas? ¿Qué sentiste?…"></textarea><button class="btn-f"
+id="dsavebtn" disabled style="background:#222;color:#555;box-shadow:none"
+onclick="saveDE()">Guardar sesión</button></div>';
 }
 function fDSearch(){
-const q=document.getElementById(‘dsrch’).value.toLowerCase();
-const hits=document.getElementById(‘dhits’);diaryPicked=null;
-document.getElementById(‘dpicked’).style.display=‘none’;
-const sb=document.getElementById(‘dsavebtn’);sb.disabled=true;sb.style.cssText=‘background:#222;color:#555;box-shadow:none’;
-if(!q){hits.style.display=‘none’;hits.innerHTML=’’;return;}
-const f=COL.filter(r=>(r.t+’ ‘+r.a).toLowerCase().includes(q)).slice(0,16);
-hits.style.display=f.length?‘grid’:‘none’;hits.innerHTML=’’;
+const q=document.getElementById('dsrch').value.toLowerCase();
+const hits=document.getElementById('dhits');diaryPicked=null;
+document.getElementById('dpicked').style.display='none';
+const
+sb=document.getElementById('dsavebtn');sb.disabled=true;sb.style.cssText='background:#222;color
+shadow:none';
+if(!q){hits.style.display='none';hits.innerHTML='';return;}
+const f=COL.filter(r=>(r.t+' '+r.a).toLowerCase().includes(q)).slice(0,16);
+hits.style.display=f.length?'grid':'none';hits.innerHTML='';
 f.forEach(r=>{
-const c=document.createElement(‘div’);c.className=‘hcard’;
-c.innerHTML=’<div class="hph">🎵</div><div class="hlbl">’+esc(r.t)+’</div>’;
-cov(r.id).then(u=>{if(u){const ph=c.querySelector(’.hph’);if(ph)ph.outerHTML=’<img src="'+u+'" alt="" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;display:block"/>’;}});
+const c=document.createElement('div');c.className='hcard';
+c.innerHTML='<div class="hph"> </div><div class="hlbl">'+esc(r.t)+'</div>';
+cov(r.id).then(u=>{if(u){const
+ph=c.querySelector('.hph');if(ph)ph.outerHTML='<img src="'+u+'" alt=""
+style="width:100%;aspect-ratio:1;object-fit:cover;border-
+radius:6px;display:block"/>';}});
 c.onclick=()=>selDP(r);hits.appendChild(c);
 });
 }
 function selDP(r){
 diaryPicked=r;
-const p=document.getElementById(‘dpicked’);p.style.display=‘flex’;p.className=‘prow’;
-p.innerHTML=’<div style="width:44px;height:44px;border-radius:8px;background:#111;overflow:hidden;flex-shrink:0"><img id="dpimg" src="" style="width:100%;height:100%;object-fit:cover"/></div><div><div style="font-size:13px;font-weight:700">’+esc(r.t)+’</div><div style="font-size:11px;color:#666">’+esc(r.a)+’</div></div>’;
-cov(r.id).then(u=>{const img=document.getElementById(‘dpimg’);if(u&&img)img.src=u;});
-const sb=document.getElementById(‘dsavebtn’);sb.disabled=false;sb.style.cssText=’’;
-document.getElementById(‘dhits’).style.display=‘none’;
-document.getElementById(‘dsrch’).value=r.t;
+const
+p=document.getElementById('dpicked');p.style.display='flex';p.className='prow';
+p.innerHTML='<div style="width:44px;height:44px;border-
+radius:8px;background:#111;overflow:hidden;flex-shrink:0"><img id="dpimg" src=""
+style="width:100%;height:100%;object-fit:cover"/></div><div><div style="font-
+size:13px;font-weight:700">'+esc(r.t)+'</div><div style="font-
+size:11px;color:#666">'+esc(r.a)+'</div></div>';
+cov(r.id).then(u=>{const
+img=document.getElementById('dpimg');if(u&&img)img.src=u;});
+const
+sb=document.getElementById('dsavebtn');sb.disabled=false;sb.style.cssText='';
+document.getElementById('dhits').style.display='none';
+document.getElementById('dsrch').value=r.t;
 }
 function saveDE(){
 if(!diaryPicked)return;
-const entry={id:Date.now(),record:diaryPicked,nota:document.getElementById(‘dnota’).value,date:new Date().toISOString()};
-diary=[entry,…diary];saveDiary(diary);dFormOpen=false;diaryPicked=null;rDiario();
+const entry=
+{id:Date.now(),record:diaryPicked,nota:document.getElementById('dnota').value,date:new
+Date().toISOString()};
+diary=
+[entry,...diary];saveDiary(diary);dFormOpen=false;diaryPicked=null;rDiario();
 }
-
 // Init
 rCol();
 </script>
-
 </body>
 </html>

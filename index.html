@@ -184,10 +184,11 @@ function openModal(r){
   if(r.f){const s=document.createElement('span');s.className='tag';s.textContent=r.f.split(',')[0];tags.appendChild(s);}
   document.getElementById('mc').innerHTML='<div style="text-align:center;padding:40px 0"><div class="spinner"></div><p style="color:#555;font-size:13px;margin-top:14px">Buscando información…</p></div>';
   document.getElementById('mbg').src=''; document.getElementById('mcover').src='';
-  cov(r.id).then(u=>{if(u){document.getElementById('mbg').src=u;document.getElementById('mcover').src=u;}});
+  cov(r.id).then(u=>{if(u){document.getElementById('mbg').src=u;document.getElementById('mcover').src=u;}}).catch(()=>{});
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow='hidden';
   const p='Eres un experto en música. Busca información sobre el álbum "'+r.t+'" de '+r.a+(r.y?' ('+r.y+')':'')+'.\nResponde SOLO en JSON sin markdown:\n{"descripcion":"2-3 frases","curiosidades":["c1","c2","c3"],"grabacion":"dónde/cuándo/productor","legado":"impacto cultural"}';
+  console.log('Calling curiosidades API...');
   fetch('/api/curiosidades',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,tools:[{type:'web_search_20250305',name:'web_search'}],messages:[{role:'user',content:p}]})
   }).then(x=>x.json()).then(d=>{

@@ -350,6 +350,10 @@ async function askIA(){
 }
 
 // DIARIO
+function diaryOpen(id){
+  var e=diary.find(function(x){return x.id===id;});
+  if(e&&e.record)openModal(e.record);
+}
 function rDiario(){
   const el=document.getElementById('p-diario');
   let h='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px"><div><h2 style="font-size:22px;font-weight:800;margin:0">Diario</h2><p style="color:#555;font-size:12px;margin-top:3px">'+diary.length+' sesión'+(diary.length!==1?'es':'')+' guardada'+(diary.length!==1?'s':'')+'</p></div><button class="btn-f" style="width:auto;padding:9px 16px;font-size:12px;border-radius:10px" onclick="tDForm()">+ Registrar</button></div>';
@@ -363,7 +367,7 @@ function rDiario(){
 function deHTML(e){
   const d=new Date(e.date).toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
   const rc=e.record?JSON.stringify(e.record).replace(/"/g,'&quot;'):'null';
-  return '<div class="de"><div id="dei-'+e.id+'" style="width:54px;height:54px;border-radius:8px;background:#111;flex-shrink:0;overflow:hidden;cursor:pointer" '+(e.record?'onclick="openModal('+rc+')"':'')+'></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">'+esc(e.record?.t||'-')+'</div><div style="font-size:11px;color:#666">'+esc(e.record?.a||'')+'</div><div style="font-size:10px;color:#444;margin-top:2px">'+d+'</div>'+(e.nota?'<p style="font-size:12px;color:#aaa;line-height:1.5;margin:8px 0 0">'+esc(e.nota)+'</p>':'')+'</div><button onclick="delDE('+e.id+')" style="background:none;border:none;color:#444;font-size:16px;cursor:pointer">✕</button></div>';
+  return '<div class="de"><div id="dei-'+e.id+'" style="width:54px;height:54px;border-radius:8px;background:#111;flex-shrink:0;overflow:hidden;cursor:pointer" '+(e.record?'onclick="diaryOpen('+e.id+')"':'')+'></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">'+esc(e.record?.t||'-')+'</div><div style="font-size:11px;color:#666">'+esc(e.record?.a||'')+'</div><div style="font-size:10px;color:#444;margin-top:2px">'+d+'</div>'+(e.nota?'<p style="font-size:12px;color:#aaa;line-height:1.5;margin:8px 0 0">'+esc(e.nota)+'</p>':'')+'</div><button onclick="delDE('+e.id+')" style="background:none;border:none;color:#444;font-size:16px;cursor:pointer">✕</button></div>';
 }
 function loadDE(e){
   cov(e.record.id).then(u=>{const w=document.getElementById('dei-'+e.id);if(u&&w){const img=document.createElement('img');img.src=u;img.style.cssText='width:100%;height:100%;object-fit:cover';w.appendChild(img);}});

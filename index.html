@@ -95,11 +95,11 @@ textarea.field{resize:vertical;min-height:80px}
 .mtbox{background:rgba(244,162,97,.08);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--gold);font-style:italic;margin-bottom:12px}
 
 /* Gallery */
-.gallery{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none;margin-bottom:18px}
+.gallery{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none;margin-bottom:16px}
 .gallery::-webkit-scrollbar{display:none}
-.gallery-img{width:140px;height:140px;object-fit:cover;border-radius:10px;flex-shrink:0;cursor:pointer;border:2px solid transparent;transition:border-color .2s}
-.gallery-img.active{border-color:#f4a261}
-.gallery-main{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;margin-bottom:10px;display:block}
+.gallery-img{width:72px;height:72px;object-fit:cover;border-radius:8px;flex-shrink:0;cursor:pointer;border:2px solid transparent;transition:border-color .2s;opacity:.7}
+.gallery-img.active{border-color:#f4a261;opacity:1}
+.gallery-img:hover{opacity:1}
 </style>
 </head>
 <body>
@@ -130,13 +130,18 @@ textarea.field{resize:vertical;min-height:80px}
     <div id="mgrad"></div>
     <button id="mcls" onclick="closeModal()">✕</button>
     <div id="minfo">
-      <img id="mcover" src="" alt=""/>
       <div><div id="mt" style="font-size:19px;font-weight:800;line-height:1.2"></div>
       <div id="ma" style="font-size:13px;color:#aaa;margin-top:3px"></div>
       <div id="mtags" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px"></div></div>
     </div>
   </div>
-  <div id="mbody"><div id="mgallery" class="gallery"></div><div id="mc"></div></div>
+  <div id="mbody">
+    <div id="mgallery-main-wrap" style="display:none;margin-bottom:16px">
+      <img id="mgallery-main" src="" alt="" style="width:100%;border-radius:12px;display:block;object-fit:cover"/>
+    </div>
+    <div id="mgallery" class="gallery"></div>
+    <div id="mc"></div>
+  </div>
 </div></div>
 <script>
 const TOK='OaIBaINfVTOtDcDutdCJLoQiaomGvctptDQSiaMd';
@@ -196,7 +201,13 @@ function openModal(r){
   document.getElementById('mbg').src=''; document.getElementById('mcover').src='';
   document.getElementById('mgallery').innerHTML='';
   covData(r.id).then(d=>{
-    if(d.url){document.getElementById('mbg').src=d.url;document.getElementById('mcover').src=d.url;}
+    if(d.url){document.getElementById('mbg').src=d.url;}
+    const mainWrap=document.getElementById('mgallery-main-wrap');
+    const mainImg=document.getElementById('mgallery-main');
+    if(d.images&&d.images.length>0){
+      mainWrap.style.display='block';
+      mainImg.src=d.images[0];
+    }
     if(d.images&&d.images.length>1){
       const gal=document.getElementById('mgallery');
       d.images.forEach((url,i)=>{
@@ -204,8 +215,8 @@ function openModal(r){
         img.className='gallery-img'+(i===0?' active':'');
         img.src=url;img.alt='';
         img.onclick=()=>{
+          mainImg.src=url;
           document.getElementById('mbg').src=url;
-          document.getElementById('mcover').src=url;
           document.querySelectorAll('.gallery-img').forEach(x=>x.classList.remove('active'));
           img.classList.add('active');
         };

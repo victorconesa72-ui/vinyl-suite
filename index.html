@@ -189,12 +189,15 @@ function openModal(r){
   document.body.style.overflow='hidden';
   const p='Eres un experto en música. Busca información sobre el álbum "'+r.t+'" de '+r.a+(r.y?' ('+r.y+')':'')+'.\nResponde SOLO en JSON sin markdown:\n{"descripcion":"2-3 frases","curiosidades":["c1","c2","c3"],"grabacion":"dónde/cuándo/productor","legado":"impacto cultural"}';
   console.log('Calling curiosidades API...');
-  fetch('/api/curiosidades',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,tools:[{type:'web_search_20250305',name:'web_search'}],messages:[{role:'user',content:p}]})
-  }).then(x=>x.json()).then(d=>{
-    const txt=(d.content||[]).map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
-    try{renderModal(JSON.parse(txt),r);}catch{document.getElementById('mc').innerHTML='<p style="color:#555;text-align:center">No se pudo cargar.</p>';}
-  }).catch(()=>{document.getElementById('mc').innerHTML='<p style="color:#555;text-align:center">Error de conexión.</p>';});
+  try {
+    fetch('/api/curiosidades',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-opus-4-5',max_tokens:600,messages:[{role:'user',content:p}]})
+    }).then(x=>{console.log('Status:',x.status);return x.json();}).then(d=>{
+      console.log('Response:',d);
+      const txt=(d.content||[]).map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+      try{renderModal(JSON.parse(txt),r);}catch(e){console.log('Parse error:',e);document.getElementById('mc').innerHTML='<p style="color:#555;text-align:center">No se pudo cargar.</p>';}
+    }).catch(e=>{console.log('Fetch error:',e);document.getElementById('mc').innerHTML='<p style="color:#555;text-align:center">Error de conexión.</p>';});
+  } catch(e) { console.log('Outer error:',e); }
 }
 function renderModal(info,r){
   const color=dc(r.y);let h='';
@@ -329,7 +332,7 @@ async function askIA(){
   const sample=COL.slice(0,60).map(r=>'"'+r.t+'" de '+r.a+' ('+(r.y||'?')+')').join('; ');
   const p='Eres un experto en música. El usuario tiene esta colección de vinilos: '+sample+'.\n'+(iaMood?'Estado de ánimo: '+iaMood+'.':'')+(iaEra?' Le apetece música de los '+iaEra+'.':'')+' Recomienda UN disco de su colección que encaje perfectamente ahora.\nResponde SOLO en JSON sin markdown:\n{"title":"...","artist":"...","razon":"2-3 frases íntimas","momento":"descripción poética del momento ideal"}';
   try{
-    const resp=await fetch('/api/curiosidades',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:[{role:'user',content:p}]})});
+    const resp=await fetch('/api/curiosidades',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-opus-4-5',max_tokens:400,messages:[{role:'user',content:p}]})});
     const data=await resp.json();
     const txt=(data.content||[]).map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
     const parsed=JSON.parse(txt);

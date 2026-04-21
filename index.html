@@ -212,7 +212,7 @@ function dc(y){
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function loadDiary(){try{return JSON.parse(localStorage.getItem('vsd')||'[]');}catch{return[];}}
 function saveDiary(d){try{localStorage.setItem('vsd',JSON.stringify(d));}catch{}}
-let diary=loadDiary(), curTab='coleccion', spinActive=false, iaMood='', iaEra='', diaryPicked=null;
+let curTab='coleccion', spinActive=false, iaMood='', iaEra='', diaryPicked=null;
 
 function go(t){
   curTab=t;

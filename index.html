@@ -281,9 +281,35 @@ document.getElementById('modal').addEventListener('click',e=>{if(e.target===docu
 // COLECCIÓN
 function rCol(){
   const el=document.getElementById('p-coleccion');
-  el.innerHTML='<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px"><h2 style="font-size:22px;font-weight:800">Colección</h2><span id="cc" style="font-size:12px;color:#555"></span></div><input class="sbox" id="csrch" placeholder="Buscar disco o artista…" oninput="fCol()" style="margin-bottom:10px"/><div style="display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none"><button class="sort-btn on" onclick="setSort('date')" id="sort-date">Recientes</button><button class="sort-btn" onclick="setSort('artist')" id="sort-artist">Artista</button><button class="sort-btn" onclick="setSort('year')" id="sort-year">Año</button><button class="sort-btn" onclick="setSort('title')" id="sort-title">Título</button></div><div class="grid" id="cgrid"></div>';
+  el.innerHTML='';
+  // Header
+  const hdr=document.createElement('div');
+  hdr.style.cssText='display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px';
+  hdr.innerHTML='<h2 style="font-size:22px;font-weight:800">Colección</h2><span id="cc" style="font-size:12px;color:#555"></span>';
+  el.appendChild(hdr);
+  // Search
+  const srch=document.createElement('input');
+  srch.className='sbox';srch.id='csrch';srch.placeholder='Buscar disco o artista…';
+  srch.style.marginBottom='10px';srch.oninput=fCol;
+  el.appendChild(srch);
+  // Sort buttons
+  const sortBar=document.createElement('div');
+  sortBar.style.cssText='display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none';
+  [['date','Recientes'],['artist','Artista'],['year','Año'],['title','Título']].forEach(([s,lbl])=>{
+    const b=document.createElement('button');
+    b.className='sort-btn'+(curSort===s?' on':'');
+    b.id='sort-'+s;b.textContent=lbl;
+    b.onclick=()=>setSort(s);
+    sortBar.appendChild(b);
+  });
+  el.appendChild(sortBar);
+  // Grid
+  const grid=document.createElement('div');
+  grid.className='grid';grid.id='cgrid';
+  el.appendChild(grid);
   fCol();
 }
+
 var curSort='date';
 function setSort(s){
   curSort=s;

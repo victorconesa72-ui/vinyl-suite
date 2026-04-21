@@ -100,6 +100,17 @@ textarea.field{resize:vertical;min-height:80px}
 .gallery-img{width:72px;height:72px;object-fit:cover;border-radius:8px;flex-shrink:0;cursor:pointer;border:2px solid transparent;transition:border-color .2s;opacity:.7}
 .gallery-img.active{border-color:#f4a261;opacity:1}
 .gallery-img:hover{opacity:1}
+
+/* Tracklist */
+.tracklist{margin-top:18px}
+.track-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #222;font-size:13px}
+.track-pos{width:24px;text-align:right;color:#555;font-size:11px;flex-shrink:0}
+.track-title{flex:1;color:#ccc}
+.track-dur{color:#555;font-size:11px;flex-shrink:0}
+
+/* Sort buttons */
+.sort-btn{background:transparent;border:1px solid #252525;color:#555;border-radius:20px;padding:6px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:Georgia,serif;white-space:nowrap;flex-shrink:0}
+.sort-btn.on{border-color:#f4a261;background:rgba(244,162,97,.12);color:#f4a261}
 </style>
 </head>
 <body>
@@ -141,6 +152,7 @@ textarea.field{resize:vertical;min-height:80px}
     </div>
     <div id="mgallery" class="gallery"></div>
     <div id="mc"></div>
+    <div id="mtracklist"></div>
   </div>
 </div></div>
 <script>
@@ -201,6 +213,7 @@ function openModal(r){
   document.getElementById('mbg').src='';
   document.getElementById('mgallery').innerHTML='';
   document.getElementById('mgallery-main-wrap').style.display='none';
+  document.getElementById('mtracklist').innerHTML='';
   covData(r.id).then(d=>{
     if(d.url){document.getElementById('mbg').src=d.url;}
     const mainWrap=document.getElementById('mgallery-main-wrap');
@@ -223,6 +236,15 @@ function openModal(r){
         };
         gal.appendChild(img);
       });
+    }
+    if(d.tracklist&&d.tracklist.length>0){
+      const tl=document.getElementById('mtracklist');
+      let h='<div class="slbl" style="margin-top:18px">TRACKLIST</div><div class="tracklist">';
+      d.tracklist.forEach(t=>{
+        if(t.title) h+='<div class="track-row"><span class="track-pos">'+esc(t.pos||'')+'</span><span class="track-title">'+esc(t.title)+'</span><span class="track-dur">'+esc(t.duration||'')+'</span></div>';
+      });
+      h+='</div>';
+      tl.innerHTML=h;
     }
   }).catch(()=>{});
   document.getElementById('modal').classList.add('open');
@@ -259,12 +281,26 @@ document.getElementById('modal').addEventListener('click',e=>{if(e.target===docu
 // COLECCIÓN
 function rCol(){
   const el=document.getElementById('p-coleccion');
-  el.innerHTML='<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px"><h2 style="font-size:22px;font-weight:800">Colección</h2><span id="cc" style="font-size:12px;color:#555"></span></div><input class="sbox" id="csrch" placeholder="Buscar disco o artista…" oninput="fCol()"/><div class="grid" id="cgrid"></div>';
+  el.innerHTML='<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px"><h2 style="font-size:22px;font-weight:800">Colección</h2><span id="cc" style="font-size:12px;color:#555"></span></div><input class="sbox" id="csrch" placeholder="Buscar disco o artista…" oninput="fCol()" style="margin-bottom:10px"/><div style="display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none"><button class="sort-btn on" onclick="setSort('date')" id="sort-date">Recientes</button><button class="sort-btn" onclick="setSort('artist')" id="sort-artist">Artista</button><button class="sort-btn" onclick="setSort('year')" id="sort-year">Año</button><button class="sort-btn" onclick="setSort('title')" id="sort-title">Título</button></div><div class="grid" id="cgrid"></div>';
+  fCol();
+}
+var curSort='date';
+function setSort(s){
+  curSort=s;
+  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('on'));
+  var el=document.getElementById('sort-'+s);
+  if(el)el.classList.add('on');
   fCol();
 }
 function fCol(){
   const q=(document.getElementById('csrch')?.value||'').toLowerCase();
-  const f=q?COL.filter(r=>(r.t+' '+r.a).toLowerCase().includes(q)):COL;
+  let f=q?COL.filter(r=>(r.t+' '+r.a).toLowerCase().includes(q)):COL.slice();
+  f.sort((a,b)=>{
+    if(curSort==='artist') return (a.a+a.t).localeCompare(b.a+b.t,'es');
+    if(curSort==='year') return (parseInt(b.y)||0)-(parseInt(a.y)||0);
+    if(curSort==='title') return a.t.localeCompare(b.t,'es');
+    return (b.d||'').localeCompare(a.d||'');
+  });
   document.getElementById('cc').textContent=f.length+' discos';
   const g=document.getElementById('cgrid');g.innerHTML='';
   f.forEach(r=>{

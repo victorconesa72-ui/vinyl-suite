@@ -240,6 +240,9 @@ function openModal(r){
   if(r.y){const s=document.createElement('span');s.className='tag';s.style.background=dc(r.y);s.style.color='#000';s.textContent=r.y;tags.appendChild(s);}
   if(r.f){const s=document.createElement('span');s.className='tag';s.textContent=r.f.split(',')[0];tags.appendChild(s);}
   document.getElementById('mc').innerHTML='<div style="text-align:center;padding:40px 0"><div class="spinner"></div><p style="color:#555;font-size:13px;margin-top:14px">Buscando información…</p></div>';
+  // Reset register form
+  const oldForm=document.getElementById('modal-reg-form');if(oldForm)oldForm.remove();
+  regRecord=null;regRating=0;
   document.getElementById('mbg').src='';
   document.getElementById('mgallery').innerHTML='';
   document.getElementById('mgallery-main-wrap').style.display='none';

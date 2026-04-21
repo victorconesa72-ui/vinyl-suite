@@ -8,7 +8,6 @@
 <meta name="apple-mobile-web-app-title" content="Vinyl Suite"/>
 <meta name="theme-color" content="#0f0f0f"/>
 <title>Vinyl Suite</title>
-<link rel="manifest" href="/manifest.json"/>
 <style>
 :root{--gold:#f4a261;--gold2:#e76f51;--bg:#0f0f0f;--card:#1a1a1a;--border:#252525;--dim:#444;--muted:#888}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -211,8 +210,6 @@ function dc(y){
   if(n<2000)return'#8ecae6';if(n<2010)return'#a8dadc';if(n<2020)return'#06d6a0';return'#8338ec';
 }
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function loadDiary(){try{return JSON.parse(localStorage.getItem('vsd')||'[]');}catch{return[];}}
-function saveDiary(d){try{localStorage.setItem('vsd',JSON.stringify(d));}catch{}}
 let curTab='coleccion', spinActive=false, iaMood='', iaEra='', diaryPicked=null;
 
 function go(t){

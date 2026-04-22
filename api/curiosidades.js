@@ -11,33 +11,24 @@ export default async function handler(req, res) {
     const prompt = userMessage ? userMessage.content : '';
     const apiKey = process.env.GEMINI_API_KEY;
 
-    // Try models in order until one works
-    const models = ['gemini-1.5-flash-latest', 'gemini-1.5-flash-001', 'gemini-1.0-pro'];
-    let text = '';
-    let lastError = null;
+    const geminiRes = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
+        })
+      }
+    );
 
-    for (const model of models) {
-      const geminiRes = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
-          })
-        }
-      );
-      const data = await geminiRes.json();
-      text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      if (text) break;
-      lastError = data.error;
-    }
-
+    const data = await geminiRes.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     const clean = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+
     return res.status(200).json({
-      content: [{ type: 'text', text: clean }],
-      _debug: { textLen: text.length, error: lastError }
+      content: [{ type: 'text', text: clean }]
     });
 
   } catch(e) {

@@ -9,17 +9,16 @@ export default async function handler(req, res) {
     const { messages = [] } = req.body;
     const userMessage = messages.find(m => m.role === 'user');
     const prompt = userMessage ? userMessage.content : '';
-
     const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: 'No API key' });
 
+    // Try gemini-2.0-flash-exp first, fallback to gemini-pro
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
           generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
         })
       }
@@ -30,7 +29,8 @@ export default async function handler(req, res) {
     const clean = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
 
     return res.status(200).json({
-      content: [{ type: 'text', text: clean }]
+      content: [{ type: 'text', text: clean }],
+      _debug: { geminiStatus: geminiRes.status, textLen: text.length, error: data.error }
     });
 
   } catch(e) {

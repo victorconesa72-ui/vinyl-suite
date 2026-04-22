@@ -26,19 +26,25 @@ export default async function handler(req) {
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
-            temperature: 0.8,
-            maxOutputTokens: 2048,
-            responseMimeType: 'application/json'
+            temperature: 0.7,
+            maxOutputTokens: 1024
           }
         })
       }
     );
 
     const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+    
+    // Log full response for debugging
+    const candidate = data.candidates?.[0];
+    const text = candidate?.content?.parts?.[0]?.text || '';
+    
+    // Clean markdown fences if present
+    const clean = text.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
 
     return new Response(JSON.stringify({
-      content: [{ type: 'text', text }]
+      content: [{ type: 'text', text: clean }],
+      debug: { finishReason: candidate?.finishReason, textLength: text.length }
     }), { headers });
 
   } catch(e) {

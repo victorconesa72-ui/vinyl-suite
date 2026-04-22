@@ -8,7 +8,13 @@ export default async function handler(req, res) {
   try {
     const { messages = [] } = req.body;
     const userMessage = messages.find(m => m.role === 'user');
-    const prompt = userMessage ? userMessage.content : '';
+    let prompt = userMessage ? userMessage.content : '';
+
+    // Force strict JSON output
+    if (!prompt.includes('IMPORTANTE')) {
+      prompt += '\n\nIMPORTANTE: Responde ÚNICAMENTE con el objeto JSON, sin texto adicional, sin markdown, sin explicaciones. Solo el JSON puro empezando por { y terminando por }.';
+    }
+
     const apiKey = process.env.GEMINI_API_KEY;
 
     const geminiRes = await fetch(
@@ -18,18 +24,28 @@ export default async function handler(req, res) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 1500,
+            stopSequences: []
+          }
         })
       }
     );
 
     const data = await geminiRes.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    const clean = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+    let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    // Clean and extract JSON
+    text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+    const start = text.indexOf('{');
+    const end = text.lastIndexOf('}');
+    if (start !== -1 && end !== -1 && end > start) {
+      text = text.slice(start, end + 1);
+    }
 
     return res.status(200).json({
-      content: [{ type: 'text', text: clean }],
-      _d: { status: geminiRes.status, len: text.length, err: data.error?.message }
+      content: [{ type: 'text', text }]
     });
 
   } catch(e) {

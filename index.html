@@ -476,7 +476,9 @@ function tEra(d,c){iaEra=iaEra===d?'':d;document.querySelectorAll('#echips .chip
 async function askIA(){
   const btn=document.getElementById('iabtn'),res=document.getElementById('iares');
   btn.disabled=true;btn.textContent='Pensando…';res.style.display='none';res.innerHTML='';
-  const sample=COL.slice(0,60).map(r=>'"'+r.t+'" de '+r.a+' ('+(r.y||'?')+')').join('; ');
+  // Shuffle to get different recommendations each time
+  const shuffled=COL.slice().sort(()=>Math.random()-.5);
+  const sample=shuffled.slice(0,60).map(r=>'"'+r.t+'" de '+r.a+' ('+(r.y||'?')+')').join('; ');
   const p='Eres un experto en música. El usuario tiene esta colección de vinilos: '+sample+'.\n'+(iaMood?'Estado de ánimo: '+iaMood+'.':'')+(iaEra?' Le apetece música de los '+iaEra+'.':'')+' Recomienda UN disco de su colección que encaje perfectamente ahora.\nResponde SOLO en JSON sin markdown:\n{"title":"...","artist":"...","razon":"2-3 frases íntimas","momento":"descripción poética del momento ideal"}';
   try{
     const resp=await fetch('/api/curiosidades',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-opus-4-5',max_tokens:400,messages:[{role:'user',content:p}]})});

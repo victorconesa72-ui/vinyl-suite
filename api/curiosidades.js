@@ -11,9 +11,8 @@ export default async function handler(req, res) {
     const prompt = userMessage ? userMessage.content : '';
     const apiKey = process.env.GEMINI_API_KEY;
 
-    // Try gemini-2.0-flash-exp first, fallback to gemini-pro
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -30,7 +29,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       content: [{ type: 'text', text: clean }],
-      _debug: { geminiStatus: geminiRes.status, textLen: text.length, error: data.error }
+      _debug: { status: geminiRes.status, textLen: text.length, error: data.error }
     });
 
   } catch(e) {

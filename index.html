@@ -295,7 +295,7 @@ function openModal(r){
     async function fetchCuriosidades(attempt){
       try{
         const x=await fetch('/api/curiosidades',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({messages:[{role:'user',content:p}]})});
+          body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,messages:[{role:'user',content:p}]})});
         const d=await x.json();
         const txt=(d.content||[]).map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
         const parsed=JSON.parse(txt);
@@ -488,7 +488,7 @@ async function askIA(){
   const sample=shuffled.slice(0,30).map(r=>'"'+r.t+'" de '+r.a).join(', ');
   const p='Eres un experto en música. El usuario tiene esta colección de vinilos: '+sample+'.\n'+(iaMood?'Estado de ánimo: '+iaMood+'.':'')+(iaEra?' Le apetece música de los '+iaEra+'.':'')+' Recomienda UN disco de su colección que encaje perfectamente ahora.\nResponde SOLO en JSON sin markdown:\n{"title":"...","artist":"...","razon":"2-3 frases íntimas","momento":"descripción poética del momento ideal"}';
   try{
-    const resp=await fetch('/api/curiosidades',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:p}]})});
+    const resp=await fetch('/api/curiosidades',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,messages:[{role:'user',content:p}]})});
     const data=await resp.json();
     const txt=(data.content||[]).map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
     const parsed=JSON.parse(txt);

@@ -14,13 +14,10 @@ export default async function handler(req) {
 
   try {
     const body = await req.json();
-
-    // Extract the user message from Claude-format request
     const messages = body.messages || [];
     const userMessage = messages.find(m => m.role === 'user');
     const prompt = userMessage ? userMessage.content : '';
 
-    // Call Gemini API
     const response = await fetch(
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + process.env.GEMINI_API_KEY,
       {
@@ -30,16 +27,16 @@ export default async function handler(req) {
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
             temperature: 0.8,
-            maxOutputTokens: 800
+            maxOutputTokens: 2048,
+            responseMimeType: 'application/json'
           }
         })
       }
     );
 
     const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
 
-    // Return in Claude-compatible format so the frontend works without changes
     return new Response(JSON.stringify({
       content: [{ type: 'text', text }]
     }), { headers });

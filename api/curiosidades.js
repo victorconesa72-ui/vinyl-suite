@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     const apiKey = process.env.GEMINI_API_KEY;
 
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -28,7 +28,8 @@ export default async function handler(req, res) {
     const clean = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
 
     return res.status(200).json({
-      content: [{ type: 'text', text: clean }]
+      content: [{ type: 'text', text: clean }],
+      _d: { status: geminiRes.status, len: text.length, err: data.error?.message }
     });
 
   } catch(e) {

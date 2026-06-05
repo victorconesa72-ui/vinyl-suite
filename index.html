@@ -135,7 +135,7 @@ textarea.field{resize:vertical;min-height:80px}
   <div id="hdr-top">
     <span style="font-size:22px">🎵</span>
     <div><div style="font-size:16px;font-weight:800;letter-spacing:-.5px">Vinyl Suite</div>
-    <div style="font-size:10px;color:var(--dim);margin-top:2px">144 discos · @veeteen</div></div>
+    <div id="hdr-count" style="font-size:10px;color:var(--dim);margin-top:2px">144 discos · @veeteen</div></div>
   </div>
   <div id="tabs">
     <button class="tab on" onclick="go('coleccion')">🎵 Colección</button>
@@ -348,7 +348,8 @@ function setSort(s){
 }
 function fCol(){
   const q=(document.getElementById('csrch')?.value||'').toLowerCase();
-  let f=q?COL.filter(r=>(r.t+' '+r.a).toLowerCase().includes(q)):COL.slice();
+  const allCol = COL.concat(localCollection);
+  let f=q?allCol.filter(r=>(r.t+' '+r.a).toLowerCase().includes(q)):allCol.slice();
   f.sort((a,b)=>{
     if(curSort==='artist') return (a.a+a.t).localeCompare(b.a+b.t,'es');
     if(curSort==='year') return (parseInt(b.y)||0)-(parseInt(a.y)||0);

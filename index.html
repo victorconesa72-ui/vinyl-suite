@@ -329,6 +329,12 @@ function renderModal(info,r){
   if(info.legado)h+='<div class="ibox"><div class="slbl" style="color:#888">🏆 LEGADO</div><p style="font-size:12px;color:#bbb;line-height:1.6;margin:0">'+esc(info.legado)+'</p></div>';
   h+='</div>';
   document.getElementById('mc').innerHTML=h;
+  // Register button
+  const regBtn=document.createElement('button');
+  regBtn.className='reg-btn';
+  regBtn.textContent='Registrar esta escucha';
+  regBtn.onclick=function(){quickRegister(r);};
+  document.getElementById('mc').appendChild(regBtn);
 }
 function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow='';}
 document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal();});
@@ -836,6 +842,38 @@ function renderLocalCollection(el){
     localWrap.appendChild(row);
   });
   el.appendChild(localWrap);
+}
+
+
+function quickRegister(record){
+  regRecord=record;regRating=0;
+  const existing=document.getElementById('modal-reg-form');
+  if(existing){existing.style.display=existing.style.display==='none'?'block':'none';return;}
+  const form=document.createElement('div');form.id='modal-reg-form';form.className='mini-reg';
+  const title=document.createElement('div');title.className='mini-reg-title';title.textContent='REGISTRAR ESTA ESCUCHA';
+  const rlbl=document.createElement('div');rlbl.style.cssText='font-size:10px;color:#666;font-weight:700;letter-spacing:1px;margin-bottom:6px';rlbl.textContent='VALORACIÓN';
+  const stars=document.createElement('div');stars.className='stars';stars.id='qreg-stars';
+  for(var i=1;i<=5;i++){
+    (function(n){const s=document.createElement('button');s.className='star';s.textContent='☆';s.onclick=function(){setQRating(n);};stars.appendChild(s);})(i);
+  }
+  const nota=document.createElement('textarea');nota.className='fld';nota.id='qnota';nota.placeholder='Notas opcionales...';nota.style.marginTop='10px';
+  const btn=document.createElement('button');btn.className='btn-f';btn.textContent='Guardar escucha';btn.onclick=saveQuickEntry;
+  form.appendChild(title);form.appendChild(rlbl);form.appendChild(stars);form.appendChild(nota);form.appendChild(btn);
+  const mc=document.getElementById('mc');if(mc&&mc.parentNode)mc.parentNode.insertBefore(form,mc);
+}
+
+function setQRating(n){
+  regRating=n;
+  document.querySelectorAll('#qreg-stars .star').forEach(function(s,i){s.classList.toggle('on',i<n);s.textContent=i<n?'★':'☆';});
+}
+
+function saveQuickEntry(){
+  if(!regRecord)return;
+  const nota=document.getElementById('qnota');
+  const entry={id:Date.now(),record:regRecord,rating:regRating,nota:nota?nota.value:'',date:new Date().toISOString()};
+  diary=[entry].concat(diary);saveDiary(diary);
+  const form=document.getElementById('modal-reg-form');
+  if(form){form.innerHTML='<div style="text-align:center;padding:14px;color:#f4a261;font-weight:700">✅ Escucha registrada!</div>';setTimeout(function(){form.style.display='none';},1500);}
 }
 
 // Init

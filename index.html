@@ -632,18 +632,7 @@ function rScanner(){
   el.appendChild(resultsWrap);
 
   // Local additions
-  if(localCollection.length > 0){
-    const localWrap = document.createElement('div');
-    localWrap.className = 'sbox2';
-    localWrap.innerHTML = '<div class="section-hdr">DISCOS AÑADIDOS (' + localCollection.length + ')</div>';
-    localCollection.slice(0,5).forEach(function(r){
-      const row = document.createElement('div');
-      row.style.cssText = 'display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)';
-      row.innerHTML = '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(r.t)+'</div><div style="font-size:11px;color:#555">'+esc(r.a)+'</div></div>';
-      localWrap.appendChild(row);
-    });
-    el.appendChild(localWrap);
-  }
+  renderLocalCollection(el);
 }
 
 function toggleScanner(){
@@ -771,6 +760,40 @@ function addToCollection(item){
   setTimeout(function(){ if(success.parentNode) success.remove(); }, 3000);
 }
 
+
+
+function renderLocalCollection(el){
+  if(!localCollection.length) return;
+  const localWrap = document.createElement('div');
+  localWrap.className = 'sbox2';
+  localWrap.id = 'local-col-wrap';
+  localWrap.innerHTML = '<div class="section-hdr">DISCOS AÑADIDOS (' + localCollection.length + ')</div>';
+  localCollection.forEach(function(r){
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)';
+    const imgWrap = document.createElement('div');
+    imgWrap.style.cssText = 'width:44px;height:44px;border-radius:8px;background:#111;overflow:hidden;flex-shrink:0';
+    if(r.thumb){ const img=document.createElement('img');img.src=r.thumb;img.style.cssText='width:100%;height:100%;object-fit:cover';imgWrap.appendChild(img); }
+    const info = document.createElement('div');
+    info.style.cssText = 'flex:1;min-width:0';
+    info.innerHTML = '<div style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(r.t)+'</div><div style="font-size:11px;color:#555">'+esc(r.a)+(r.y?' · '+r.y:'')+'</div>';
+    const delBtn = document.createElement('button');
+    delBtn.style.cssText = 'background:none;border:1px solid #e6394644;color:#e63946;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0';
+    delBtn.textContent = 'Eliminar';
+    (function(rid){ delBtn.onclick = function(){
+      if(!confirm('¿Eliminar "'+r.t+'" de tu colección?')) return;
+      localCollection = localCollection.filter(function(x){ return x.id !== rid; });
+      saveLocalCol(localCollection);
+      rScanner();
+      fCol();
+    }; })(r.id);
+    row.appendChild(imgWrap);
+    row.appendChild(info);
+    row.appendChild(delBtn);
+    localWrap.appendChild(row);
+  });
+  el.appendChild(localWrap);
+}
 
 // Init
 rCol();

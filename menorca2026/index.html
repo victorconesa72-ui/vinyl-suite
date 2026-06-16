@@ -202,10 +202,15 @@ section { padding:3rem 0; }
 .gal-hint { font-size:12px; color:var(--text-light); font-style:italic; margin-top:.75rem; text-align:center; }
 
 /* LIGHTBOX */
-#lightbox { display:none; position:fixed; inset:0; z-index:2000; background:rgba(0,0,0,.92); align-items:center; justify-content:center; cursor:pointer; }
+#lightbox { display:none; position:fixed; inset:0; z-index:2000; background:rgba(0,0,0,.95); align-items:center; justify-content:center; }
 #lightbox.open { display:flex; }
-#lightbox img { max-width:92vw; max-height:88vh; border-radius:var(--radius); object-fit:contain; }
-#lb-close { position:absolute; top:1rem; right:1.2rem; color:#fff; font-size:28px; cursor:pointer; opacity:.7; }
+#lb-img { max-width:88vw; max-height:82vh; border-radius:var(--radius); object-fit:contain; user-select:none; }
+#lb-close { position:absolute; top:1rem; right:1.2rem; color:#fff; font-size:28px; cursor:pointer; opacity:.7; background:none; border:none; z-index:1; }
+#lb-prev, #lb-next { position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,.15); border:none; color:#fff; font-size:36px; width:48px; height:48px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .2s; z-index:1; }
+#lb-prev { left:1rem; }
+#lb-next { right:1rem; }
+#lb-prev:hover, #lb-next:hover { background:rgba(255,255,255,.3); }
+#lb-counter { position:absolute; bottom:1rem; left:50%; transform:translateX(-50%); color:rgba(255,255,255,.6); font-size:12px; letter-spacing:1px; }
 
 /* AI CHAT */
 .ai-wrap { background:var(--white); border-radius:var(--radius); border:1px solid rgba(0,0,0,.06); overflow:hidden; }
@@ -604,7 +609,10 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 <!-- LIGHTBOX -->
 <div id="lightbox" onclick="closeLightbox()">
   <div id="lb-close">✕</div>
+  <button id="lb-prev" onclick="event.stopPropagation();lbNav(-1)">‹</button>
   <img id="lb-img" src="" alt="">
+  <button id="lb-next" onclick="event.stopPropagation();lbNav(1)">›</button>
+  <div id="lb-counter"></div>
 </div>
 
 <footer>
@@ -869,12 +877,53 @@ function uploadFiles(files) {
 }
 
 // ── LIGHTBOX ──
+var lbPhotos = [];
+var lbIndex = 0;
+var lbTouchX = 0;
+
 function openLightbox(url) {
-  document.getElementById('lb-img').src = url;
+  // Build flat list of all photos in current gallery day
+  lbPhotos = galPhotos[galDay].length > 0 ? galPhotos[galDay] : [];
+  // If from memories grid, use all photos
+  if (lbPhotos.indexOf(url) === -1) {
+    lbPhotos = [];
+    for(var i=0;i<4;i++) galPhotos[i].forEach(function(u){ lbPhotos.push(u); });
+  }
+  lbIndex = lbPhotos.indexOf(url);
+  if (lbIndex === -1) { lbIndex = 0; lbPhotos = [url]; }
+  lbShow();
   document.getElementById('lightbox').classList.add('open');
 }
+
+function lbShow() {
+  document.getElementById('lb-img').src = lbPhotos[lbIndex];
+  document.getElementById('lb-counter').textContent = (lbIndex+1) + ' / ' + lbPhotos.length;
+  document.getElementById('lb-prev').style.display = lbPhotos.length > 1 ? 'flex' : 'none';
+  document.getElementById('lb-next').style.display = lbPhotos.length > 1 ? 'flex' : 'none';
+}
+
+function lbNav(dir) {
+  lbIndex = (lbIndex + dir + lbPhotos.length) % lbPhotos.length;
+  lbShow();
+}
+
 function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
-document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLightbox(); });
+
+document.addEventListener('keydown', function(e){
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') lbNav(-1);
+  if (e.key === 'ArrowRight') lbNav(1);
+});
+
+document.getElementById('lightbox').addEventListener('touchstart', function(e){ lbTouchX = e.touches[0].clientX; }, {passive:true});
+document.getElementById('lightbox').addEventListener('touchend', function(e){
+  var diff = lbTouchX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) lbNav(diff > 0 ? 1 : -1);
+});
+document.getElementById('lightbox').addEventListener('click', function(e){
+  if (e.target === this) closeLightbox();
+});
 
 // ── AI CHAT ──
 var TRIP_CONTEXT = 'Eres la guía de viaje oficial de un grupo de 8 amigos que viajan a Menorca del 19 al 22 de julio de 2026, alojados en Calan Porter (Nelva Resort). Responde siempre en español, de forma amigable, breve y práctica. Solo respondes sobre este viaje.\n\nDÍA 1 (Dom 19): 10h desayuno Can Pons Es Mercadal, 12h Jaleo Sant Martí (grito: ¡Ara va de bo!), 14h Es Molí des Racó RESERVADO (caldereta langosta), 16:15h Playa Cavalleria, 19h Catamarán Katayak RESERVADO (atardecer privado barra libre 555€ 2h15min), 22:15h Sa Taula Fornells RESERVADO.\n\nDÍA 2 (Lun 20): 9:15h Ca na Juanita + Can Sintes Alaior (pícnic barco), 10h Barco Puerto Addaia RESERVADO (4h Isla Colom Reserva Marina), 15:30h Cala en Porter, 18h piscina Nelva Resort, 21h Rojo Pomodoro PENDIENTE (971 351 853), 22:30h Mercadillo Cales Fonts.\n\nDÍA 3 (Mar 21): 9h Bus Macarella PENDIENTE (bus2macarella.com 8.50€), 9:30h Macarella+Macarelleta, 15:30h Cala Turqueta, 17:30h bifurcación 3 opciones, 20h Pont d\'en Gil pícnic atardecer, 22h Polaris Menorca RESERVADO (Vía Láctea La Vall 670 503 362).\n\nDÍA 4 (Mié 22): 9:30h Bar Can Rafa Ciutadella, 10h Mercat Municipal (9-14h), 11:30h paseo casco histórico, 14h Pins 46 RESERVADO (971 481 674), 16:15h Claustro Carmen Mahón, 18:15h El Turronero (cierra 20h), 19h aeropuerto vuelo 21h.\n\nEQUIPAJE Día 1: ropa cómoda+seca, bañador, calzado cerrado, manga larga, protección solar, cámara. Día 2: nevera bebidas, bocadillos, gorra, snorkel, bolsas impermeables. Día 3: linterna luz ROJA, abrigo, agua 2L, manta pícnic. Día 4: efectivo, documentación, maletas listas.\n\nCONSEJOS: llegar calas antes 9:30h, AppPlatja para parkings, agua 2L mínimo, efectivo siempre, mapas offline, linterna roja para astronomía.';
@@ -1052,6 +1101,20 @@ function renderMemoriesFrase() {
 }
 
 var memoriesFrase = '';
+
+function deleteFrase() {
+  if (!confirm('¿Borrar la frase del viaje?')) return;
+  memoriesFrase = '';
+  fetch('https://api.jsonbin.io/v3/b/'+JBIN_ID, {
+    method:'PUT',
+    headers:{'Content-Type':'application/json','X-Master-Key': JBIN_KEY},
+    body: JSON.stringify({fotos: galPhotos, diario: diaryEntries, frase: ''})
+  }).then(function(){
+    renderMemoriesFrase();
+    document.getElementById('frase-status').textContent = '✅ Frase borrada';
+    setTimeout(function(){ document.getElementById('frase-status').textContent = ''; }, 3000);
+  }).catch(function(){ document.getElementById('frase-status').textContent = '❌ Error al borrar'; });
+}
 
 function saveFrase() {
   var text = document.getElementById('memoriesFraseText').value.trim();

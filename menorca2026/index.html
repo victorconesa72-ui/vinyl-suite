@@ -583,7 +583,10 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
   <div id="memories-frase-display"></div>
   <div class="memories-frase-input" id="memories-frase-input-wrap">
     <textarea id="memoriesFraseText" placeholder="Escribid aquí la frase que define vuestro viaje…" maxlength="200" rows="2"></textarea>
-    <button class="diary-save-btn" onclick="saveFrase()">💬 Guardar frase del viaje</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="diary-save-btn" onclick="saveFrase()">💬 Guardar frase del viaje</button>
+      <button class="diary-save-btn" style="background:rgba(220,50,50,0.8)" onclick="deleteFrase()">✕ Borrar frase</button>
+    </div>
     <div id="frase-status" class="diary-status"></div>
   </div>
 </div>

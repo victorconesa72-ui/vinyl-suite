@@ -1,21 +1,23 @@
 {
-  "name": "Vinyl Suite",
-  "short_name": "Vinyl Suite",
-  "description": "Tu colección de vinilos",
-  "start_url": "/",
+  "name": "Menorca 2026",
+  "short_name": "Menorca",
+  "description": "Guía del viaje a Menorca · 19-22 Julio 2026",
+  "start_url": "/menorca2026/",
   "display": "standalone",
-  "background_color": "#0f0f0f",
-  "theme_color": "#0f0f0f",
+  "background_color": "#0a1628",
+  "theme_color": "#0a1628",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "/menorca2026/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon.png",
+      "src": "/menorca2026/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

@@ -706,7 +706,7 @@ CONSEJOS: calas llegar antes 9:30h julio, AppPlatja para parkings, sin agua pota
 
 FRASES: ¡Ara va de bo! (grito Jaleo), Bon profit! (buen provecho), Pomada=gin Xoriguer+limonada, Bon dia!/Bones!`;
 
-const GEMINI_KEY = 'AIzaSyDOh8Gw3BQLECfxXIldrceBDzfEUVWHUik';
+const OR_KEY = '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';
 let chatHistory = [];
 
 async function sendChat() {
@@ -718,30 +718,26 @@ async function sendChat() {
   document.getElementById('chatSugs').style.display = 'none';
   document.getElementById('chatSend').disabled = true;
   document.getElementById('chatTyping').classList.add('show');
-  chatHistory.push({role:'user', parts:[{text: msg}]});
+  chatHistory.push({role:'user', content: msg});
   try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
-      {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
-          system_instruction: { parts:[{text: TRIP_CONTEXT}] },
-          contents: chatHistory.map(m => ({
-            role: m.role,
-            parts: m.parts
-          })),
-          generationConfig: { maxOutputTokens: 400, temperature: 0.7 }
-        })
-      }
-    );
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization': `Bearer ${OR_KEY}`,
+        'HTTP-Referer': 'https://vinyl-suite.vercel.app',
+        'X-Title': 'Menorca 2026'
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.0-flash-exp:free',
+        max_tokens: 400,
+        messages: [{role:'system', content: TRIP_CONTEXT}, ...chatHistory]
+      })
+    });
     const data = await res.json();
-    if (!res.ok) {
-      console.error('Gemini error:', JSON.stringify(data));
-      throw new Error(data.error?.message || 'API error');
-    }
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sin respuesta.';
-    chatHistory.push({role:'model', parts:[{text: reply}]});
+    if (!res.ok) { console.error('OpenRouter error:', JSON.stringify(data)); throw new Error(); }
+    const reply = data.choices?.[0]?.message?.content || 'Sin respuesta.';
+    chatHistory.push({role:'assistant', content: reply});
     document.getElementById('chatTyping').classList.remove('show');
     addMessage(reply, 'bot');
   } catch(e) {

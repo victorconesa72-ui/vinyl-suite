@@ -588,7 +588,7 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 
 </div><!-- /mainContent -->
 
-<script>
+<script defer>
 // ── INTRO ──
 function startIntroExit() {
   const intro = document.getElementById('intro');
@@ -600,7 +600,6 @@ function startIntroExit() {
   }, {once:true});
 }
 
-window.addEventListener('DOMContentLoaded', function() {
 document.getElementById('intro').addEventListener('click', startIntroExit);
 
 // ── INIT APP ──
@@ -920,7 +919,6 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') closeLightbox()
     btn.classList.add('active');
   }
 
-}); // DOMContentLoaded
 </script>
 </body>
 </html>

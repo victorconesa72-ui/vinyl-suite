@@ -286,7 +286,7 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 <body>
 
 <!-- ══ INTRO SCREEN ══ -->
-<div id="intro">
+<div id="intro" onclick="(function(){var i=document.getElementById('intro');i.style.pointerEvents='none';i.classList.add('hiding');i.addEventListener('animationend',function(){i.style.display='none';document.getElementById('mainContent').classList.add('active');if(typeof initApp==='function')initApp();},{once:true});})()">
   <div id="intro-sky"></div>
   <div id="intro-sun"></div>
   <div id="intro-waves">

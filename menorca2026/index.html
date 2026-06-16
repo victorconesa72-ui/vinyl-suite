@@ -589,6 +589,7 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 </div><!-- /mainContent -->
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
 // ── INTRO ──
 document.getElementById('intro').addEventListener('click', startIntroExit);
 
@@ -919,6 +920,7 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') closeLightbox()
     btn.classList.add('active');
   }
 
+}); // DOMContentLoaded
 </script>
 </body>
 </html>

@@ -2,8 +2,14 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Menorca 2026 · 19-22 Julio · Calan Porter</title>
+<link rel="manifest" href="/menorca2026/manifest.json">
+<meta name="theme-color" content="#0a1628">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Menorca">
+<link rel="apple-touch-icon" href="/menorca2026/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -186,6 +192,9 @@ section { padding:3rem 0; }
 .gal-item { position:relative; aspect-ratio:4/3; border-radius:var(--radius-sm); overflow:hidden; background:var(--sand-dark); cursor:pointer; }
 .gal-item img { width:100%; height:100%; object-fit:cover; transition:transform .3s; }
 .gal-item:hover img { transform:scale(1.05); }
+.gal-delete { position:absolute; top:5px; right:5px; width:24px; height:24px; background:rgba(0,0,0,0.6); color:#fff; border:none; border-radius:50%; font-size:14px; line-height:24px; text-align:center; cursor:pointer; display:none; z-index:2; transition:background .2s; }
+.gal-item:hover .gal-delete { display:block; }
+.gal-delete:hover { background:rgba(220,50,50,0.9); }
 .gal-placeholder { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:var(--text-light); font-size:11px; text-align:center; padding:8px; }
 .gal-placeholder .ph-icon { font-size:28px; opacity:.4; }
 .gal-hint { font-size:12px; color:var(--text-light); font-style:italic; margin-top:.75rem; text-align:center; }
@@ -627,16 +636,34 @@ function renderGallery(day) {
   var panel = document.getElementById('gal'+day);
   var hint = panel.querySelector('.gal-hint');
   grid.innerHTML = '';
-  galPhotos[day].forEach(function(url) {
+  galPhotos[day].forEach(function(url, idx) {
     var div = document.createElement('div');
     div.className = 'gal-item';
     var img = document.createElement('img');
     img.src = url; img.alt = 'Foto día '+(day+1); img.loading = 'lazy';
+    var btn = document.createElement('button');
+    btn.className = 'gal-delete';
+    btn.textContent = '✕';
+    btn.title = 'Borrar foto';
+    (function(d, i){ 
+      btn.onclick = function(e) { 
+        e.stopPropagation(); 
+        deletePhoto(d, i); 
+      }; 
+    })(day, idx);
     div.appendChild(img);
+    div.appendChild(btn);
     (function(u){ div.onclick = function(){ openLightbox(u); }; })(url);
     grid.appendChild(div);
   });
   if(hint) hint.style.display = galPhotos[day].length > 0 ? 'none' : 'block';
+}
+
+function deletePhoto(day, idx) {
+  if (!confirm('¿Borrar esta foto de la galería?')) return;
+  galPhotos[day].splice(idx, 1);
+  saveGallery();
+  renderGallery(day);
 }
 
 function showGallery(idx, btn) {
@@ -740,6 +767,10 @@ function addMsg(text, role) {
 }
 
 function sendSug(btn) { document.getElementById('chatInput').value = btn.textContent; sendChat(); }
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/menorca2026/sw.js');
+}
 </script>
 </body>
 </html>

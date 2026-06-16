@@ -267,6 +267,25 @@ section { padding:3rem 0; }
 .diary-save-btn:hover { background:var(--sea-deep); }
 .diary-status { font-size:12px; color:var(--text-light); margin-top:8px; min-height:16px; }
 
+/* MEMORIES */
+.memories-hero { background:linear-gradient(135deg,var(--sea-deep),var(--sea-mid)); border-radius:var(--radius); padding:2rem; text-align:center; margin-bottom:1.5rem; }
+.memories-title { font-family:'Playfair Display',serif; font-size:28px; color:#fff; font-style:italic; }
+.memories-sub { font-size:12px; color:rgba(255,255,255,.6); letter-spacing:2px; margin-top:.5rem; text-transform:uppercase; }
+.memories-frase-wrap { background:var(--white); border-radius:var(--radius); padding:1.5rem; margin-bottom:1.5rem; border:1px solid var(--sand-dark); }
+.memories-frase-label { font-size:10px; letter-spacing:2px; font-weight:600; color:var(--text-light); text-transform:uppercase; margin-bottom:1rem; }
+.memories-frase-display { font-family:'Playfair Display',serif; font-size:20px; color:var(--sea-deep); font-style:italic; line-height:1.5; text-align:center; padding:1rem 0; display:none; }
+.memories-frase-display.has-frase { display:block; }
+.memories-frase-input { margin-top:1rem; }
+.memories-frase-input textarea { width:100%; background:var(--sand); border:1px solid var(--sand-dark); border-radius:var(--radius-sm); padding:9px 12px; font-size:13px; font-family:'Playfair Display',serif; font-style:italic; color:var(--text-main); outline:none; margin-bottom:8px; display:block; resize:none; }
+.memories-frase-input textarea:focus { border-color:var(--sea-light); }
+.memories-photos-label { font-size:10px; letter-spacing:2px; font-weight:600; color:var(--text-light); text-transform:uppercase; margin-bottom:1rem; }
+.memories-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px; margin-bottom:1.5rem; }
+.memories-grid .gal-item { aspect-ratio:4/3; }
+.memories-diary-label { font-size:10px; letter-spacing:2px; font-weight:600; color:var(--text-light); text-transform:uppercase; margin-bottom:1rem; }
+.memories-day-block { margin-bottom:1.5rem; }
+.memories-day-title { font-size:13px; font-weight:600; color:var(--sea-mid); margin-bottom:.5rem; padding-bottom:.4rem; border-bottom:1px solid var(--sand-dark); }
+.memories-empty { font-size:13px; color:var(--text-light); font-style:italic; text-align:center; padding:1rem 0; }
+
 footer { background:var(--sea-deep); color:rgba(255,255,255,.5); text-align:center; padding:3rem 1.5rem; font-size:12px; line-height:2; }
 footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 
@@ -550,6 +569,35 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 </div>
 </section>
 
+<!-- RECUERDOS -->
+<div style="margin-top:3rem">
+<div class="section-label">Recuerdos del viaje</div>
+
+<div class="memories-hero">
+  <div class="memories-title">L'illa que et roba el cor</div>
+  <div class="memories-sub">Menorca · 19-22 Julio 2026 · 8 viajeros</div>
+</div>
+
+<div class="memories-frase-wrap">
+  <div class="memories-frase-label">La frase del viaje</div>
+  <div id="memories-frase-display"></div>
+  <div class="memories-frase-input" id="memories-frase-input-wrap">
+    <textarea id="memoriesFraseText" placeholder="Escribid aquí la frase que define vuestro viaje…" maxlength="200" rows="2"></textarea>
+    <button class="diary-save-btn" onclick="saveFrase()">💬 Guardar frase del viaje</button>
+    <div id="frase-status" class="diary-status"></div>
+  </div>
+</div>
+
+<div class="memories-photos-label">Fotos destacadas</div>
+<div id="memories-grid" class="memories-grid"></div>
+
+<div class="memories-diary-label">El diario completo</div>
+<div id="memories-diary"></div>
+</div>
+
+</div>
+</section>
+
 <!-- LIGHTBOX -->
 <div id="lightbox" onclick="closeLightbox()">
   <div id="lb-close">✕</div>
@@ -712,8 +760,12 @@ function loadGallery() {
     if (data.record && data.record.diario) {
       for(var i=0;i<4;i++) diaryEntries[i] = data.record.diario[i] || [];
     }
+    if (data.record && data.record.frase) {
+      memoriesFrase = data.record.frase;
+    }
     renderAllGalleries();
     renderAllDiary();
+    renderMemories();
   }).catch(function(e){ console.error('Load error:', e); });
 }
 
@@ -721,7 +773,7 @@ function saveGallery() {
   fetch('https://api.jsonbin.io/v3/b/'+JBIN_ID, {
     method:'PUT',
     headers:{'Content-Type':'application/json','X-Master-Key': JBIN_KEY},
-    body: JSON.stringify({fotos: galPhotos, diario: diaryEntries})
+    body: JSON.stringify({fotos: galPhotos, diario: diaryEntries, frase: memoriesFrase})
   }).catch(function(e){ console.error('Save error:', e); });
 }
 
@@ -872,7 +924,7 @@ function saveDiaryToJBin() {
   fetch('https://api.jsonbin.io/v3/b/'+JBIN_ID, {
     method:'PUT',
     headers:{'Content-Type':'application/json','X-Master-Key': JBIN_KEY},
-    body: JSON.stringify({fotos: galPhotos, diario: diaryEntries})
+    body: JSON.stringify({fotos: galPhotos, diario: diaryEntries, frase: memoriesFrase})
   }).catch(function(e){ console.error('Diary save error:', e); });
 }
 
@@ -931,6 +983,88 @@ function saveDiaryEntry() {
   document.getElementById('diaryText').value = '';
   status.textContent = '✅ Guardado en el diario del grupo';
   setTimeout(function(){ status.textContent = ''; }, 3000);
+}
+
+// ── MEMORIES ──
+function renderMemories() {
+  renderMemoriesPhotos();
+  renderMemoriesDiary();
+  renderMemoriesFrase();
+}
+
+function renderMemoriesPhotos() {
+  var grid = document.getElementById('memories-grid');
+  var allPhotos = [];
+  for(var i=0;i<4;i++) {
+    galPhotos[i].forEach(function(url){ allPhotos.push(url); });
+  }
+  if (allPhotos.length === 0) {
+    grid.innerHTML = '<div class="memories-empty">Las fotos del viaje aparecerán aquí 📷</div>';
+    return;
+  }
+  grid.innerHTML = '';
+  allPhotos.forEach(function(url) {
+    var div = document.createElement('div');
+    div.className = 'gal-item';
+    var img = document.createElement('img');
+    img.src = url; img.loading = 'lazy'; img.alt = 'Recuerdo';
+    div.appendChild(img);
+    (function(u){ div.onclick = function(){ openLightbox(u); }; })(url);
+    grid.appendChild(div);
+  });
+}
+
+function renderMemoriesDiary() {
+  var wrap = document.getElementById('memories-diary');
+  var days = ['Domingo 19 · Norte · Jaleo','Lunes 20 · Barco · Calas','Martes 21 · Sur · Estrellas','Miércoles 22 · Ciutadella · Mahón'];
+  var hasAny = false;
+  wrap.innerHTML = '';
+  diaryEntries.forEach(function(entries, i) {
+    if (!entries || entries.length === 0) return;
+    hasAny = true;
+    var block = document.createElement('div');
+    block.className = 'memories-day-block';
+    block.innerHTML = '<div class="memories-day-title">'+days[i]+'</div>' +
+      entries.map(function(e){
+        return '<div class="diary-entry">' +
+          '<div class="diary-entry-author">'+e.author+'</div>' +
+          '<div class="diary-entry-text">"'+e.text+'"</div>' +
+          '<div class="diary-entry-time">'+e.time+'</div>' +
+          '</div>';
+      }).join('');
+    wrap.appendChild(block);
+  });
+  if (!hasAny) wrap.innerHTML = '<div class="memories-empty">Las entradas del diario aparecerán aquí ✍️</div>';
+}
+
+function renderMemoriesFrase() {
+  var display = document.getElementById('memories-frase-display');
+  var frase = (typeof memoriesFrase !== 'undefined' && memoriesFrase) ? memoriesFrase : '';
+  if (frase) {
+    display.textContent = '"' + frase + '"';
+    display.classList.add('has-frase');
+  } else {
+    display.classList.remove('has-frase');
+  }
+}
+
+var memoriesFrase = '';
+
+function saveFrase() {
+  var text = document.getElementById('memoriesFraseText').value.trim();
+  var status = document.getElementById('frase-status');
+  if (!text) { status.textContent = 'Escribe una frase primero.'; return; }
+  memoriesFrase = text;
+  fetch('https://api.jsonbin.io/v3/b/'+JBIN_ID, {
+    method:'PUT',
+    headers:{'Content-Type':'application/json','X-Master-Key': JBIN_KEY},
+    body: JSON.stringify({fotos: galPhotos, diario: diaryEntries, frase: memoriesFrase})
+  }).then(function(){
+    document.getElementById('memoriesFraseText').value = '';
+    renderMemoriesFrase();
+    status.textContent = '✅ Frase guardada';
+    setTimeout(function(){ status.textContent = ''; }, 3000);
+  }).catch(function(){ status.textContent = '❌ Error al guardar'; });
 }
 
 // ── MAP ──

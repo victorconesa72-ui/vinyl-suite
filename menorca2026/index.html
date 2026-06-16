@@ -195,6 +195,7 @@ section { padding:3rem 0; }
 .gal-delete { position:absolute; top:5px; right:5px; width:24px; height:24px; background:rgba(0,0,0,0.6); color:#fff; border:none; border-radius:50%; font-size:14px; line-height:24px; text-align:center; cursor:pointer; display:none; z-index:2; transition:background .2s; }
 .gal-item:hover .gal-delete { display:block; }
 .gal-delete:hover { background:rgba(220,50,50,0.9); }
+@media (hover: none) { .gal-delete { display:block; } }
 .gal-placeholder { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:var(--text-light); font-size:11px; text-align:center; padding:8px; }
 .gal-placeholder .ph-icon { font-size:28px; opacity:.4; }
 .gal-hint { font-size:12px; color:var(--text-light); font-style:italic; margin-top:.75rem; text-align:center; }

@@ -286,7 +286,7 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 <body>
 
 <!-- ══ INTRO SCREEN ══ -->
-<div id="intro" onclick="startIntroExit()">
+<div id="intro">
   <div id="intro-sky"></div>
   <div id="intro-sun"></div>
   <div id="intro-waves">
@@ -590,6 +590,8 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 
 <script>
 // ── INTRO ──
+document.getElementById('intro').addEventListener('click', startIntroExit);
+
 function startIntroExit() {
   const intro = document.getElementById('intro');
   intro.classList.add('hiding');

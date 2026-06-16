@@ -272,7 +272,12 @@ section { padding:3rem 0; }
 .tl-web-link { display:inline-flex; align-items:center; gap:4px; font-size:11px; color:var(--turquoise); font-weight:500; text-decoration:none; margin-top:6px; padding:3px 8px; border-radius:20px; border:1px solid rgba(46,204,138,.3); transition:all .2s; }
 .tl-web-link:hover { background:rgba(46,204,138,.08); }
 
-/* GALLERY */
+/* GALLERY UPLOAD */
+.gal-upload-btn { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:10px; background:var(--sea-mid); color:#fff; border:none; border-radius:var(--radius-sm); font-size:13px; font-weight:500; cursor:pointer; font-family:'Inter',sans-serif; margin-bottom:1rem; transition:background .2s; }
+.gal-upload-btn:hover { background:var(--sea-deep); }
+.gal-upload-btn:disabled { opacity:.6; cursor:not-allowed; }
+.gal-uploading { font-size:12px; color:var(--text-light); text-align:center; margin-bottom:.5rem; display:none; }
+.gal-uploading.show { display:block; }
 .gallery-section { margin-top:3rem; }
 .gallery-days { display:flex; gap:8px; margin-bottom:1.2rem; flex-wrap:wrap; }
 .gal-day-btn { padding:6px 14px; font-size:12px; font-weight:500; border-radius:20px; border:1.5px solid var(--sand-dark); background:var(--white); cursor:pointer; transition:all .2s; font-family:'Inter',sans-serif; color:var(--text-mid); }
@@ -551,6 +556,9 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
         <button class="gal-day-btn" onclick="showGallery(2,this)">Mar 21</button>
         <button class="gal-day-btn" onclick="showGallery(3,this)">Mié 22</button>
       </div>
+      <input type="file" id="fileInput" accept="image/*" multiple style="display:none" onchange="uploadPhotos(this.files)">
+      <button class="gal-upload-btn" id="uploadBtn" onclick="document.getElementById('fileInput').click()">📷 Añadir fotos a este día</button>
+      <div class="gal-uploading" id="galUploading">Subiendo fotos… espera un momento ⏳</div>
       <div class="gal-panel active" id="gal0">
         <div class="gal-grid">
           <div class="gal-item"><div class="gal-placeholder"><div class="ph-icon">🐴</div><div>Jaleo de Sant Martí</div></div></div>
@@ -877,6 +885,93 @@ function closeLightbox() {
 }
 
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeLightbox(); });
+
+  // ── CLOUDINARY + JSONBIN GALLERY ──
+  const CLD_CLOUD = 'dt10mhwxb';
+  const CLD_PRESET = 'menorca';
+  const JBIN_ID = '6a319578f5f4af5e29fcf881';
+  const JBIN_KEY = '$2a$10$NME.Py0VJJ4l6p5GHaPO/urEE34i5m03X1NqeyhCFvDa4Ik0/QlGO';
+  const JBIN_URL = 'https://api.jsonbin.io/v3/b/' + JBIN_ID;
+  let currentGalDay = 0;
+  const galPhotos = [[],[],[],[]];
+
+  async function loadGalPhotos() {
+    try {
+      const res = await fetch(JBIN_URL + '/latest', {
+        headers: {'X-Master-Key': JBIN_KEY}
+      });
+      const data = await res.json();
+      const fotos = data.record?.fotos;
+      if(fotos && Array.isArray(fotos)) {
+        for(let i=0;i<4;i++) galPhotos[i] = fotos[i] || [];
+      }
+    } catch(e) { console.error('Error cargando fotos:', e); }
+    renderAllGalleries();
+  }
+
+  async function saveGalPhotos() {
+    try {
+      await fetch(JBIN_URL, {
+        method: 'PUT',
+        headers: {'Content-Type':'application/json','X-Master-Key': JBIN_KEY},
+        body: JSON.stringify({fotos: galPhotos})
+      });
+    } catch(e) { console.error('Error guardando fotos:', e); }
+  }
+
+  function renderAllGalleries() {
+    for(let i=0;i<4;i++) renderGallery(i);
+  }
+
+  function renderGallery(day) {
+    const panel = document.getElementById('gal'+day);
+    const grid = panel.querySelector('.gal-grid');
+    grid.querySelectorAll('.gal-item.real-photo').forEach(el => el.remove());
+    galPhotos[day].slice().reverse().forEach(url => {
+      const div = document.createElement('div');
+      div.className = 'gal-item real-photo';
+      div.innerHTML = '<img src="'+url+'" alt="Foto día '+(day+1)+'" loading="lazy">';
+      div.onclick = () => openLightbox(url, 'Foto día '+(day+1));
+      grid.insertBefore(div, grid.firstChild);
+    });
+    const hint = panel.querySelector('.gal-hint');
+    if(hint) hint.style.display = galPhotos[day].length > 0 ? 'none' : 'block';
+  }
+
+  async function uploadPhotos(files) {
+    if(!files.length) return;
+    const btn = document.getElementById('uploadBtn');
+    const uploading = document.getElementById('galUploading');
+    btn.disabled = true;
+    uploading.classList.add('show');
+    uploading.textContent = 'Subiendo ' + files.length + ' foto' + (files.length>1?'s':'') + '… ⏳';
+    let uploaded = 0;
+    for(const file of files) {
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('upload_preset', CLD_PRESET);
+        fd.append('folder', 'menorca2026/dia'+(currentGalDay+1));
+        const res = await fetch('https://api.cloudinary.com/v1_1/'+CLD_CLOUD+'/image/upload', {method:'POST', body:fd});
+        const data = await res.json();
+        if(data.secure_url) { galPhotos[currentGalDay].push(data.secure_url); uploaded++; uploading.textContent = 'Subiendo… '+uploaded+'/'+files.length+' ⏳'; }
+      } catch(e) { console.error('Upload error:', e); }
+    }
+    saveGalPhotos();
+    renderGallery(currentGalDay);
+    btn.disabled = false;
+    document.getElementById('fileInput').value = '';
+    uploading.textContent = '✅ ' + uploaded + ' foto' + (uploaded>1?'s':'') + ' añadida' + (uploaded>1?'s':'');
+    setTimeout(() => uploading.classList.remove('show'), 3000);
+  }
+
+  function showGallery(idx, btn) {
+    currentGalDay = idx;
+    document.querySelectorAll('.gal-panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+    document.querySelectorAll('.gal-day-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
 </script>
 </body>
 </html>

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Menorca 2026 · 19-22 Julio · Calan Porter</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="manifest" href="/menorca2026/manifest.json">
 <meta name="theme-color" content="#0a1628">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -229,8 +230,18 @@ section { padding:3rem 0; }
 #chatSend:hover { background:var(--sea-deep); }
 #chatSend:disabled { opacity:.5; cursor:not-allowed; }
 
+/* MAP */
+#map { height:380px; border-radius:var(--radius); overflow:hidden; border:1px solid var(--sand-dark); margin-bottom:.5rem; }
+.map-day-btns { display:flex; gap:8px; margin-bottom:1rem; flex-wrap:wrap; }
+.map-day-btn { padding:6px 14px; font-size:12px; font-weight:500; border-radius:20px; border:1.5px solid var(--sand-dark); background:var(--white); cursor:pointer; font-family:'Inter',sans-serif; color:var(--text-mid); transition:all .2s; }
+.map-day-btn.active { background:var(--sea-deep); color:#fff; border-color:var(--sea-deep); }
+
 /* WEATHER */
-.weather-card { background:var(--white); border-radius:var(--radius); padding:14px 10px; text-align:center; border:1px solid rgba(0,0,0,.05); box-shadow:0 1px 4px rgba(0,0,0,.05); }
+.weather-card { background:var(--white); border-radius:var(--radius); padding:14px 10px; text-align:center; border:1px solid rgba(0,0,0,.05); box-shadow:0 1px 4px rgba(0,0,0,.05); transition: background .3s; }
+.weather-card.sun { background:linear-gradient(135deg,#fff9e6,#fff3cc); border-color:#ffd966; }
+.weather-card.cloud { background:linear-gradient(135deg,#f0f4f8,#e2eaf2); border-color:#b0c4d8; }
+.weather-card.rain { background:linear-gradient(135deg,#e8f0f8,#d0e4f4); border-color:#7aaccf; }
+.weather-card.storm { background:linear-gradient(135deg,#e8e8f0,#d4d4e8); border-color:#8888bb; }
 .weather-day { font-size:10px; font-weight:600; letter-spacing:1px; color:var(--text-light); text-transform:uppercase; margin-bottom:6px; }
 .weather-icon { font-size:32px; margin:6px 0; }
 .weather-temp { font-size:15px; font-weight:600; color:var(--text-main); }
@@ -449,6 +460,19 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 <div class="gal-panel" id="gal3"><div class="gal-grid" id="grid3"></div><div class="gal-hint">📷 Tras el viaje añade aquí vuestras fotos</div></div>
 </div>
 
+<!-- MAPA -->
+<div style="margin-top:3rem">
+<div class="section-label">Ruta del viaje</div>
+<div class="map-day-btns">
+  <button class="map-day-btn active" onclick="filterMap(0,this)">Todos</button>
+  <button class="map-day-btn" onclick="filterMap(1,this)">Día 1</button>
+  <button class="map-day-btn" onclick="filterMap(2,this)">Día 2</button>
+  <button class="map-day-btn" onclick="filterMap(3,this)">Día 3</button>
+  <button class="map-day-btn" onclick="filterMap(4,this)">Día 4</button>
+</div>
+<div id="map"></div>
+</div>
+
 <!-- TIEMPO -->
 <div style="margin-top:3rem">
 <div class="section-label">Tiempo en Menorca</div>
@@ -516,6 +540,14 @@ function initApp() {
   buildChecklists();
   loadGallery();
   loadWeather();
+  loadLeaflet();
+}
+
+function loadLeaflet() {
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+  s.onload = initMap;
+  document.head.appendChild(s);
 }
 
 // ── COUNTDOWN ──
@@ -785,6 +817,95 @@ function addMsg(text, role) {
   msgs.scrollTop = msgs.scrollHeight;
 }
 
+// ── MAP ──
+var mapInstance = null;
+var allMarkers = [];
+var allLines = [];
+
+var MAP_POINTS = [
+  {day:1, name:'Es Mercadal — Desayuno', lat:39.996, lng:4.034, emoji:'☕', time:'10:00'},
+  {day:1, name:'Jaleo de Sant Martí', lat:39.996, lng:4.034, emoji:'🐴', time:'12:00'},
+  {day:1, name:'Es Molí des Racó', lat:39.991, lng:4.031, emoji:'🦞', time:'14:00'},
+  {day:1, name:'Playa de Cavalleria', lat:40.058, lng:3.841, emoji:'🏖️', time:'16:15'},
+  {day:1, name:'Catamarán Katayak', lat:40.058, lng:3.841, emoji:'⛵', time:'19:00'},
+  {day:1, name:'Sa Taula — Fornells', lat:40.003, lng:4.013, emoji:'🌙', time:'22:15'},
+  {day:2, name:'Ca na Juanita — Alaior', lat:39.934, lng:4.140, emoji:'🥐', time:'9:15'},
+  {day:2, name:'Puerto Addaia', lat:40.001, lng:4.198, emoji:'⚓', time:'10:00'},
+  {day:2, name:'Isla de Colom', lat:40.012, lng:4.228, emoji:'🗺️', time:'10:30'},
+  {day:2, name:'Cala en Porter', lat:39.865, lng:4.121, emoji:'🏊', time:'15:30'},
+  {day:2, name:'Nelva Resort — Calan Porter', lat:39.868, lng:4.118, emoji:'🏠', time:'18:00'},
+  {day:2, name:'Cales Fonts — Es Castell', lat:39.862, lng:4.261, emoji:'🎶', time:'22:30'},
+  {day:3, name:'Macarella', lat:39.903, lng:3.808, emoji:'🏝️', time:'9:30'},
+  {day:3, name:'Cala Turqueta', lat:39.911, lng:3.793, emoji:'🏖️', time:'15:30'},
+  {day:3, name:"Pont d'en Gil", lat:40.003, lng:3.761, emoji:'🌅', time:'20:00'},
+  {day:3, name:'Polaris Menorca — La Vall', lat:40.032, lng:3.782, emoji:'🔭', time:'22:00'},
+  {day:4, name:'Bar Can Rafa — Ciutadella', lat:40.001, lng:3.831, emoji:'☕', time:'9:30'},
+  {day:4, name:'Mercat Municipal Ciutadella', lat:39.999, lng:3.832, emoji:'🧀', time:'10:00'},
+  {day:4, name:'Pins 46 — Ciutadella', lat:39.998, lng:3.831, emoji:'🍽️', time:'14:00'},
+  {day:4, name:'Claustro del Carmen — Mahón', lat:39.888, lng:4.264, emoji:'🛍️', time:'16:15'},
+  {day:4, name:'El Turronero — Mahón', lat:39.889, lng:4.265, emoji:'🍦', time:'18:15'},
+  {day:4, name:'Aeropuerto Menorca', lat:39.863, lng:4.219, emoji:'✈️', time:'19:00'}
+];
+
+var DAY_COLORS = {1:'#e74c3c', 2:'#2980b9', 3:'#8e44ad', 4:'#e67e22'};
+
+function initMap() {
+  if (mapInstance) return;
+  mapInstance = L.map('map', {zoomControl:true}).setView([39.95, 4.0], 10);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:'© OpenStreetMap',
+    maxZoom:18
+  }).addTo(mapInstance);
+  MAP_POINTS.forEach(function(p) {
+    var color = DAY_COLORS[p.day];
+    var icon = L.divIcon({
+      className:'',
+      html:'<div style="background:'+color+';color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,.3);border:2px solid #fff">'+p.emoji+'</div>',
+      iconSize:[32,32], iconAnchor:[16,16]
+    });
+    var marker = L.marker([p.lat, p.lng], {icon:icon})
+      .addTo(mapInstance)
+      .bindPopup('<div style="font-family:Inter,sans-serif;min-width:140px"><div style="font-size:11px;color:#888;font-weight:600;letter-spacing:1px;text-transform:uppercase">DÍA '+p.day+' · '+p.time+'</div><div style="font-size:14px;font-weight:600;margin-top:2px">'+p.name+'</div></div>');
+    marker._day = p.day;
+    allMarkers.push(marker);
+  });
+  drawRoutes(0);
+  setTimeout(function(){ mapInstance.invalidateSize(); }, 300);
+}
+
+function drawRoutes(dayFilter) {
+  allLines.forEach(function(l){ mapInstance.removeLayer(l); });
+  allLines = [];
+  var days = dayFilter === 0 ? [1,2,3,4] : [dayFilter];
+  days.forEach(function(d) {
+    var pts = MAP_POINTS.filter(function(p){ return p.day === d; });
+    if (pts.length < 2) return;
+    var coords = pts.map(function(p){ return [p.lat, p.lng]; });
+    var line = L.polyline(coords, {color:DAY_COLORS[d], weight:3, opacity:.7, dashArray:'6,4'}).addTo(mapInstance);
+    allLines.push(line);
+  });
+}
+
+function filterMap(dayFilter, btn) {
+  document.querySelectorAll('.map-day-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  allMarkers.forEach(function(m){
+    if (dayFilter === 0 || m._day === dayFilter) {
+      if (!mapInstance.hasLayer(m)) m.addTo(mapInstance);
+    } else {
+      mapInstance.removeLayer(m);
+    }
+  });
+  drawRoutes(dayFilter);
+  if (dayFilter === 0) {
+    mapInstance.setView([39.95, 4.0], 10);
+  } else {
+    var pts = MAP_POINTS.filter(function(p){ return p.day === dayFilter; });
+    var bounds = L.latLngBounds(pts.map(function(p){ return [p.lat, p.lng]; }));
+    mapInstance.fitBounds(bounds, {padding:[30,30]});
+  }
+}
+
 // ── WEATHER ──
 function loadWeather() {
   var url = 'https://api.open-meteo.com/v1/forecast?latitude=39.88&longitude=4.05&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&timezone=Europe/Madrid&start_date=2026-07-19&end_date=2026-07-22';
@@ -797,8 +918,9 @@ function loadWeather() {
     document.getElementById('weather-loading').style.display = 'none';
     data.daily.time.forEach(function(_, i) {
       var code = data.daily.weathercode[i];
+      var colorClass = code === 0 ? 'sun' : code <= 2 ? 'sun' : code <= 3 ? 'cloud' : code <= 48 ? 'cloud' : code <= 67 ? 'rain' : 'storm';
       var card = document.createElement('div');
-      card.className = 'weather-card';
+      card.className = 'weather-card ' + colorClass;
       card.innerHTML =
         '<div class="weather-day">'+days[i]+'</div>' +
         '<div class="weather-icon">'+(icons[code]||'🌡️')+'</div>' +

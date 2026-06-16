@@ -291,6 +291,25 @@ section { padding:3rem 0; }
 .memories-day-title { font-size:13px; font-weight:600; color:var(--sea-mid); margin-bottom:.5rem; padding-bottom:.4rem; border-bottom:1px solid var(--sand-dark); }
 .memories-empty { font-size:13px; color:var(--text-light); font-style:italic; text-align:center; padding:1rem 0; }
 
+/* NEWSPAPER */
+.newspaper-intro { background:var(--white); border-radius:var(--radius); padding:1.5rem; border:1px solid var(--sand-dark); text-align:center; margin-bottom:1rem; }
+.newspaper-intro p { font-size:13px; color:var(--text-mid); margin-bottom:1rem; line-height:1.6; }
+.newspaper-btn { background:var(--sea-deep); color:#fff; border:none; border-radius:var(--radius-sm); padding:12px 24px; font-size:14px; font-weight:500; cursor:pointer; font-family:'Inter',sans-serif; transition:background .2s; }
+.newspaper-btn:hover { background:var(--sea-mid); }
+.newspaper-btn:disabled { opacity:.5; cursor:not-allowed; }
+.newspaper { background:var(--white); border-radius:var(--radius); border:1px solid var(--sand-dark); overflow:hidden; font-family:'Playfair Display',serif; }
+.newspaper-header { background:var(--sea-deep); color:#fff; padding:1.5rem; text-align:center; border-bottom:3px solid #ffcc44; }
+.newspaper-name { font-size:clamp(28px,6vw,48px); font-weight:700; letter-spacing:2px; }
+.newspaper-meta { font-size:11px; letter-spacing:3px; color:rgba(255,255,255,.6); margin-top:.3rem; font-family:'Inter',sans-serif; text-transform:uppercase; }
+.newspaper-body { padding:1.5rem; }
+.newspaper-headline { font-size:clamp(20px,4vw,30px); font-weight:700; color:var(--text-main); line-height:1.2; border-bottom:2px solid var(--sea-deep); padding-bottom:.75rem; margin-bottom:1rem; }
+.newspaper-lead { font-size:15px; color:var(--text-main); line-height:1.7; margin-bottom:1.5rem; font-style:italic; }
+.newspaper-cols { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem; }
+.newspaper-col h3 { font-size:13px; font-weight:700; color:var(--sea-deep); text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid var(--sand-dark); padding-bottom:.4rem; margin-bottom:.6rem; font-family:'Inter',sans-serif; }
+.newspaper-col p { font-size:13px; color:var(--text-mid); line-height:1.7; }
+.newspaper-footer-bar { background:var(--sea-deep); color:rgba(255,255,255,.6); text-align:center; padding:.75rem; font-size:11px; letter-spacing:2px; font-family:'Inter',sans-serif; }
+@media(max-width:480px){ .newspaper-cols { grid-template-columns:1fr; } }
+
 footer { background:var(--sea-deep); color:rgba(255,255,255,.5); text-align:center; padding:3rem 1.5rem; font-size:12px; line-height:2; }
 footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 
@@ -601,6 +620,20 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 
 <div class="memories-diary-label">El diario completo</div>
 <div id="memories-diary"></div>
+</div>
+
+</div>
+</section>
+
+<!-- PERIÓDICO -->
+<div style="margin-top:3rem">
+<div class="section-label">El Periódico del Viaje</div>
+<div class="newspaper-intro">
+  <p>Claude genera un periódico ficticio con los momentos de vuestro viaje. Cuanto más rico sea el diario, mejor quedará.</p>
+  <button class="newspaper-btn" id="newspaperBtn" onclick="generateNewspaper()">🗞️ Generar El Periódico de Menorca</button>
+  <div id="newspaper-status" class="diary-status" style="text-align:center;margin-top:8px"></div>
+</div>
+<div id="newspaper-output" style="display:none"></div>
 </div>
 
 </div>
@@ -1131,6 +1164,108 @@ function saveFrase() {
     status.textContent = '✅ Frase guardada';
     setTimeout(function(){ status.textContent = ''; }, 3000);
   }).catch(function(){ status.textContent = '❌ Error al guardar'; });
+}
+
+// ── NEWSPAPER ──
+var GROUP = 'Víctor, Verónica, Noemí, Gerardo, Lucía, Rocío, Alex y Álvaro';
+
+async function generateNewspaper() {
+  var btn = document.getElementById('newspaperBtn');
+  var status = document.getElementById('newspaper-status');
+  var output = document.getElementById('newspaper-output');
+
+  btn.disabled = true;
+  status.textContent = '✍️ Claude está redactando el periódico… puede tardar unos segundos';
+
+  // Build diary context
+  var dayNames = ['Domingo 19 (Norte · Jaleo)','Lunes 20 (Barco · Calas)','Martes 21 (Sur · Estrellas)','Miércoles 22 (Ciutadella · Mahón)'];
+  var diaryContext = '';
+  diaryEntries.forEach(function(entries, i) {
+    if (entries && entries.length > 0) {
+      diaryContext += '\n' + dayNames[i] + ':\n';
+      entries.forEach(function(e){ diaryContext += '- ' + e.author + ': "' + e.text + '"\n'; });
+    }
+  });
+  if (!diaryContext) diaryContext = 'El diario está vacío — invéntate momentos verosímiles basados en el itinerario.';
+
+  var prompt = `Eres el redactor jefe de "La Gaceta de Menorca", un periódico ficticio y humorístico que cubre las noticias de un grupo de 8 amigos en su viaje a Menorca del 19 al 22 de julio de 2026.
+
+El grupo: ${GROUP}.
+
+Itinerario real: Día 1 (Jaleo de Sant Martí, caldereta de langosta en Es Molí des Racó, playa Cavalleria, catamarán privado con barra libre, cena rooftop Fornells). Día 2 (barco 4h Isla de Colom, Cala en Porter, mercadillo Cales Fonts). Día 3 (Macarella + Macarelleta, Cala Turqueta, atardecer Pont d'en Gil, observación Vía Láctea con telescopios). Día 4 (Ciutadella, comida despedida Pins 46, Mahón, helados El Turronero, aeropuerto).
+
+Lo que el grupo escribió en su diario:
+${diaryContext}
+
+Genera el periódico en formato JSON estricto, sin markdown, sin texto extra, solo el JSON:
+{
+  "titular": "titular principal impactante y gracioso (máx 12 palabras)",
+  "subtitular": "subtítulo que amplía el titular (máx 20 palabras)",
+  "entradilla": "párrafo de entrada estilo crónica periodística, entre humor y lirismo (3-4 frases)",
+  "columna1_titulo": "título columna izquierda (máx 6 palabras, mayúsculas)",
+  "columna1_texto": "texto columna izquierda, 3-4 frases, tono humorístico",
+  "columna2_titulo": "título columna derecha (máx 6 palabras, mayúsculas)",
+  "columna2_texto": "texto columna derecha, 3-4 frases, tono más lírico",
+  "noticia_breve_1": "noticia breve 1: titular + 1 frase",
+  "noticia_breve_2": "noticia breve 2: titular + 1 frase",
+  "noticia_breve_3": "noticia breve 3: titular + 1 frase",
+  "pie": "frase final al pie del periódico, emotiva o divertida"
+}`;
+
+  try {
+    var res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1200,
+        messages: [{role: 'user', content: prompt}]
+      })
+    });
+    var data = await res.json();
+    var text = data.content && data.content[0] ? data.content[0].text : '';
+    var clean = text.replace(/```json|```/g, '').trim();
+    var p = JSON.parse(clean);
+    renderNewspaper(p);
+    status.textContent = '';
+  } catch(e) {
+    console.error('Newspaper error:', e);
+    status.textContent = '❌ Error al generar. Inténtalo de nuevo.';
+    btn.disabled = false;
+  }
+}
+
+function renderNewspaper(p) {
+  var output = document.getElementById('newspaper-output');
+  output.style.display = 'block';
+  output.innerHTML =
+    '<div class="newspaper">' +
+      '<div class="newspaper-header">' +
+        '<div class="newspaper-name">La Gaceta de Menorca</div>' +
+        '<div class="newspaper-meta">Edición especial · 19-22 Julio 2026 · 8 enviados especiales</div>' +
+      '</div>' +
+      '<div class="newspaper-body">' +
+        '<div class="newspaper-headline">'+p.titular+'</div>' +
+        '<div style="font-size:14px;font-weight:600;color:var(--text-mid);margin-bottom:1rem;font-family:Inter,sans-serif">'+p.subtitular+'</div>' +
+        '<div class="newspaper-lead">'+p.entradilla+'</div>' +
+        '<hr style="border:none;border-top:1px solid var(--sand-dark);margin:1rem 0">' +
+        '<div class="newspaper-cols">' +
+          '<div class="newspaper-col"><h3>'+p.columna1_titulo+'</h3><p>'+p.columna1_texto+'</p></div>' +
+          '<div class="newspaper-col"><h3>'+p.columna2_titulo+'</h3><p>'+p.columna2_texto+'</p></div>' +
+        '</div>' +
+        '<hr style="border:none;border-top:1px solid var(--sand-dark);margin:1rem 0">' +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1rem">' +
+          '<div style="border-left:3px solid var(--sea-light);padding-left:.75rem"><div style="font-size:11px;font-weight:700;font-family:Inter,sans-serif;color:var(--sea-mid);text-transform:uppercase;letter-spacing:1px;margin-bottom:.3rem">Breve</div><div style="font-size:12px;color:var(--text-mid);line-height:1.6;font-family:Inter,sans-serif">'+p.noticia_breve_1+'</div></div>' +
+          '<div style="border-left:3px solid var(--sea-light);padding-left:.75rem"><div style="font-size:11px;font-weight:700;font-family:Inter,sans-serif;color:var(--sea-mid);text-transform:uppercase;letter-spacing:1px;margin-bottom:.3rem">Breve</div><div style="font-size:12px;color:var(--text-mid);line-height:1.6;font-family:Inter,sans-serif">'+p.noticia_breve_2+'</div></div>' +
+          '<div style="border-left:3px solid var(--sea-light);padding-left:.75rem"><div style="font-size:11px;font-weight:700;font-family:Inter,sans-serif;color:var(--sea-mid);text-transform:uppercase;letter-spacing:1px;margin-bottom:.3rem">Breve</div><div style="font-size:12px;color:var(--text-mid);line-height:1.6;font-family:Inter,sans-serif">'+p.noticia_breve_3+'</div></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="newspaper-footer-bar">'+p.pie+'</div>' +
+    '</div>' +
+    '<div style="text-align:center;margin-top:1rem">' +
+      '<button class="newspaper-btn" onclick="generateNewspaper()" style="font-size:12px;padding:8px 16px">🔄 Regenerar</button>' +
+    '</div>';
+  document.getElementById('newspaperBtn').disabled = false;
 }
 
 // ── MAP ──

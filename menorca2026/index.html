@@ -6,349 +6,319 @@
 <title>Menorca 2026 · 19-22 Julio · Calan Porter</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --sea-deep:#0a2a4a; --sea-mid:#1a5276; --sea-light:#1a9aaa;
+  --turquoise:#2ecc8a; --sand:#f5f0e8; --sand-dark:#e8dfc8;
+  --text-main:#1a1a2e; --text-mid:#4a5568; --text-light:#8a9ab0;
+  --white:#ffffff; --reserved:#d4edda; --reserved-t:#1a6b35;
+  --pending:#fff3cd; --pending-t:#856404;
+  --radius:12px; --radius-sm:8px;
+}
+html { scroll-behavior: smooth; }
+body { font-family:'Inter',sans-serif; background:var(--sand); color:var(--text-main); min-height:100vh; overflow-x:hidden; }
 
-  :root {
-    --sea-deep:    #0a2a4a;
-    --sea-mid:     #1a5276;
-    --sea-light:   #1a9aaa;
-    --turquoise:   #2ecc8a;
-    --sand:        #f5f0e8;
-    --sand-dark:   #e8dfc8;
-    --text-main:   #1a1a2e;
-    --text-mid:    #4a5568;
-    --text-light:  #8a9ab0;
-    --white:       #ffffff;
-    --reserved:    #d4edda;
-    --reserved-t:  #1a6b35;
-    --pending:     #fff3cd;
-    --pending-t:   #856404;
-    --radius:      12px;
-    --radius-sm:   8px;
-  }
+/* ── INTRO SCREEN ── */
+#intro {
+  position:fixed; inset:0; z-index:1000;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  overflow:hidden; cursor:pointer;
+}
+#intro-sky {
+  position:absolute; inset:0;
+  background:linear-gradient(180deg,#0a1628 0%,#0d2a4a 25%,#1a5276 55%,#2a8fa8 75%,#3dbfaa 90%,#6dd5c0 100%);
+}
+#intro-sun {
+  position:absolute; width:90px; height:90px; border-radius:50%;
+  background:radial-gradient(circle,#ffe8a0 0%,#ffcc44 40%,#ff9922 70%,transparent 100%);
+  top:22%; left:50%; transform:translateX(-50%);
+  animation:sunRise 3s ease-out forwards;
+  box-shadow:0 0 60px 20px rgba(255,180,50,0.3);
+}
+@keyframes sunRise { from{top:50%;opacity:0} to{top:22%;opacity:1} }
 
-  html { scroll-behavior: smooth; }
+#intro-waves { position:absolute; bottom:0; left:0; right:0; height:35%; }
+#intro-waves svg { width:100%; height:100%; }
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--sand);
-    color: var(--text-main);
-    min-height: 100vh;
-  }
+#intro-content {
+  position:relative; z-index:2; text-align:center;
+  padding:1rem;
+  animation:contentIn 1s ease 1.2s both;
+}
+@keyframes contentIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
 
-  /* HERO */
-  .hero {
-    background: linear-gradient(170deg, var(--sea-deep) 0%, var(--sea-mid) 45%, var(--sea-light) 75%, var(--turquoise) 100%);
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    text-align: center;
-    padding: 2rem 1.5rem;
-    position: relative;
-    overflow: hidden;
-  }
+#intro-title {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(60px,20vw,140px);
+  font-weight:700; color:#fff; line-height:0.9;
+  letter-spacing:-2px;
+  text-shadow:0 4px 40px rgba(0,0,0,0.3);
+}
+#intro-sub {
+  font-size:clamp(12px,3vw,16px); letter-spacing:5px;
+  color:rgba(255,255,255,0.75); margin-top:1rem; font-weight:300;
+}
+#intro-dates {
+  font-size:13px; color:rgba(255,255,255,0.5);
+  letter-spacing:3px; margin-top:.5rem;
+}
+#intro-tap {
+  margin-top:2.5rem; font-size:12px; letter-spacing:3px;
+  color:rgba(255,255,255,0.45); animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:.45} 50%{opacity:.9} }
 
-  .hero-stars {
-    position: absolute; inset: 0;
-    background-image:
-      radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1px),
-      radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px);
-    background-size: 80px 80px, 50px 50px;
-    background-position: 0 0, 25px 25px;
-    opacity: 0.12;
-    animation: twinkle 6s ease-in-out infinite alternate;
-  }
-  @keyframes twinkle { from { opacity: 0.08; } to { opacity: 0.18; } }
+#intro.hiding { animation:introOut .8s ease forwards; }
+@keyframes introOut { to{opacity:0;transform:scale(1.04)} }
 
-  .hero-waves {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    height: 80px;
-    background: var(--sand);
-    clip-path: ellipse(55% 100% at 50% 100%);
-  }
+/* ── PASSWORD SCREEN ── */
+#passScreen {
+  display:none; position:fixed; inset:0; z-index:999;
+  background:var(--sea-deep);
+  flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:2rem;
+}
+#passScreen.active { display:flex; }
+.pass-title {
+  font-family:'Playfair Display',serif; font-size:28px;
+  color:#fff; margin-bottom:.5rem;
+}
+.pass-sub { font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:2rem; font-style:italic; }
+.pass-hint { font-size:12px; color:rgba(255,255,255,0.3); margin-top:1rem; }
+#passInput {
+  background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+  border-radius:30px; padding:12px 24px; color:#fff;
+  font-size:16px; font-family:'Inter',sans-serif; text-align:center;
+  letter-spacing:4px; outline:none; width:220px;
+  transition:border-color .2s;
+}
+#passInput:focus { border-color:var(--turquoise); }
+#passInput::placeholder { color:rgba(255,255,255,0.3); letter-spacing:2px; font-size:13px; }
+.pass-error {
+  color:#ff7a7a; font-size:12px; margin-top:.75rem;
+  opacity:0; transition:opacity .3s;
+}
+.pass-error.show { opacity:1; }
 
-  .hero-content { position: relative; z-index: 1; }
+/* ── MAIN CONTENT ── */
+#mainContent { display:none; }
+#mainContent.active { display:block; }
 
-  .hero-eyebrow {
-    font-size: 11px; letter-spacing: 4px; font-weight: 500;
-    color: rgba(255,255,255,0.6); margin-bottom: 1rem;
-    text-transform: uppercase;
-  }
+/* HERO */
+.hero {
+  background:linear-gradient(170deg,var(--sea-deep) 0%,var(--sea-mid) 45%,var(--sea-light) 75%,var(--turquoise) 100%);
+  min-height:100vh; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  text-align:center; padding:2rem 1.5rem;
+  position:relative; overflow:hidden;
+}
+.hero-stars {
+  position:absolute; inset:0;
+  background-image:radial-gradient(circle,rgba(255,255,255,.9) 1px,transparent 1px),radial-gradient(circle,rgba(255,255,255,.5) 1px,transparent 1px);
+  background-size:80px 80px,50px 50px; background-position:0 0,25px 25px;
+  opacity:.12; animation:twinkle 6s ease-in-out infinite alternate;
+}
+@keyframes twinkle { from{opacity:.08} to{opacity:.18} }
+.hero-waves { position:absolute; bottom:0; left:0; right:0; height:80px; background:var(--sand); clip-path:ellipse(55% 100% at 50% 100%); }
+.hero-content { position:relative; z-index:1; }
+.hero-eyebrow { font-size:11px; letter-spacing:4px; font-weight:500; color:rgba(255,255,255,.6); margin-bottom:1rem; text-transform:uppercase; }
+.hero-title { font-family:'Playfair Display',serif; font-size:clamp(72px,18vw,130px); font-weight:700; color:#fff; letter-spacing:-2px; line-height:.9; text-shadow:0 4px 40px rgba(0,0,0,.2); }
+.hero-dates { font-size:clamp(14px,3vw,18px); font-weight:300; color:rgba(255,255,255,.85); letter-spacing:3px; margin-top:1.2rem; }
+.hero-quote { font-size:13px; font-style:italic; color:rgba(255,255,255,.6); margin-top:1rem; max-width:340px; line-height:1.6; }
+.hero-badge { display:inline-flex; align-items:center; gap:8px; margin-top:2rem; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); border-radius:30px; padding:8px 20px; color:rgba(255,255,255,.85); font-size:11px; letter-spacing:2px; font-weight:500; }
+.scroll-hint { position:absolute; bottom:100px; left:50%; transform:translateX(-50%); color:rgba(255,255,255,.5); font-size:12px; letter-spacing:2px; animation:bounce 2s ease-in-out infinite; z-index:1; }
+@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
 
-  .hero-title {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(72px, 18vw, 130px);
-    font-weight: 700; color: #fff;
-    letter-spacing: -2px; line-height: 0.9;
-    text-shadow: 0 4px 40px rgba(0,0,0,0.2);
-  }
+/* COUNTDOWN */
+.countdown { display:flex; gap:16px; justify-content:center; margin-top:1.8rem; position:relative; z-index:1; }
+.cd-block { text-align:center; }
+.cd-num { font-family:'Playfair Display',serif; font-size:42px; font-weight:700; color:#fff; line-height:1; display:block; text-shadow:0 2px 20px rgba(0,0,0,.2); }
+.cd-label { font-size:9px; letter-spacing:2px; color:rgba(255,255,255,.5); text-transform:uppercase; margin-top:4px; display:block; }
+.cd-sep { font-family:'Playfair Display',serif; font-size:36px; color:rgba(255,255,255,.3); align-self:flex-start; margin-top:4px; }
+.cd-done { font-size:14px; color:rgba(255,255,255,.7); font-style:italic; margin-top:1.5rem; }
 
-  .hero-dates {
-    font-size: clamp(14px, 3vw, 18px); font-weight: 300;
-    color: rgba(255,255,255,0.85);
-    letter-spacing: 3px; margin-top: 1.2rem;
-  }
+/* TODAY BANNER */
+.today-banner { display:none; background:linear-gradient(90deg,var(--sea-mid),var(--sea-light)); color:#fff; text-align:center; padding:10px 16px; font-size:13px; font-weight:500; position:sticky; top:0; z-index:20; letter-spacing:.5px; }
 
-  .hero-quote {
-    font-size: 13px; font-style: italic;
-    color: rgba(255,255,255,0.6);
-    margin-top: 1rem; max-width: 340px;
-    line-height: 1.6;
-  }
+/* LAYOUT */
+.container { max-width:720px; margin:0 auto; padding:0 1.25rem; }
+section { padding:3rem 0; }
+.section-label { font-size:10px; letter-spacing:3px; font-weight:600; color:var(--text-light); text-transform:uppercase; margin-bottom:1.5rem; display:flex; align-items:center; gap:12px; }
+.section-label::after { content:''; flex:1; height:1px; background:var(--sand-dark); }
 
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    margin-top: 2rem;
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.25);
-    border-radius: 30px; padding: 8px 20px;
-    color: rgba(255,255,255,0.85);
-    font-size: 11px; letter-spacing: 2px; font-weight: 500;
-  }
+/* DAY NAV */
+.days-nav { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:2rem; position:sticky; top:0; z-index:10; background:var(--sand); padding:1rem 0; border-bottom:1px solid var(--sand-dark); }
+.day-btn { padding:10px 6px; text-align:center; cursor:pointer; border-radius:var(--radius-sm); border:1.5px solid transparent; background:var(--white); transition:all .2s; user-select:none; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+.day-btn:hover { border-color:var(--sea-light); }
+.day-btn.active { border-color:var(--sea-mid); background:var(--sea-deep); color:#fff; }
+.day-btn .dn { font-size:9px; letter-spacing:1px; opacity:.6; margin-bottom:2px; }
+.day-btn .dd { font-size:13px; font-weight:600; }
+.day-btn .dt { font-size:10px; opacity:.6; margin-top:2px; }
+.day-btn.active .dn,.day-btn.active .dt { color:rgba(255,255,255,.6); }
+.day-btn.active .dd { color:#fff; }
 
-  .scroll-hint {
-    position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%);
-    color: rgba(255,255,255,0.5); font-size: 12px; letter-spacing: 2px;
-    animation: bounce 2s ease-in-out infinite;
-    z-index: 1;
-  }
-  @keyframes bounce {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(6px); }
-  }
+/* DAY CONTENT */
+.day-content { display:none; }
+.day-content.visible { display:block; animation:fadeIn .3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
 
-  /* LAYOUT */
-  .container { max-width: 720px; margin: 0 auto; padding: 0 1.25rem; }
+/* INSIDER */
+.insider { background:#fffbeb; border-left:3px solid #f5c842; border-radius:var(--radius-sm); padding:14px 16px; margin-bottom:1.5rem; display:flex; gap:12px; align-items:flex-start; }
+.insider-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+.insider p { font-size:13px; color:#6b5700; line-height:1.7; }
 
-  section { padding: 3rem 0; }
+/* TIMELINE */
+.timeline { display:flex; flex-direction:column; gap:10px; }
+.tl-item { display:flex; gap:14px; align-items:flex-start; background:var(--white); border-radius:var(--radius); padding:14px 16px; box-shadow:0 1px 4px rgba(0,0,0,.05); border:1px solid rgba(0,0,0,.04); transition:transform .15s; }
+.tl-item:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,.08); }
+.tl-time { font-size:12px; font-weight:600; color:var(--sea-mid); min-width:46px; padding-top:2px; font-variant-numeric:tabular-nums; }
+.tl-emoji { font-size:20px; flex-shrink:0; line-height:1; }
+.tl-body { flex:1; }
+.tl-title { font-size:14px; font-weight:600; color:var(--text-main); line-height:1.3; }
+.tl-desc { font-size:12px; color:var(--text-mid); margin-top:4px; line-height:1.6; }
+.maps-link { display:inline-flex; align-items:center; gap:4px; font-size:11px; color:var(--sea-light); font-weight:500; text-decoration:none; margin-top:6px; padding:3px 8px; border-radius:20px; border:1px solid rgba(26,154,170,.3); transition:all .2s; }
+.maps-link:hover { background:rgba(26,154,170,.08); border-color:var(--sea-light); }
+.badge { display:inline-block; font-size:10px; font-weight:600; padding:2px 8px; border-radius:10px; vertical-align:middle; margin-left:6px; }
+.badge-ok { background:var(--reserved); color:var(--reserved-t); }
+.badge-pend { background:var(--pending); color:var(--pending-t); }
 
-  .section-label {
-    font-size: 10px; letter-spacing: 3px; font-weight: 600;
-    color: var(--text-light); text-transform: uppercase;
-    margin-bottom: 1.5rem;
-    display: flex; align-items: center; gap: 12px;
-  }
-  .section-label::after {
-    content: ''; flex: 1; height: 1px; background: var(--sand-dark);
-  }
+/* TABS */
+.tabs-section { margin-top:3rem; }
+.tabs { display:flex; gap:0; border-bottom:1.5px solid var(--sand-dark); margin-bottom:1.5rem; overflow-x:auto; }
+.tab-btn { padding:10px 18px; font-size:13px; font-weight:500; cursor:pointer; border:none; background:none; color:var(--text-light); border-bottom:2px solid transparent; margin-bottom:-1.5px; white-space:nowrap; transition:all .2s; font-family:'Inter',sans-serif; }
+.tab-btn:hover { color:var(--text-main); }
+.tab-btn.active { color:var(--sea-mid); border-bottom-color:var(--sea-mid); }
+.tab-panel { display:none; }
+.tab-panel.active { display:block; animation:fadeIn .25s ease; }
 
-  /* DAY NAV */
-  .days-nav {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 8px; margin-bottom: 2rem;
-    position: sticky; top: 0; z-index: 10;
-    background: var(--sand); padding: 1rem 0;
-    border-bottom: 1px solid var(--sand-dark);
-  }
+/* RESERVAS */
+.reservas-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+.rc { background:var(--white); border-radius:var(--radius); padding:14px; border:1px solid rgba(0,0,0,.05); box-shadow:0 1px 4px rgba(0,0,0,.05); }
+.rc-emoji { font-size:22px; margin-bottom:8px; }
+.rc-name { font-size:13px; font-weight:600; color:var(--text-main); line-height:1.3; }
+.rc-info { font-size:11px; color:var(--text-mid); margin-top:4px; }
+.rc-badge { margin-top:8px; }
 
-  .day-btn {
-    padding: 10px 6px; text-align: center; cursor: pointer;
-    border-radius: var(--radius-sm);
-    border: 1.5px solid transparent;
-    background: var(--white);
-    transition: all 0.2s; user-select: none;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  }
-  .day-btn:hover { border-color: var(--sea-light); }
-  .day-btn.active {
-    border-color: var(--sea-mid);
-    background: var(--sea-deep);
-    color: #fff;
-  }
-  .day-btn .dn { font-size: 9px; letter-spacing: 1px; opacity: 0.6; margin-bottom: 2px; }
-  .day-btn .dd { font-size: 13px; font-weight: 600; }
-  .day-btn .dt { font-size: 10px; opacity: 0.6; margin-top: 2px; }
-  .day-btn.active .dn, .day-btn.active .dt { color: rgba(255,255,255,0.6); }
-  .day-btn.active .dd { color: #fff; }
+/* CONTACTS */
+.contact-row { display:flex; justify-content:space-between; align-items:flex-start; padding:12px 0; border-bottom:1px solid var(--sand-dark); gap:12px; }
+.contact-row:last-child { border-bottom:none; }
+.cr-name { font-size:14px; font-weight:600; color:var(--text-main); }
+.cr-addr { font-size:12px; color:var(--text-mid); margin-top:2px; }
+.cr-meta { text-align:right; font-size:12px; color:var(--text-mid); flex-shrink:0; }
+.cr-phone { font-weight:500; color:var(--sea-mid); }
 
-  /* DAY CONTENT */
-  .day-content { display: none; }
-  .day-content.visible { display: block; animation: fadeIn 0.3s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+/* TIPS */
+.tips-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
+.tip { background:var(--white); border-radius:var(--radius); padding:14px; display:flex; gap:12px; align-items:flex-start; border:1px solid rgba(0,0,0,.05); }
+.tip-icon { font-size:20px; flex-shrink:0; }
+.tip p { font-size:12px; color:var(--text-mid); line-height:1.6; }
 
-  /* INSIDER TIP */
-  .insider {
-    background: #fffbeb; border-left: 3px solid #f5c842;
-    border-radius: var(--radius-sm); padding: 14px 16px;
-    margin-bottom: 1.5rem;
-    display: flex; gap: 12px; align-items: flex-start;
-  }
-  .insider-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-  .insider p { font-size: 13px; color: #6b5700; line-height: 1.7; }
+/* FRASES */
+.frase-row { padding:14px 0; border-bottom:1px solid var(--sand-dark); }
+.frase-row:last-child { border-bottom:none; }
+.frase-key { font-family:'Playfair Display',serif; font-size:17px; color:var(--sea-deep); font-style:italic; }
+.frase-val { font-size:13px; color:var(--text-mid); margin-top:4px; line-height:1.6; }
 
-  /* TIMELINE */
-  .timeline { display: flex; flex-direction: column; gap: 10px; }
+/* CHECKLIST */
+.checklist-days { display:flex; gap:8px; margin-bottom:1.2rem; flex-wrap:wrap; }
+.cl-day-btn { padding:6px 14px; font-size:12px; font-weight:500; border-radius:20px; border:1.5px solid var(--sand-dark); background:var(--white); cursor:pointer; transition:all .2s; font-family:'Inter',sans-serif; color:var(--text-mid); }
+.cl-day-btn.active { background:var(--sea-deep); color:#fff; border-color:var(--sea-deep); }
+.cl-panel { display:none; }
+.cl-panel.active { display:block; animation:fadeIn .2s ease; }
+.cl-item { display:flex; align-items:center; gap:12px; padding:10px 12px; background:var(--white); border-radius:var(--radius-sm); margin-bottom:6px; border:1px solid rgba(0,0,0,.04); cursor:pointer; transition:background .15s; }
+.cl-item:hover { background:#f8f6f0; }
+.cl-item input[type=checkbox] { width:18px; height:18px; accent-color:var(--sea-mid); cursor:pointer; flex-shrink:0; }
+.cl-item label { font-size:13px; color:var(--text-main); cursor:pointer; flex:1; user-select:none; }
+.cl-item.checked label { text-decoration:line-through; color:var(--text-light); }
+.cl-progress { font-size:12px; color:var(--text-light); margin-bottom:1rem; }
+.cl-progress span { font-weight:600; color:var(--sea-mid); }
 
-  .tl-item {
-    display: flex; gap: 14px; align-items: flex-start;
-    background: var(--white); border-radius: var(--radius);
-    padding: 14px 16px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    border: 1px solid rgba(0,0,0,0.04);
-    transition: transform 0.15s;
-  }
-  .tl-item:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+/* AI CHAT */
+.ai-chat-wrap { background:var(--white); border-radius:var(--radius); border:1px solid rgba(0,0,0,.06); overflow:hidden; }
+.chat-messages { padding:1rem; min-height:200px; max-height:360px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; }
+.chat-msg { max-width:85%; }
+.chat-msg.bot { align-self:flex-start; }
+.chat-msg.user { align-self:flex-end; }
+.chat-bubble { padding:10px 14px; border-radius:18px; font-size:13px; line-height:1.6; }
+.chat-msg.bot .chat-bubble { background:var(--sand); color:var(--text-main); border-bottom-left-radius:4px; }
+.chat-msg.user .chat-bubble { background:var(--sea-mid); color:#fff; border-bottom-right-radius:4px; }
+.chat-name { font-size:10px; font-weight:600; letter-spacing:.5px; margin-bottom:3px; color:var(--text-light); }
+.chat-msg.user .chat-name { text-align:right; }
+.chat-input-row { display:flex; gap:8px; padding:12px; border-top:1px solid var(--sand-dark); }
+#chatInput { flex:1; background:var(--sand); border:1px solid var(--sand-dark); border-radius:20px; padding:9px 16px; font-size:13px; font-family:'Inter',sans-serif; outline:none; color:var(--text-main); }
+#chatInput:focus { border-color:var(--sea-light); }
+#chatSend { background:var(--sea-mid); color:#fff; border:none; border-radius:20px; padding:9px 18px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Inter',sans-serif; transition:background .2s; white-space:nowrap; }
+#chatSend:hover { background:var(--sea-deep); }
+#chatSend:disabled { opacity:.5; cursor:not-allowed; }
+.chat-typing { display:none; align-self:flex-start; padding:10px 14px; background:var(--sand); border-radius:18px; border-bottom-left-radius:4px; font-size:13px; color:var(--text-light); font-style:italic; }
+.chat-typing.show { display:block; }
+.chat-suggestions { display:flex; gap:6px; flex-wrap:wrap; padding:0 12px 12px; }
+.chat-sug { font-size:11px; padding:5px 10px; border-radius:14px; border:1px solid var(--sand-dark); background:var(--white); cursor:pointer; color:var(--text-mid); transition:all .15s; font-family:'Inter',sans-serif; }
+.chat-sug:hover { border-color:var(--sea-light); color:var(--sea-mid); }
 
-  .tl-time {
-    font-size: 12px; font-weight: 600; color: var(--sea-mid);
-    min-width: 46px; padding-top: 2px; font-variant-numeric: tabular-nums;
-  }
-  .tl-emoji { font-size: 20px; flex-shrink: 0; line-height: 1; }
-  .tl-body { flex: 1; }
-  .tl-title { font-size: 14px; font-weight: 600; color: var(--text-main); line-height: 1.3; }
-  .tl-desc { font-size: 12px; color: var(--text-mid); margin-top: 4px; line-height: 1.6; }
+/* FOOTER */
+footer { background:var(--sea-deep); color:rgba(255,255,255,.5); text-align:center; padding:3rem 1.5rem; font-size:12px; line-height:2; }
+footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 
-  .badge {
-    display: inline-block; font-size: 10px; font-weight: 600;
-    padding: 2px 8px; border-radius: 10px;
-    vertical-align: middle; margin-left: 6px;
-  }
-  .badge-ok { background: var(--reserved); color: var(--reserved-t); }
-  .badge-pend { background: var(--pending); color: var(--pending-t); }
-
-  /* TABS */
-  .tabs-section { margin-top: 3rem; }
-
-  .tabs {
-    display: flex; gap: 0;
-    border-bottom: 1.5px solid var(--sand-dark);
-    margin-bottom: 1.5rem; overflow-x: auto;
-  }
-  .tab-btn {
-    padding: 10px 18px; font-size: 13px; font-weight: 500;
-    cursor: pointer; border: none; background: none;
-    color: var(--text-light); border-bottom: 2px solid transparent;
-    margin-bottom: -1.5px; white-space: nowrap; transition: all 0.2s;
-    font-family: 'Inter', sans-serif;
-  }
-  .tab-btn:hover { color: var(--text-main); }
-  .tab-btn.active { color: var(--sea-mid); border-bottom-color: var(--sea-mid); }
-
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; animation: fadeIn 0.25s ease; }
-
-  /* RESERVAS GRID */
-  .reservas-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
-  }
-  .rc {
-    background: var(--white); border-radius: var(--radius);
-    padding: 14px; border: 1px solid rgba(0,0,0,0.05);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-  }
-  .rc-emoji { font-size: 22px; margin-bottom: 8px; }
-  .rc-name { font-size: 13px; font-weight: 600; color: var(--text-main); line-height: 1.3; }
-  .rc-info { font-size: 11px; color: var(--text-mid); margin-top: 4px; }
-  .rc-badge { margin-top: 8px; }
-
-  /* CONTACTS */
-  .contact-row {
-    display: flex; justify-content: space-between; align-items: flex-start;
-    padding: 12px 0; border-bottom: 1px solid var(--sand-dark);
-    gap: 12px;
-  }
-  .contact-row:last-child { border-bottom: none; }
-  .cr-name { font-size: 14px; font-weight: 600; color: var(--text-main); }
-  .cr-addr { font-size: 12px; color: var(--text-mid); margin-top: 2px; }
-  .cr-meta { text-align: right; font-size: 12px; color: var(--text-mid); flex-shrink: 0; }
-  .cr-phone { font-weight: 500; color: var(--sea-mid); }
-
-  /* TIPS */
-  .tips-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 10px;
-  }
-  .tip {
-    background: var(--white); border-radius: var(--radius);
-    padding: 14px; display: flex; gap: 12px; align-items: flex-start;
-    border: 1px solid rgba(0,0,0,0.05);
-  }
-  .tip-icon { font-size: 20px; flex-shrink: 0; }
-  .tip p { font-size: 12px; color: var(--text-mid); line-height: 1.6; }
-
-  /* FRASES */
-  .frase-row {
-    padding: 14px 0; border-bottom: 1px solid var(--sand-dark);
-  }
-  .frase-row:last-child { border-bottom: none; }
-  .frase-key {
-    font-family: 'Playfair Display', serif;
-    font-size: 17px; color: var(--sea-deep); font-style: italic;
-  }
-  .frase-val { font-size: 13px; color: var(--text-mid); margin-top: 4px; line-height: 1.6; }
-
-  /* MAPS LINK */
-  .maps-link {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 11px; color: var(--sea-light); font-weight: 500;
-    text-decoration: none; margin-top: 6px;
-    padding: 3px 8px; border-radius: 20px;
-    border: 1px solid rgba(26,154,170,0.3);
-    transition: all 0.2s;
-  }
-  .maps-link:hover { background: rgba(26,154,170,0.08); border-color: var(--sea-light); }
-
-  /* COUNTDOWN */
-  .countdown {
-    display: flex; gap: 16px; justify-content: center;
-    margin-top: 1.8rem; position: relative; z-index: 1;
-  }
-  .cd-block { text-align: center; }
-  .cd-num {
-    font-family: 'Playfair Display', serif;
-    font-size: 42px; font-weight: 700; color: #fff;
-    line-height: 1; display: block;
-    text-shadow: 0 2px 20px rgba(0,0,0,0.2);
-  }
-  .cd-label {
-    font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,0.5);
-    text-transform: uppercase; margin-top: 4px; display: block;
-  }
-  .cd-sep {
-    font-family: 'Playfair Display', serif;
-    font-size: 36px; color: rgba(255,255,255,0.3);
-    align-self: flex-start; margin-top: 4px;
-  }
-  .cd-done {
-    font-size: 14px; color: rgba(255,255,255,0.7);
-    font-style: italic; margin-top: 1.5rem;
-  }
-
-  /* TODAY BANNER */
-  .today-banner {
-    display: none;
-    background: linear-gradient(90deg, var(--sea-mid), var(--sea-light));
-    color: #fff; text-align: center;
-    padding: 10px 16px; font-size: 13px; font-weight: 500;
-    position: sticky; top: 0; z-index: 20;
-    letter-spacing: 0.5px;
-  }
-
-  /* FOOTER */
-  footer {
-    background: var(--sea-deep); color: rgba(255,255,255,0.5);
-    text-align: center; padding: 3rem 1.5rem;
-    font-size: 12px; line-height: 2;
-  }
-  footer strong { color: rgba(255,255,255,0.8); font-weight: 500; }
-
-  /* RESPONSIVE */
-  @media (max-width: 480px) {
-    .days-nav { gap: 6px; }
-    .day-btn { padding: 8px 4px; }
-    .day-btn .dd { font-size: 12px; }
-    .tl-item { padding: 12px; gap: 10px; }
-    .reservas-grid { grid-template-columns: repeat(2, 1fr); }
-    .tips-grid { grid-template-columns: 1fr 1fr; }
-  }
+/* RESPONSIVE */
+@media(max-width:480px){
+  .days-nav{gap:6px} .day-btn{padding:8px 4px} .day-btn .dd{font-size:12px}
+  .tl-item{padding:12px;gap:10px} .reservas-grid{grid-template-columns:repeat(2,1fr)}
+  .tips-grid{grid-template-columns:1fr 1fr} .tabs{gap:0}
+}
 </style>
 </head>
 <body>
 
-<!-- HERO -->
+<!-- ══ INTRO SCREEN ══ -->
+<div id="intro" onclick="startIntroExit()">
+  <div id="intro-sky"></div>
+  <div id="intro-sun"></div>
+  <div id="intro-waves">
+    <svg viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#f5f0e8" opacity=".4">
+        <animate attributeName="d" dur="4s" repeatCount="indefinite"
+          values="M0,80 C240,40 480,120 720,80 C960,40 1200,120 1440,80 L1440,200 L0,200 Z;
+                  M0,100 C240,60 480,140 720,100 C960,60 1200,140 1440,100 L1440,200 L0,200 Z;
+                  M0,80 C240,40 480,120 720,80 C960,40 1200,120 1440,80 L1440,200 L0,200 Z"/>
+      </path>
+      <path fill="#f5f0e8" opacity=".7">
+        <animate attributeName="d" dur="3s" repeatCount="indefinite"
+          values="M0,120 C360,80 720,160 1080,120 C1260,100 1380,130 1440,120 L1440,200 L0,200 Z;
+                  M0,130 C360,90 720,170 1080,130 C1260,110 1380,140 1440,130 L1440,200 L0,200 Z;
+                  M0,120 C360,80 720,160 1080,120 C1260,100 1380,130 1440,120 L1440,200 L0,200 Z"/>
+      </path>
+      <path fill="#f5f0e8">
+        <animate attributeName="d" dur="2.5s" repeatCount="indefinite"
+          values="M0,160 C360,140 720,180 1080,160 C1260,150 1380,165 1440,160 L1440,200 L0,200 Z;
+                  M0,155 C360,135 720,175 1080,155 C1260,145 1380,160 1440,155 L1440,200 L0,200 Z;
+                  M0,160 C360,140 720,180 1080,160 C1260,150 1380,165 1440,160 L1440,200 L0,200 Z"/>
+      </path>
+    </svg>
+  </div>
+  <div id="intro-content">
+    <div style="font-size:11px;letter-spacing:5px;color:rgba(255,255,255,.5);margin-bottom:.8rem;font-weight:300">JULIO 2026 · CALAN PORTER</div>
+    <div id="intro-title">Menorca</div>
+    <div id="intro-sub">L'ILLA QUE ET ROBA EL COR</div>
+    <div id="intro-dates">19 — 22 Julio · 8 viajeros</div>
+    <div id="intro-tap">toca para entrar ↓</div>
+  </div>
+</div>
+
+<!-- ══ PASSWORD SCREEN ══ -->
+<div id="passScreen">
+  <div class="pass-title">¿Cuál es la bebida de la isla?</div>
+  <div class="pass-sub">Una pista: gin Xoriguer + limonada</div>
+  <input id="passInput" type="text" placeholder="escribe aquí..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <div class="pass-hint">Solo los del grupo conocen la respuesta 🏝️</div>
+  <div class="pass-error" id="passError">Eso no suena a bebida menorquina… 🤔</div>
+</div>
+
+<!-- ══ MAIN CONTENT ══ -->
+<div id="mainContent">
+
 <section class="hero">
   <div class="hero-stars"></div>
   <div class="hero-content">
@@ -372,322 +342,81 @@
   <div class="hero-waves"></div>
 </section>
 
-<!-- TODAY BANNER -->
 <div class="today-banner" id="todayBanner"></div>
 
-<!-- ITINERARIO -->
 <section>
   <div class="container">
     <div class="section-label">Itinerario</div>
-
     <div class="days-nav" id="daysNav">
-      <div class="day-btn active" onclick="showDay(0)">
-        <div class="dn">DÍA 1</div>
-        <div class="dd">Dom 19</div>
-        <div class="dt">Norte · Jaleo</div>
-      </div>
-      <div class="day-btn" onclick="showDay(1)">
-        <div class="dn">DÍA 2</div>
-        <div class="dd">Lun 20</div>
-        <div class="dt">Barco · Calas</div>
-      </div>
-      <div class="day-btn" onclick="showDay(2)">
-        <div class="dn">DÍA 3</div>
-        <div class="dd">Mar 21</div>
-        <div class="dt">Sur · Estrellas</div>
-      </div>
-      <div class="day-btn" onclick="showDay(3)">
-        <div class="dn">DÍA 4</div>
-        <div class="dd">Mié 22</div>
-        <div class="dt">Ciutadella</div>
-      </div>
+      <div class="day-btn active" onclick="showDay(0)"><div class="dn">DÍA 1</div><div class="dd">Dom 19</div><div class="dt">Norte · Jaleo</div></div>
+      <div class="day-btn" onclick="showDay(1)"><div class="dn">DÍA 2</div><div class="dd">Lun 20</div><div class="dt">Barco · Calas</div></div>
+      <div class="day-btn" onclick="showDay(2)"><div class="dn">DÍA 3</div><div class="dd">Mar 21</div><div class="dt">Sur · Estrellas</div></div>
+      <div class="day-btn" onclick="showDay(3)"><div class="dn">DÍA 4</div><div class="dd">Mié 22</div><div class="dt">Ciutadella</div></div>
     </div>
 
     <!-- DÍA 1 -->
     <div class="day-content visible" id="day0">
-      <div class="insider">
-        <div class="insider-icon">💡</div>
-        <p>Llegamos al Jaleo antes de las 11:30h para coger sitio. Ropa que no importe manchar. En Cavalleria no hay servicios — agua y algo de picar. Para el catamarán, manga larga: el viento del norte refresca al anochecer.</p>
-      </div>
+      <div class="insider"><div class="insider-icon">💡</div><p>Llegamos al Jaleo antes de las 11:30h para coger sitio. Ropa que no importe manchar. En Cavalleria no hay servicios. Para el catamarán, manga larga: el viento del norte refresca al anochecer.</p></div>
       <div class="timeline">
-        <div class="tl-item">
-          <span class="tl-time">10:00</span>
-          <span class="tl-emoji">☕</span>
-          <div class="tl-body">
-            <div class="tl-title">Desayuno en Es Mercadal</div>
-            <div class="tl-desc">Can Pons (C/ General Albertí, 6 · 971 154 256): ensaimadas artesanales de crema, chocolate o cabello de ángel. Alternativas: Cas Sucrer y Panadería Pedro.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Can+Pons+Es+Mercadal+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">12:00</span>
-          <span class="tl-emoji">🐴</span>
-          <div class="tl-body">
-            <div class="tl-title">Jaleo de Sant Martí</div>
-            <div class="tl-desc">Una de las fiestas más ancestrales del Mediterráneo. Jinetes entre la multitud al ritmo del fabiol. Nuestro grito: «¡Ara va de bo!»</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Jaleo+Sant+Marti+Es+Mercadal+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">14:00</span>
-          <span class="tl-emoji">🦞</span>
-          <div class="tl-body">
-            <div class="tl-title">Es Molí des Racó <span class="badge badge-ok">RESERVADO</span></div>
-            <div class="tl-desc">Molino blanco de 370 años. Caldereta de langosta — caldo profundo y pan tostado para mojar.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Es+Moli+des+Raco+Es+Mercadal+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">16:15</span>
-          <span class="tl-emoji">🏖️</span>
-          <div class="tl-body">
-            <div class="tl-title">Playa de Cavalleria</div>
-            <div class="tl-desc">Arena rojiza única en la isla, custodiada por el faro. Aguas turquesa en plena Reserva Marina. Parking gratuito, 5 min a pie.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Playa+Cavalleria+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">19:00</span>
-          <span class="tl-emoji">⛵</span>
-          <div class="tl-body">
-            <div class="tl-title">Catamarán Katayak — Atardecer privado <span class="badge badge-ok">RESERVADO</span></div>
-            <div class="tl-desc">¡Solo para nosotros! Cap de Cavalleria con barra libre: cerveza, agua y pomada menorquina. Snorkel y SUP incluidos. 2h 15 min.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Katayak+Menorca+Fornells" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">22:15</span>
-          <span class="tl-emoji">🌙</span>
-          <div class="tl-body">
-            <div class="tl-title">Sa Taula — Fornells <span class="badge badge-ok">RESERVADO</span></div>
-            <div class="tl-desc">Terraza animada con rooftop y música en vivo.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Sa+Taula+Fornells+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
+        <div class="tl-item"><span class="tl-time">10:00</span><span class="tl-emoji">☕</span><div class="tl-body"><div class="tl-title">Desayuno en Es Mercadal</div><div class="tl-desc">Can Pons (C/ General Albertí, 6 · 971 154 256): ensaimadas artesanales de crema, chocolate o cabello de ángel.</div><a class="maps-link" href="https://maps.google.com/?q=Can+Pons+Es+Mercadal+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
+        <div class="tl-item"><span class="tl-time">12:00</span><span class="tl-emoji">🐴</span><div class="tl-body"><div class="tl-title">Jaleo de Sant Martí</div><div class="tl-desc">Una de las fiestas más ancestrales del Mediterráneo. Jinetes entre la multitud al ritmo del fabiol. Nuestro grito: «¡Ara va de bo!»</div><a class="maps-link" href="https://maps.google.com/?q=Jaleo+Sant+Marti+Es+Mercadal+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
+        <div class="tl-item"><span class="tl-time">14:00</span><span class="tl-emoji">🦞</span><div class="tl-body"><div class="tl-title">Es Molí des Racó <span class="badge badge-ok">RESERVADO</span></div><div class="tl-desc">Molino blanco de 370 años. Caldereta de langosta — caldo profundo y pan tostado para mojar.</div><a class="maps-link" href="https://maps.google.com/?q=Es+Moli+des+Raco+Es+Mercadal+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
+        <div class="tl-item"><span class="tl-time">16:15</span><span class="tl-emoji">🏖️</span><div class="tl-body"><div class="tl-title">Playa de Cavalleria</div><div class="tl-desc">Arena rojiza única en la isla, custodiada por el faro. Aguas turquesa en plena Reserva Marina.</div><a class="maps-link" href="https://maps.google.com/?q=Playa+Cavalleria+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
+        <div class="tl-item"><span class="tl-time">19:00</span><span class="tl-emoji">⛵</span><div class="tl-body"><div class="tl-title">Catamarán Katayak — Atardecer privado <span class="badge badge-ok">RESERVADO</span></div><div class="tl-desc">¡Solo para nosotros! Barra libre: cerveza, agua y pomada menorquina. Snorkel y SUP incluidos. 2h 15 min.</div><a class="maps-link" href="https://maps.google.com/?q=Katayak+Menorca+Fornells" target="_blank">📍 Ver en Maps</a></div></div>
+        <div class="tl-item"><span class="tl-time">22:15</span><span class="tl-emoji">🌙</span><div class="tl-body"><div class="tl-title">Sa Taula — Fornells <span class="badge badge-ok">RESERVADO</span></div><div class="tl-desc">Terraza animada con rooftop y música en vivo.</div><a class="maps-link" href="https://maps.google.com/?q=Sa+Taula+Fornells+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
       </div>
     </div>
 
     <!-- DÍA 2 -->
     <div class="day-content" id="day1">
-      <div class="insider">
-        <div class="insider-icon">💡</div>
-        <p>Gorra y mucha protección solar — en alta mar el sol castiga más. La nevera con bebidas frías es imprescindible. Llamar a Rojo Pomodoro con antelación. En Cales Fonts, el bar Pindapoi tiene las mejores vistas nocturnas.</p>
-      </div>
+      <div class="insider"><div class="insider-icon">💡</div><p>Gorra y mucha protección solar — en alta mar el sol castiga más. La nevera con bebidas frías es imprescindible. Llamar a Rojo Pomodoro con antelación. En Cales Fonts, el bar Pindapoi tiene las mejores vistas nocturnas.</p></div>
       <div class="timeline">
-        <div class="tl-item">
-          <span class="tl-time">9:15</span>
-          <span class="tl-emoji">🥐</span>
-          <div class="tl-body">
-            <div class="tl-title">Ca na Juanita + Can Sintes — Alaior</div>
-            <div class="tl-desc">Pícnic del barco: cocas saladas y bocadillos (C/ Menor, 5 · 971 371 266). Y el helado «57» de Can Sintes (C/ Ferreries, 24).</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Ca+na+Juanita+Alaior+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">10:00</span>
-          <span class="tl-emoji">⚓</span>
-          <div class="tl-body">
-            <div class="tl-title">Recogida del barco — Addaia <span class="badge badge-ok">RESERVADO</span></div>
-            <div class="tl-desc">Briefing de navegación y zarpamos hacia el norte con la nevera llena.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Puerto+Addaia+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">10:30</span>
-          <span class="tl-emoji">🗺️</span>
-          <div class="tl-body">
-            <div class="tl-title">Navegación libre — Isla de Colom</div>
-            <div class="tl-desc">¡Cuatro horas al timón nosotros solos! Fondeamos en la Isla de Colom, exploramos Sa Torreta y la Reserva Marina. Comemos a bordo.</div>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">15:30</span>
-          <span class="tl-emoji">🏊</span>
-          <div class="tl-body">
-            <div class="tl-title">Cala en Porter</div>
-            <div class="tl-desc">Por fin nuestra cala. Acantilados espectaculares con aguas turquesa. Parking a 20 metros de la arena.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Cala+en+Porter+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">18:00</span>
-          <span class="tl-emoji">🏠</span>
-          <div class="tl-body">
-            <div class="tl-title">Relax en piscina — Nelva Resort</div>
-            <div class="tl-desc">Tarde en la piscina del apartamento.</div>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">21:00</span>
-          <span class="tl-emoji">🍕</span>
-          <div class="tl-body">
-            <div class="tl-title">Rojo Pomodoro — Es Castell <span class="badge badge-pend">PENDIENTE</span></div>
-            <div class="tl-desc">Pizzas con mozzarella de la finca Son Tema de Menorca. Sant Josep, 7 · 971 351 853.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Rojo+Pomodoro+Es+Castell+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">22:30</span>
-          <span class="tl-emoji">🎶</span>
-          <div class="tl-body">
-            <div class="tl-title">Mercadillo Cales Fonts + copa</div>
-            <div class="tl-desc">Artesanía, moda y música en directo junto al puerto. Hasta la 1:00h. Bar Pindapoi: mejores vistas.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Cales+Fonts+Es+Castell+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
+        <div class="tl-item"><span class="tl-time">9:15</span><span class="tl-emoji">🥐</span><div class="tl-body"><div class="tl-title">Ca na Juanita + Can Sintes — Alaior</div><div class="tl-desc">Pícnic del barco: cocas saladas y bocadillos (C/ Menor, 5 · 971 371 266). Y el helado «57» de Can Sintes.</div><a class="maps-link" href="https://maps.google.com/?q=Ca+na+Juanita+Alaior+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
+        <div class="tl-item"><span class="tl-time">10:00</span><span class="tl-emoji">⚓</span><div class="tl-body"><div class="tl-title">Recogida del barco — Addaia <span class="badge badge-ok">RESERVADO</span></div><div class="tl-desc">Briefing de navegación y zarpamos hacia el norte con la nevera llena.</div><a class="maps-link" href="https://maps.google.com/?q=Puerto+Addaia+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
+        <div class="tl-item"><span class="tl-time">10:30</span><span class="tl-emoji">🗺️</span><div class="tl-body"><div class="tl-title">Navegación libre — Isla de Colom</div><div class="tl-desc">¡Cuatro horas al timón nosotros solos! Fondeamos en la Isla de Colom, exploramos Sa Torreta y la Reserva Marina.</div></div></div>
+        <div class="tl-item"><span class="tl-time">15:30</span><span class="tl-emoji">🏊</span><div class="tl-body"><div class="tl-title">Cala en Porter</div><div class="tl-desc">Por fin nuestra cala. Acantilados espectaculares con aguas turquesa.</div><a class="maps-link" href="https://maps.google.com/?q=Cala+en+Porter+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
+        <div class="tl-item"><span class="tl-time">18:00</span><span class="tl-emoji">🏠</span><div class="tl-body"><div class="tl-title">Relax en piscina — Nelva Resort</div><div class="tl-desc">Tarde en la piscina del apartamento.</div></div></div>
+        <div class="tl-item"><span class="tl-time">21:00</span><span class="tl-emoji">🍕</span><div class="tl-body"><div class="tl-title">Rojo Pomodoro — Es Castell <span class="badge badge-pend">PENDIENTE</span></div><div class="tl-desc">Pizzas con mozzarella de la finca Son Tema de Menorca. Sant Josep, 7 · 971 351 853.</div><a class="maps-link" href="https://maps.google.com/?q=Rojo+Pomodoro+Es+Castell+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
+        <div class="tl-item"><span class="tl-time">22:30</span><span class="tl-emoji">🎶</span><div class="tl-body"><div class="tl-title">Mercadillo Cales Fonts + copa</div><div class="tl-desc">Artesanía, moda y música en directo junto al puerto. Hasta la 1:00h. Bar Pindapoi: mejores vistas.</div><a class="maps-link" href="https://maps.google.com/?q=Cales+Fonts+Es+Castell+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
       </div>
     </div>
 
     <!-- DÍA 3 -->
     <div class="day-content" id="day2">
-      <div class="insider">
-        <div class="insider-icon">💡</div>
-        <p>Linterna de luz ROJA para Pont d'en Gil y Polaris (preserva la visión nocturna). Calzado cerrado obligatorio de noche en los acantilados. Abrigo: La Vall refresca mucho al anochecer. Billetes del bus YA en bus2macarella.com — en julio se agotan.</p>
-      </div>
+      <div class="insider"><div class="insider-icon">💡</div><p>Linterna de luz ROJA para Pont d'en Gil y Polaris (preserva la visión nocturna). Calzado cerrado obligatorio de noche. Abrigo: La Vall refresca mucho al anochecer. Billetes del bus YA en bus2macarella.com.</p></div>
       <div class="timeline">
-        <div class="tl-item">
-          <span class="tl-time">9:00</span>
-          <span class="tl-emoji">🚌</span>
-          <div class="tl-body">
-            <div class="tl-title">Bus lanzadera → Macarella <span class="badge badge-pend">PENDIENTE</span></div>
-            <div class="tl-desc">Única forma de llegar en julio. bus2macarella.com · 8,50€/p · cada 20 min. Aparcamos en Ciutadella.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Ciutadella+Menorca" target="_blank">📍 Parking Ciutadella</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">9:30</span>
-          <span class="tl-emoji">🏝️</span>
-          <div class="tl-body">
-            <div class="tl-title">Macarella + Macarelleta</div>
-            <div class="tl-desc">¡Las joyas del sur! Chiringuito bajo los pinos. Macarelleta a 5 min: más íntima, snorkel espectacular. Comemos en el chiringuito a las 13:30h.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Cala+Macarella+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">15:30</span>
-          <span class="tl-emoji">🏖️</span>
-          <div class="tl-body">
-            <div class="tl-title">Cala Turqueta</div>
-            <div class="tl-desc">Arena blanca entre pinos centenarios. Sin servicios — llevamos agua.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Cala+Turqueta+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">17:30</span>
-          <span class="tl-emoji">⚡</span>
-          <div class="tl-body">
-            <div class="tl-title">Bifurcación — 3 opciones según energía</div>
-            <div class="tl-desc">① Volver al apartamento &nbsp;·&nbsp; ② Forn del Ranxo + paseo Ciutadella &nbsp;·&nbsp; ③ Cala en Brut (saltos) + Forn del Ranxo</div>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">20:00</span>
-          <span class="tl-emoji">🌅</span>
-          <div class="tl-body">
-            <div class="tl-title">Atardecer Pont d'en Gil + Pícnic</div>
-            <div class="tl-desc">El arco de piedra más fotografiado de Menorca. Cocas y bocadillos mientras el cielo se tiñe de naranja.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Pont+den+Gil+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">22:00</span>
-          <span class="tl-emoji">🔭</span>
-          <div class="tl-body">
-            <div class="tl-title">Polaris Menorca — Vía Láctea <span class="badge badge-ok">RESERVADO</span></div>
-            <div class="tl-desc">Sesión privada en La Vall. Telescopios, guía Starlight y un cielo que no olvidaremos.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=La+Vall+Ciutadella+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
+        <div class="tl-item"><span class="tl-time">9:00</span><span class="tl-emoji">🚌</span><div class="tl-body"><div class="tl-title">Bus lanzadera → Macarella <span class="badge badge-pend">PENDIENTE</span></div><div class="tl-desc">Única forma de llegar en julio. bus2macarella.com · 8,50€/p · cada 20 min. Aparcamos en Ciutadella.</div><a class="maps-link" href="https://maps.google.com/?q=Ciutadella+Menorca" target="_blank">📍 Parking Ciutadella</a></div></div>
+        <div class="tl-item"><span class="tl-time">9:30</span><span class="tl-emoji">🏝️</span><div class="tl-body"><div class="tl-title">Macarella + Macarelleta</div><div class="tl-desc">¡Las joyas del sur! Chiringuito bajo los pinos. Macarelleta a 5 min: más íntima, snorkel espectacular.</div><a class="maps-link" href="https://maps.google.com/?q=Cala+Macarella+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
+        <div class="tl-item"><span class="tl-time">15:30</span><span class="tl-emoji">🏖️</span><div class="tl-body"><div class="tl-title">Cala Turqueta</div><div class="tl-desc">Arena blanca entre pinos centenarios. Sin servicios — llevamos agua.</div><a class="maps-link" href="https://maps.google.com/?q=Cala+Turqueta+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
+        <div class="tl-item"><span class="tl-time">17:30</span><span class="tl-emoji">⚡</span><div class="tl-body"><div class="tl-title">Bifurcación — 3 opciones según energía</div><div class="tl-desc">① Volver al apartamento &nbsp;·&nbsp; ② Forn del Ranxo + paseo Ciutadella &nbsp;·&nbsp; ③ Cala en Brut (saltos) + Forn del Ranxo</div></div></div>
+        <div class="tl-item"><span class="tl-time">20:00</span><span class="tl-emoji">🌅</span><div class="tl-body"><div class="tl-title">Atardecer Pont d'en Gil + Pícnic</div><div class="tl-desc">El arco de piedra más fotografiado de Menorca. Cocas y bocadillos mientras el cielo se tiñe de naranja.</div><a class="maps-link" href="https://maps.google.com/?q=Pont+den+Gil+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
+        <div class="tl-item"><span class="tl-time">22:00</span><span class="tl-emoji">🔭</span><div class="tl-body"><div class="tl-title">Polaris Menorca — Vía Láctea <span class="badge badge-ok">RESERVADO</span></div><div class="tl-desc">Sesión privada en La Vall. Telescopios, guía Starlight y un cielo que no olvidaremos.</div><a class="maps-link" href="https://maps.google.com/?q=La+Vall+Ciutadella+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
       </div>
     </div>
 
     <!-- DÍA 4 -->
     <div class="day-content" id="day3">
-      <div class="insider">
-        <div class="insider-icon">💡</div>
-        <p>Aparcamos en C/ San Sebastián o Avda. de la Constitució en Mahón — gratuito y a 10 min del centro. El Turronero cierra pronto — llegamos antes de las 20h. Llevar efectivo para mercados y tiendas artesanales.</p>
-      </div>
+      <div class="insider"><div class="insider-icon">💡</div><p>Aparcamos en C/ San Sebastián o Avda. de la Constitució en Mahón — gratuito y a 10 min del centro. El Turronero cierra pronto — llegamos antes de las 20h. Llevar efectivo para mercados.</p></div>
       <div class="timeline">
-        <div class="tl-item">
-          <span class="tl-time">9:30</span>
-          <span class="tl-emoji">☕</span>
-          <div class="tl-body">
-            <div class="tl-title">Bar Can Rafa — Ciutadella</div>
-            <div class="tl-desc">Churros con chocolate bajo los arcos de la Plaça del Mercat. Una institución local.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Bar+Can+Rafa+Ciutadella+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">10:00</span>
-          <span class="tl-emoji">🧀</span>
-          <div class="tl-body">
-            <div class="tl-title">Mercat Municipal</div>
-            <div class="tl-desc">Queso Mahón, sobrasada, gin Xoriguer, ensaimadas y miel local. Los mejores recuerdos del viaje. Abre 9-14h.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Mercat+Municipal+Ciutadella+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">11:30</span>
-          <span class="tl-emoji">🏛️</span>
-          <div class="tl-body">
-            <div class="tl-title">Paseo casco histórico</div>
-            <div class="tl-desc">Plaça des Born, Catedral gótica, callejuelas de piedra dorada y boutiques de diseño local.</div>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">14:00</span>
-          <span class="tl-emoji">🍽️</span>
-          <div class="tl-body">
-            <div class="tl-title">Pins 46 — Comida de despedida <span class="badge badge-ok">RESERVADO</span></div>
-            <div class="tl-desc">Donde comen los menorquines en las grandes ocasiones. Brasa excelente. Plaça dels Pins, 46 · 971 481 674.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Pins+46+Ciutadella+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">16:15</span>
-          <span class="tl-emoji">🛍️</span>
-          <div class="tl-body">
-            <div class="tl-title">Carrer d'Isabel II + Claustro del Carmen — Mahón</div>
-            <div class="tl-desc">Casas señoriales georgianas y últimas compras: quesos, vinos, cerámica.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=Claustro+del+Carmen+Mahon+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">17:30</span>
-          <span class="tl-emoji">⛪</span>
-          <div class="tl-body">
-            <div class="tl-title">Santa María + Mirador de Ses Monges</div>
-            <div class="tl-desc">El órgano de 3.000 tubos y el puerto más grande del Mediterráneo al atardecer.</div>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">18:15</span>
-          <span class="tl-emoji">🍦</span>
-          <div class="tl-body">
-            <div class="tl-title">El Turronero — Despedida</div>
-            <div class="tl-desc">Helados artesanales desde 1894. 42 sabores con leche fresca menorquina.</div>
-            <a class="maps-link" href="https://maps.google.com/?q=El+Turronero+Mahon+Menorca" target="_blank">📍 Ver en Maps</a>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-time">19:00</span>
-          <span class="tl-emoji">✈️</span>
-          <div class="tl-body">
-            <div class="tl-title">Aeropuerto — Vuelo 21:00h</div>
-            <div class="tl-desc">Maleta llena de recuerdos y el corazón lleno de Menorca. ¡Bon viatge a tots!</div>
-          </div>
-        </div>
+        <div class="tl-item"><span class="tl-time">9:30</span><span class="tl-emoji">☕</span><div class="tl-body"><div class="tl-title">Bar Can Rafa — Ciutadella</div><div class="tl-desc">Churros con chocolate bajo los arcos de la Plaça del Mercat. Una institución local.</div><a class="maps-link" href="https://maps.google.com/?q=Bar+Can+Rafa+Ciutadella+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
+        <div class="tl-item"><span class="tl-time">10:00</span><span class="tl-emoji">🧀</span><div class="tl-body"><div class="tl-title">Mercat Municipal</div><div class="tl-desc">Queso Mahón, sobrasada, gin Xoriguer, ensaimadas y miel local. Abre 9-14h.</div><a class="maps-link" href="https://maps.google.com/?q=Mercat+Municipal+Ciutadella+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
+        <div class="tl-item"><span class="tl-time">11:30</span><span class="tl-emoji">🏛️</span><div class="tl-body"><div class="tl-title">Paseo casco histórico</div><div class="tl-desc">Plaça des Born, Catedral gótica, callejuelas de piedra dorada y boutiques de diseño local.</div></div></div>
+        <div class="tl-item"><span class="tl-time">14:00</span><span class="tl-emoji">🍽️</span><div class="tl-body"><div class="tl-title">Pins 46 — Comida de despedida <span class="badge badge-ok">RESERVADO</span></div><div class="tl-desc">Donde comen los menorquines en las grandes ocasiones. Brasa excelente. Plaça dels Pins, 46 · 971 481 674.</div><a class="maps-link" href="https://maps.google.com/?q=Pins+46+Ciutadella+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
+        <div class="tl-item"><span class="tl-time">16:15</span><span class="tl-emoji">🛍️</span><div class="tl-body"><div class="tl-title">Carrer d'Isabel II + Claustro del Carmen — Mahón</div><div class="tl-desc">Casas señoriales georgianas y últimas compras: quesos, vinos, cerámica.</div><a class="maps-link" href="https://maps.google.com/?q=Claustro+del+Carmen+Mahon+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
+        <div class="tl-item"><span class="tl-time">18:15</span><span class="tl-emoji">🍦</span><div class="tl-body"><div class="tl-title">El Turronero — Despedida</div><div class="tl-desc">Helados artesanales desde 1894. 42 sabores con leche fresca menorquina.</div><a class="maps-link" href="https://maps.google.com/?q=El+Turronero+Mahon+Menorca" target="_blank">📍 Ver en Maps</a></div></div>
+        <div class="tl-item"><span class="tl-time">19:00</span><span class="tl-emoji">✈️</span><div class="tl-body"><div class="tl-title">Aeropuerto — Vuelo 21:00h</div><div class="tl-desc">Maleta llena de recuerdos y el corazón lleno de Menorca. ¡Bon viatge a tots!</div></div></div>
       </div>
     </div>
 
-    <!-- TABS SECTION -->
+    <!-- TABS -->
     <div class="tabs-section">
       <div class="section-label">Información del viaje</div>
       <div class="tabs">
-        <button class="tab-btn active" onclick="showTab('reservas', this)">Reservas</button>
-        <button class="tab-btn" onclick="showTab('contactos', this)">Contactos</button>
-        <button class="tab-btn" onclick="showTab('consejos', this)">Consejos</button>
-        <button class="tab-btn" onclick="showTab('frases', this)">Frases</button>
+        <button class="tab-btn active" onclick="showTab('reservas',this)">Reservas</button>
+        <button class="tab-btn" onclick="showTab('contactos',this)">Contactos</button>
+        <button class="tab-btn" onclick="showTab('consejos',this)">Consejos</button>
+        <button class="tab-btn" onclick="showTab('frases',this)">Frases</button>
+        <button class="tab-btn" onclick="showTab('equipaje',this)">Equipaje</button>
       </div>
 
       <div class="tab-panel active" id="tab-reservas">
@@ -734,88 +463,297 @@
         <div class="frase-row"><div class="frase-key">Pomada menorquina</div><div class="frase-val">Gin Xoriguer con limonada. La bebida típica de la isla. Obligatoria en el catamarán.</div></div>
         <div class="frase-row"><div class="frase-key">Bon dia! / Bones!</div><div class="frase-val">Buenos días / Hola en menorquín. Siempre bien recibido.</div></div>
       </div>
+
+      <!-- EQUIPAJE -->
+      <div class="tab-panel" id="tab-equipaje">
+        <div class="checklist-days">
+          <button class="cl-day-btn active" onclick="showChecklist(0,this)">Dom 19 · Norte</button>
+          <button class="cl-day-btn" onclick="showChecklist(1,this)">Lun 20 · Barco</button>
+          <button class="cl-day-btn" onclick="showChecklist(2,this)">Mar 21 · Sur</button>
+          <button class="cl-day-btn" onclick="showChecklist(3,this)">Mié 22 · Mahón</button>
+        </div>
+        <div class="cl-progress" id="cl-progress"></div>
+        <div class="cl-panel active" id="cl0"></div>
+        <div class="cl-panel" id="cl1"></div>
+        <div class="cl-panel" id="cl2"></div>
+        <div class="cl-panel" id="cl3"></div>
+      </div>
     </div>
+
+    <!-- AI CHAT -->
+    <div style="margin-top:3rem">
+      <div class="section-label">Consulta el viaje</div>
+      <div class="ai-chat-wrap">
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-msg bot">
+            <div class="chat-name">MENORCA AI</div>
+            <div class="chat-bubble">¡Hola! Soy vuestra guía de viaje. Conozco todo el itinerario, las reservas y los consejos del viaje. ¿En qué puedo ayudarte? 🏝️</div>
+          </div>
+        </div>
+        <div class="chat-typing" id="chatTyping">Buscando en el itinerario…</div>
+        <div class="chat-suggestions" id="chatSugs">
+          <button class="chat-sug" onclick="sendSuggestion(this)">¿Qué llevamos el día del barco?</button>
+          <button class="chat-sug" onclick="sendSuggestion(this)">¿A qué hora es el catamarán?</button>
+          <button class="chat-sug" onclick="sendSuggestion(this)">¿Cómo llegar a Macarella?</button>
+          <button class="chat-sug" onclick="sendSuggestion(this)">¿Qué está pendiente de reservar?</button>
+        </div>
+        <div class="chat-input-row">
+          <input id="chatInput" type="text" placeholder="Pregunta sobre el viaje…" onkeydown="if(event.key==='Enter')sendChat()">
+          <button id="chatSend" onclick="sendChat()">Enviar</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
 <footer>
   <p><strong>L'illa que et roba el cor</strong></p>
   <p>Menorca · 19-22 Julio 2026 · Calan Porter</p>
-  <p style="margin-top:1rem; font-style:italic">"Menorca no se visita, se siente.<br>Bon profit i bon viatge a tots!"</p>
+  <p style="margin-top:1rem;font-style:italic">"Menorca no se visita, se siente.<br>Bon profit i bon viatge a tots!"</p>
 </footer>
 
+</div><!-- /mainContent -->
+
 <script>
-  // COUNTDOWN
-  const TARGET = new Date('2026-07-19T00:00:00');
-  const TRIP_START = new Date('2026-07-19T00:00:00');
-  const TRIP_END   = new Date('2026-07-22T23:59:59');
+// ── INTRO ──
+function startIntroExit() {
+  const intro = document.getElementById('intro');
+  intro.classList.add('hiding');
+  intro.addEventListener('animationend', () => {
+    intro.style.display = 'none';
+    document.getElementById('passScreen').classList.add('active');
+    document.getElementById('passInput').focus();
+  }, {once:true});
+}
 
-  function updateCountdown() {
-    const now = new Date();
-    const diff = TARGET - now;
-    const cd = document.getElementById('countdown');
-    const done = document.getElementById('cd-done');
+// ── PASSWORD ──
+const PASS = 'pomada';
+document.getElementById('passInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') checkPass();
+});
+document.getElementById('passInput').addEventListener('input', function() {
+  document.getElementById('passError').classList.remove('show');
+});
 
-    if (diff <= 0) {
-      cd.style.display = 'none';
-      if (now <= TRIP_END) {
-        done.style.display = 'block';
-        done.textContent = '¡Estamos en Menorca! 🏝️';
-      } else {
-        done.style.display = 'block';
-        done.textContent = 'Hasta la próxima aventura ✦';
-      }
-      return;
-    }
-
-    const days  = Math.floor(diff / 86400000);
-    const hours = Math.floor((diff % 86400000) / 3600000);
-    const mins  = Math.floor((diff % 3600000)  / 60000);
-    const secs  = Math.floor((diff % 60000)    / 1000);
-
-    document.getElementById('cd-d').textContent = String(days).padStart(2,'0');
-    document.getElementById('cd-h').textContent = String(hours).padStart(2,'0');
-    document.getElementById('cd-m').textContent = String(mins).padStart(2,'0');
-    document.getElementById('cd-s').textContent = String(secs).padStart(2,'0');
+function checkPass() {
+  const val = document.getElementById('passInput').value.trim().toLowerCase();
+  if (val === PASS || val === 'pomada menorquina') {
+    document.getElementById('passScreen').classList.remove('active');
+    const main = document.getElementById('mainContent');
+    main.classList.add('active');
+    initApp();
+  } else {
+    document.getElementById('passError').classList.add('show');
+    document.getElementById('passInput').value = '';
   }
+}
+// Also check on each keystroke for instant unlock feel
+document.getElementById('passInput').addEventListener('input', function() {
+  if (this.value.trim().toLowerCase() === PASS) checkPass();
+});
+
+// ── INIT APP ──
+function initApp() {
   updateCountdown();
   setInterval(updateCountdown, 1000);
-
-  // MODE "ESTOY AQUÍ" — auto-select current day during the trip
-  function autoSelectDay() {
-    const now = new Date();
-    const banner = document.getElementById('todayBanner');
-    const dayMap = [
-      { date: '2026-07-19', label: '📍 Hoy: Día 1 · Norte · Jaleo', idx: 0 },
-      { date: '2026-07-20', label: '📍 Hoy: Día 2 · Barco · Calas', idx: 1 },
-      { date: '2026-07-21', label: '📍 Hoy: Día 3 · Sur · Estrellas', idx: 2 },
-      { date: '2026-07-22', label: '📍 Hoy: Día 4 · Ciutadella · Mahón', idx: 3 },
-    ];
-    const todayStr = now.toISOString().slice(0,10);
-    const match = dayMap.find(d => d.date === todayStr);
-    if (match) {
-      showDay(match.idx);
-      banner.style.display = 'block';
-      banner.textContent = match.label;
-    }
-  }
   autoSelectDay();
+  buildChecklists();
+  updateChecklistProgress();
+}
 
-  function showDay(idx) {
-    document.querySelectorAll('.day-content').forEach((d, i) => {
-      d.classList.toggle('visible', i === idx);
-    });
-    document.querySelectorAll('.day-btn').forEach((b, i) => {
-      b.classList.toggle('active', i === idx);
-    });
+// ── COUNTDOWN ──
+const TARGET   = new Date('2026-07-19T00:00:00');
+const TRIP_END = new Date('2026-07-22T23:59:59');
+function updateCountdown() {
+  const now = new Date(), diff = TARGET - now;
+  const cd = document.getElementById('countdown'), done = document.getElementById('cd-done');
+  if (diff <= 0) {
+    cd.style.display = 'none'; done.style.display = 'block';
+    done.textContent = now <= TRIP_END ? '¡Estamos en Menorca! 🏝️' : 'Hasta la próxima aventura ✦';
+    return;
   }
+  document.getElementById('cd-d').textContent = String(Math.floor(diff/86400000)).padStart(2,'0');
+  document.getElementById('cd-h').textContent = String(Math.floor((diff%86400000)/3600000)).padStart(2,'0');
+  document.getElementById('cd-m').textContent = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+  document.getElementById('cd-s').textContent = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+}
 
-  function showTab(name, btn) {
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + name).classList.add('active');
-    btn.classList.add('active');
+// ── TODAY MODE ──
+function autoSelectDay() {
+  const todayStr = new Date().toISOString().slice(0,10);
+  const map = [
+    {date:'2026-07-19', label:'📍 Hoy: Día 1 · Norte · Jaleo', idx:0},
+    {date:'2026-07-20', label:'📍 Hoy: Día 2 · Barco · Calas', idx:1},
+    {date:'2026-07-21', label:'📍 Hoy: Día 3 · Sur · Estrellas', idx:2},
+    {date:'2026-07-22', label:'📍 Hoy: Día 4 · Ciutadella · Mahón', idx:3},
+  ];
+  const match = map.find(d => d.date === todayStr);
+  if (match) {
+    showDay(match.idx);
+    const b = document.getElementById('todayBanner');
+    b.style.display = 'block'; b.textContent = match.label;
   }
+}
+
+function showDay(idx) {
+  document.querySelectorAll('.day-content').forEach((d,i) => d.classList.toggle('visible', i===idx));
+  document.querySelectorAll('.day-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+}
+
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'equipaje') updateChecklistProgress();
+}
+
+// ── CHECKLIST ──
+const ITEMS = [
+  ['Ropa cómoda para el Jaleo','Ropa seca para la cena','Bañador y toalla','Calzado cerrado (Cavalleria)','Manga larga (catamarán)','Protección solar','Cámara de fotos','Agua y algo de picar'],
+  ['Nevera con bebidas frías','Bocadillos (Ca na Juanita)','Gorra','Bañador, toalla, chanclas','Snorkel','Bolsas impermeables para el móvil','Protección solar extra'],
+  ['Sandalias + calzado cerrado para la noche','LINTERNA DE LUZ ROJA 🔴','Manta para el pícnic','Abrigo (La Vall refresca)','Agua abundante (2L mínimo)','Bocadillos para Pont d\'en Gil'],
+  ['Ropa y calzado cómodos','Bolsas para los recuerdos','EFECTIVO 💶','Documentación / DNI','Maletas listas desde la mañana']
+];
+
+function buildChecklists() {
+  ITEMS.forEach((items, dayIdx) => {
+    const container = document.getElementById('cl'+dayIdx);
+    container.innerHTML = items.map((item, i) => {
+      const id = 'cl-'+dayIdx+'-'+i;
+      const checked = sessionStorage.getItem(id) === '1';
+      return `<div class="cl-item${checked?' checked':''}" onclick="toggleCheck('${id}',this)">
+        <input type="checkbox" id="${id}" ${checked?'checked':''} onclick="event.stopPropagation();toggleCheck('${id}',this.closest('.cl-item'))">
+        <label for="${id}">${item}</label>
+      </div>`;
+    }).join('');
+  });
+}
+
+function toggleCheck(id, row) {
+  const cb = document.getElementById(id);
+  cb.checked = !cb.checked;
+  row.classList.toggle('checked', cb.checked);
+  sessionStorage.setItem(id, cb.checked ? '1' : '0');
+  updateChecklistProgress();
+}
+
+function showChecklist(idx, btn) {
+  document.querySelectorAll('.cl-panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+  document.querySelectorAll('.cl-day-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateChecklistProgress();
+}
+
+function updateChecklistProgress() {
+  const activeIdx = [...document.querySelectorAll('.cl-panel')].findIndex(p => p.classList.contains('active'));
+  if (activeIdx < 0) return;
+  const items = ITEMS[activeIdx];
+  const done = items.filter((_,i) => sessionStorage.getItem('cl-'+activeIdx+'-'+i)==='1').length;
+  const p = document.getElementById('cl-progress');
+  p.innerHTML = `<span>${done}</span> de ${items.length} preparados ${done===items.length ? '✅' : ''}`;
+}
+
+// ── AI CHAT ──
+const TRIP_CONTEXT = `Eres la guía de viaje oficial de un grupo de 8 amigos que viajan a Menorca del 19 al 22 de julio de 2026, alojados en Calan Porter (Nelva Resort). Responde siempre en español, de forma amigable, breve y práctica. Solo respondes sobre este viaje.
+
+ITINERARIO:
+DÍA 1 (Dom 19) - Norte · Jaleo:
+- 10:00 Desayuno Can Pons Es Mercadal (ensaimadas artesanales)
+- 12:00 Jaleo de Sant Martí (fiesta ancestral, jinetes, grito: ¡Ara va de bo!)
+- 14:00 Comida Es Molí des Racó - RESERVADO (caldereta de langosta, molino 370 años)
+- 16:15 Playa de Cavalleria (arena rojiza, faro, sin servicios)
+- 19:00 Catamarán Katayak - RESERVADO (atardecer privado, barra libre: cerveza+agua+pomada, snorkel+SUP, 2h15min, 555€)
+- 22:15 Cena Sa Taula Fornells - RESERVADO (rooftop, música en vivo)
+
+DÍA 2 (Lun 20) - Barco · Calas:
+- 9:15 Ca na Juanita + Can Sintes Alaior (pícnic barco, helado 57)
+- 10:00 Barco Puerto Addaia - RESERVADO (4h, Isla de Colom, Reserva Marina)
+- 15:30 Cala en Porter (nuestra cala, acantilados)
+- 18:00 Piscina Nelva Resort
+- 21:00 Rojo Pomodoro Es Castell - PENDIENTE (pizzas mozzarella Son Tema, 971 351 853)
+- 22:30 Mercadillo Cales Fonts (artesanía, música, hasta 1h, bar Pindapoi mejores vistas)
+
+DÍA 3 (Mar 21) - Sur · Estrellas:
+- 9:00 Bus Macarella - PENDIENTE (bus2macarella.com, 8.50€/p, aparcamos Ciutadella)
+- 9:30 Macarella + Macarelleta (joyas del sur, chiringuito, snorkel)
+- 15:30 Cala Turqueta (sin servicios, llevar agua)
+- 17:30 Bifurcación 3 opciones: ①volver apartamento ②Forn Ranxo+Ciutadella ③Cala en Brut+saltos
+- 20:00 Atardecer Pont d'en Gil + pícnic (arco piedra, cocas bocadillos)
+- 22:00 Polaris Menorca Vía Láctea - RESERVADO (La Vall, telescopios, guía Starlight, sesión privada, 670 503 362)
+
+DÍA 4 (Mié 22) - Ciutadella · Mahón:
+- 9:30 Bar Can Rafa Ciutadella (churros chocolate, Plaça del Mercat)
+- 10:00 Mercat Municipal (queso Mahón, sobrasada, gin Xoriguer, 9-14h)
+- 11:30 Paseo casco histórico (Plaça des Born, Catedral gótica)
+- 14:00 Pins 46 Comida despedida - RESERVADO (brasa, Plaça dels Pins 46, 971 481 674)
+- 16:15 Carrer Isabel II + Claustro Carmen Mahón (compras)
+- 17:30 Santa María + Mirador Ses Monges (órgano 3000 tubos, puerto grande Mediterráneo)
+- 18:15 El Turronero (helados 1894, 42 sabores, cierra pronto llegar antes 20h)
+- 19:00 Aeropuerto, vuelo 21:00h
+
+RESERVAS CONFIRMADAS: Nuracar Toyota Proace (640€, todo riesgo sin franquicia), Es Molí des Racó, Catamarán Katayak (555€), Sa Taula Fornells, Barco Puerto Addaia, Polaris Menorca, Pins 46.
+PENDIENTES: Rojo Pomodoro (llamar 971 351 853), Bus Macarella (comprar en bus2macarella.com).
+
+EQUIPAJE:
+Día 1: ropa cómoda+seca, bañador+toalla, calzado cerrado, manga larga, protección solar, cámara, agua+picar.
+Día 2: nevera bebidas frías, bocadillos Ca na Juanita, gorra, bañador+toalla+chanclas, snorkel, bolsas impermeables móvil.
+Día 3: sandalias+calzado cerrado noche, LINTERNA LUZ ROJA, manta pícnic, abrigo, agua 2L mínimo, bocadillos.
+Día 4: ropa cómoda, bolsas recuerdos, EFECTIVO, documentación, maletas listas desde mañana.
+
+CONSEJOS: calas llegar antes 9:30h julio, AppPlatja para parkings, sin agua potable en calas vírgenes (2L/persona), efectivo siempre, mapas offline Google Maps (poca cobertura norte), linterna roja para astroturismo, sol se pone 21h (llegar 30min antes).
+
+FRASES: ¡Ara va de bo! (grito Jaleo), Bon profit! (buen provecho), Pomada=gin Xoriguer+limonada, Bon dia!/Bones!`;
+
+let chatHistory = [];
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addMessage(msg, 'user');
+  document.getElementById('chatSugs').style.display = 'none';
+  document.getElementById('chatSend').disabled = true;
+  document.getElementById('chatTyping').classList.add('show');
+  chatHistory.push({role:'user', content: msg});
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:400,
+        system: TRIP_CONTEXT,
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'No he podido obtener respuesta. Inténtalo de nuevo.';
+    chatHistory.push({role:'assistant', content: reply});
+    document.getElementById('chatTyping').classList.remove('show');
+    addMessage(reply, 'bot');
+  } catch(e) {
+    document.getElementById('chatTyping').classList.remove('show');
+    addMessage('Error de conexión. Comprueba tu red e inténtalo de nuevo.', 'bot');
+  }
+  document.getElementById('chatSend').disabled = false;
+}
+
+function addMessage(text, role) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg '+role;
+  div.innerHTML = `<div class="chat-name">${role==='bot'?'MENORCA AI':'TÚ'}</div><div class="chat-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function sendSuggestion(btn) {
+  document.getElementById('chatInput').value = btn.textContent;
+  sendChat();
+}
 </script>
 </body>
 </html>

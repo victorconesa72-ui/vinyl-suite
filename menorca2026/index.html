@@ -887,13 +887,23 @@ function renderDiary(day) {
     panel.innerHTML = '<div class="diary-empty">Aún no hay entradas para este día. ¡Sé el primero en escribir! ✍️</div>';
     return;
   }
-  panel.innerHTML = entries.map(function(e) {
+  panel.innerHTML = entries.map(function(e, idx) {
     return '<div class="diary-entry">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
       '<div class="diary-entry-author">'+e.author+'</div>' +
+      '<button onclick="deleteDiaryEntry('+day+','+idx+')" style="background:none;border:none;color:var(--text-light);cursor:pointer;font-size:14px;padding:0;line-height:1" title="Borrar entrada">✕</button>' +
+      '</div>' +
       '<div class="diary-entry-text">"'+e.text+'"</div>' +
       '<div class="diary-entry-time">'+e.time+'</div>' +
       '</div>';
   }).join('');
+}
+
+function deleteDiaryEntry(day, idx) {
+  if (!confirm('¿Borrar esta entrada del diario?')) return;
+  diaryEntries[day].splice(idx, 1);
+  saveDiaryToJBin();
+  renderDiary(day);
 }
 
 function showDiary(idx, btn) {

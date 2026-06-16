@@ -229,7 +229,14 @@ section { padding:3rem 0; }
 #chatSend:hover { background:var(--sea-deep); }
 #chatSend:disabled { opacity:.5; cursor:not-allowed; }
 
-/* FOOTER */
+/* WEATHER */
+.weather-card { background:var(--white); border-radius:var(--radius); padding:14px 10px; text-align:center; border:1px solid rgba(0,0,0,.05); box-shadow:0 1px 4px rgba(0,0,0,.05); }
+.weather-day { font-size:10px; font-weight:600; letter-spacing:1px; color:var(--text-light); text-transform:uppercase; margin-bottom:6px; }
+.weather-icon { font-size:32px; margin:6px 0; }
+.weather-temp { font-size:15px; font-weight:600; color:var(--text-main); }
+.weather-temp span { font-size:12px; font-weight:400; color:var(--text-light); }
+.weather-rain { font-size:11px; color:var(--sea-mid); margin-top:4px; }
+.weather-desc { font-size:11px; color:var(--text-mid); margin-top:3px; }
 footer { background:var(--sea-deep); color:rgba(255,255,255,.5); text-align:center; padding:3rem 1.5rem; font-size:12px; line-height:2; }
 footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 
@@ -442,6 +449,16 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 <div class="gal-panel" id="gal3"><div class="gal-grid" id="grid3"></div><div class="gal-hint">📷 Tras el viaje añade aquí vuestras fotos</div></div>
 </div>
 
+<!-- TIEMPO -->
+<div style="margin-top:3rem">
+<div class="section-label">Tiempo en Menorca</div>
+<div id="weather-wrap">
+  <div id="weather-loading" style="font-size:13px;color:var(--text-light);text-align:center;padding:1rem">Cargando previsión… ⛅</div>
+  <div id="weather-grid" style="display:none;grid-template-columns:repeat(4,1fr);gap:10px"></div>
+  <div style="font-size:11px;color:var(--text-light);text-align:center;margin-top:.5rem">Fuente: Open-Meteo · Calan Porter, Menorca</div>
+</div>
+</div>
+
 <!-- CHAT IA -->
 <div style="margin-top:3rem">
 <div class="section-label">Consulta el viaje</div>
@@ -498,6 +515,7 @@ function initApp() {
   autoSelectDay();
   buildChecklists();
   loadGallery();
+  loadWeather();
 }
 
 // ── COUNTDOWN ──
@@ -765,6 +783,33 @@ function addMsg(text, role) {
   div.innerHTML = '<div class="chat-name">'+(role==='bot'?'MENORCA AI':'TÚ')+'</div><div class="chat-bubble">'+text.replace(/\n/g,'<br>')+'</div>';
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
+}
+
+// ── WEATHER ──
+function loadWeather() {
+  var url = 'https://api.open-meteo.com/v1/forecast?latitude=39.88&longitude=4.05&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&timezone=Europe/Madrid&start_date=2026-07-19&end_date=2026-07-22';
+  fetch(url).then(function(r){ return r.json(); }).then(function(data) {
+    var days = ['Dom 19','Lun 20','Mar 21','Mié 22'];
+    var icons = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
+    var descs = {0:'Despejado',1:'Poco nuboso',2:'Parcialmente nublado',3:'Nublado',45:'Niebla',48:'Niebla',51:'Llovizna',53:'Llovizna',55:'Llovizna',61:'Lluvia leve',63:'Lluvia',65:'Lluvia fuerte',80:'Chubascos',81:'Chubascos',82:'Chubascos fuertes',95:'Tormenta',96:'Tormenta',99:'Tormenta'};
+    var grid = document.getElementById('weather-grid');
+    grid.style.display = 'grid';
+    document.getElementById('weather-loading').style.display = 'none';
+    data.daily.time.forEach(function(_, i) {
+      var code = data.daily.weathercode[i];
+      var card = document.createElement('div');
+      card.className = 'weather-card';
+      card.innerHTML =
+        '<div class="weather-day">'+days[i]+'</div>' +
+        '<div class="weather-icon">'+(icons[code]||'🌡️')+'</div>' +
+        '<div class="weather-temp">'+Math.round(data.daily.temperature_2m_max[i])+'° <span>/ '+Math.round(data.daily.temperature_2m_min[i])+'°</span></div>' +
+        '<div class="weather-rain">💧 '+data.daily.precipitation_probability_max[i]+'%</div>' +
+        '<div class="weather-desc">'+(descs[code]||'')+'</div>';
+      grid.appendChild(card);
+    });
+  }).catch(function() {
+    document.getElementById('weather-loading').textContent = 'Previsión no disponible · inténtalo más cerca del viaje';
+  });
 }
 
 function sendSug(btn) { document.getElementById('chatInput').value = btn.textContent; sendChat(); }

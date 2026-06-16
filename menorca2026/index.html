@@ -589,10 +589,7 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 </div><!-- /mainContent -->
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
 // ── INTRO ──
-document.getElementById('intro').addEventListener('click', startIntroExit);
-
 function startIntroExit() {
   const intro = document.getElementById('intro');
   intro.classList.add('hiding');
@@ -602,6 +599,9 @@ function startIntroExit() {
     initApp();
   }, {once:true});
 }
+
+window.addEventListener('DOMContentLoaded', function() {
+document.getElementById('intro').addEventListener('click', startIntroExit);
 
 // ── INIT APP ──
 function initApp() {

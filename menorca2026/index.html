@@ -73,34 +73,7 @@ body { font-family:'Inter',sans-serif; background:var(--sand); color:var(--text-
 #intro.hiding { animation:introOut .8s ease forwards; }
 @keyframes introOut { to{opacity:0;transform:scale(1.04)} }
 
-/* ── PASSWORD SCREEN ── */
-#passScreen {
-  display:none; position:fixed; inset:0; z-index:999;
-  background:var(--sea-deep);
-  flex-direction:column; align-items:center; justify-content:center;
-  text-align:center; padding:2rem;
-}
-#passScreen.active { display:flex; }
-.pass-title {
-  font-family:'Playfair Display',serif; font-size:28px;
-  color:#fff; margin-bottom:.5rem;
-}
-.pass-sub { font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:2rem; font-style:italic; }
-.pass-hint { font-size:12px; color:rgba(255,255,255,0.3); margin-top:1rem; }
-#passInput {
-  background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
-  border-radius:30px; padding:12px 24px; color:#fff;
-  font-size:16px; font-family:'Inter',sans-serif; text-align:center;
-  letter-spacing:4px; outline:none; width:220px;
-  transition:border-color .2s;
-}
-#passInput:focus { border-color:var(--turquoise); }
-#passInput::placeholder { color:rgba(255,255,255,0.3); letter-spacing:2px; font-size:13px; }
-.pass-error {
-  color:#ff7a7a; font-size:12px; margin-top:.75rem;
-  opacity:0; transition:opacity .3s;
-}
-.pass-error.show { opacity:1; }
+/* password css removed */
 
 /* ── MAIN CONTENT ── */
 #mainContent { display:none; }
@@ -347,14 +320,7 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
   </div>
 </div>
 
-<!-- ══ PASSWORD SCREEN ══ -->
-<div id="passScreen">
-  <div class="pass-title">¿Cuál es la bebida de la isla?</div>
-  <div class="pass-sub">Una pista: gin Xoriguer + limonada</div>
-  <input id="passInput" type="text" placeholder="escribe aquí..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-  <div class="pass-hint">Solo los del grupo conocen la respuesta 🏝️</div>
-  <div class="pass-error" id="passError">Eso no suena a bebida menorquina… 🤔</div>
-</div>
+<!-- password removed -->
 
 <!-- ══ MAIN CONTENT ══ -->
 <div id="mainContent">
@@ -556,8 +522,8 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
         <button class="gal-day-btn" onclick="showGallery(2,this)">Mar 21</button>
         <button class="gal-day-btn" onclick="showGallery(3,this)">Mié 22</button>
       </div>
-      <input type="file" id="fileInput" accept="image/*" multiple style="display:none" onchange="uploadPhotos(this.files)">
-      <button class="gal-upload-btn" id="uploadBtn" onclick="document.getElementById('fileInput').click()">📷 Añadir fotos a este día</button>
+      <input type="file" id="fileInput" accept="image/*" multiple style="display:none">
+      <button class="gal-upload-btn" id="uploadBtn" onclick="triggerUpload()">📷 Añadir fotos a este día</button>
       <div class="gal-uploading" id="galUploading">Subiendo fotos… espera un momento ⏳</div>
       <div class="gal-panel active" id="gal0">
         <div class="gal-grid">
@@ -629,36 +595,10 @@ function startIntroExit() {
   intro.classList.add('hiding');
   intro.addEventListener('animationend', () => {
     intro.style.display = 'none';
-    document.getElementById('passScreen').classList.add('active');
-    document.getElementById('passInput').focus();
+    document.getElementById('mainContent').classList.add('active');
+    initApp();
   }, {once:true});
 }
-
-// ── PASSWORD ──
-const PASS = 'pomada';
-document.getElementById('passInput').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') checkPass();
-});
-document.getElementById('passInput').addEventListener('input', function() {
-  document.getElementById('passError').classList.remove('show');
-});
-
-function checkPass() {
-  const val = document.getElementById('passInput').value.trim().toLowerCase();
-  if (val === PASS || val === 'pomada menorquina') {
-    document.getElementById('passScreen').classList.remove('active');
-    const main = document.getElementById('mainContent');
-    main.classList.add('active');
-    initApp();
-  } else {
-    document.getElementById('passError').classList.add('show');
-    document.getElementById('passInput').value = '';
-  }
-}
-// Also check on each keystroke for instant unlock feel
-document.getElementById('passInput').addEventListener('input', function() {
-  if (this.value.trim().toLowerCase() === PASS) checkPass();
-});
 
 // ── INIT APP ──
 function initApp() {
@@ -667,6 +607,7 @@ function initApp() {
   autoSelectDay();
   buildChecklists();
   updateChecklistProgress();
+  loadGalPhotos();
 }
 
 // ── COUNTDOWN ──
@@ -938,7 +879,11 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') closeLightbox()
     if(hint) hint.style.display = galPhotos[day].length > 0 ? 'none' : 'block';
   }
 
-  async function uploadPhotos(files) {
+  function triggerUpload() {
+    const input = document.getElementById('fileInput');
+    input.onchange = (e) => { if(e.target.files.length) uploadPhotos(e.target.files); };
+    input.click();
+  }
     if(!files.length) return;
     const btn = document.getElementById('uploadBtn');
     const uploading = document.getElementById('galUploading');

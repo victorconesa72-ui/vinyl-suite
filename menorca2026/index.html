@@ -706,6 +706,7 @@ CONSEJOS: calas llegar antes 9:30h julio, AppPlatja para parkings, sin agua pota
 
 FRASES: ¡Ara va de bo! (grito Jaleo), Bon profit! (buen provecho), Pomada=gin Xoriguer+limonada, Bon dia!/Bones!`;
 
+const GEMINI_KEY = 'AIzaSyDOh8Gw3BQLECfxXIldrceBDzfEUVWHUik';
 let chatHistory = [];
 
 async function sendChat() {
@@ -717,21 +718,23 @@ async function sendChat() {
   document.getElementById('chatSugs').style.display = 'none';
   document.getElementById('chatSend').disabled = true;
   document.getElementById('chatTyping').classList.add('show');
-  chatHistory.push({role:'user', content: msg});
+  chatHistory.push({role:'user', parts:[{text: msg}]});
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:400,
-        system: TRIP_CONTEXT,
-        messages: chatHistory
-      })
-    });
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
+      {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          system_instruction: { parts:[{text: TRIP_CONTEXT}] },
+          contents: chatHistory,
+          generationConfig: { maxOutputTokens: 400, temperature: 0.7 }
+        })
+      }
+    );
     const data = await res.json();
-    const reply = data.content?.[0]?.text || 'No he podido obtener respuesta. Inténtalo de nuevo.';
-    chatHistory.push({role:'assistant', content: reply});
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No he podido obtener respuesta. Inténtalo de nuevo.';
+    chatHistory.push({role:'model', parts:[{text: reply}]});
     document.getElementById('chatTyping').classList.remove('show');
     addMessage(reply, 'bot');
   } catch(e) {

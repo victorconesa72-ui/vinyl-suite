@@ -706,7 +706,7 @@ CONSEJOS: calas llegar antes 9:30h julio, AppPlatja para parkings, sin agua pota
 
 FRASES: ¡Ara va de bo! (grito Jaleo), Bon profit! (buen provecho), Pomada=gin Xoriguer+limonada, Bon dia!/Bones!`;
 
-const OR_KEY = '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';
+const ANT_KEY = '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';
 let chatHistory = [];
 
 async function sendChat() {
@@ -720,23 +720,24 @@ async function sendChat() {
   document.getElementById('chatTyping').classList.add('show');
   chatHistory.push({role:'user', content: msg});
   try {
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST',
       headers:{
         'Content-Type':'application/json',
-        'Authorization': `Bearer ${OR_KEY}`,
-        'HTTP-Referer': 'https://vinyl-suite.vercel.app',
-        'X-Title': 'Menorca 2026'
+        'x-api-key': ANT_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'meta-llama/llama-3.1-8b-instruct:free',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 400,
-        messages: [{role:'system', content: TRIP_CONTEXT}, ...chatHistory]
+        system: TRIP_CONTEXT,
+        messages: chatHistory
       })
     });
     const data = await res.json();
-    if (!res.ok) { console.error('OpenRouter error:', JSON.stringify(data)); throw new Error(); }
-    const reply = data.choices?.[0]?.message?.content || 'Sin respuesta.';
+    if (!res.ok) { console.error('Anthropic error:', JSON.stringify(data)); throw new Error(); }
+    const reply = data.content?.[0]?.text || 'Sin respuesta.';
     chatHistory.push({role:'assistant', content: reply});
     document.getElementById('chatTyping').classList.remove('show');
     addMessage(reply, 'bot');

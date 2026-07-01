@@ -255,6 +255,22 @@ section { padding:3rem 0; }
 .weather-rain { font-size:11px; color:var(--sea-mid); margin-top:4px; }
 .weather-desc { font-size:11px; color:var(--text-mid); margin-top:3px; }
 
+/* CAMPAMENTO BASE */
+.base-card { background:var(--white); border-radius:var(--radius); border:1px solid var(--sand-dark); overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,.05); }
+.base-header { background:linear-gradient(135deg,var(--sea-deep),var(--sea-mid)); padding:1.2rem 1.5rem; display:flex; align-items:center; gap:14px; }
+.base-emoji { font-size:36px; }
+.base-name { font-family:'Playfair Display',serif; font-size:22px; color:#fff; font-weight:700; }
+.base-location { font-size:12px; color:rgba(255,255,255,.65); margin-top:3px; }
+.base-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:0; padding:1rem 1.5rem; border-bottom:1px solid var(--sand-dark); }
+.base-item { padding:8px 0; }
+.base-label { font-size:10px; font-weight:600; letter-spacing:1px; color:var(--text-light); text-transform:uppercase; margin-bottom:3px; }
+.base-val { font-size:13px; color:var(--text-main); font-weight:500; }
+.base-alerts { padding:.75rem 1.5rem; background:var(--sand); display:flex; flex-wrap:wrap; gap:6px; border-bottom:1px solid var(--sand-dark); }
+.base-alert { font-size:11px; color:var(--text-mid); background:var(--white); padding:4px 10px; border-radius:20px; border:1px solid var(--sand-dark); }
+.base-actions { padding:1rem 1.5rem; display:flex; gap:8px; flex-wrap:wrap; }
+.base-btn { display:inline-flex; align-items:center; gap:5px; padding:8px 14px; background:var(--sea-mid); color:#fff; border-radius:var(--radius-sm); font-size:12px; font-weight:500; text-decoration:none; transition:background .2s; font-family:'Inter',sans-serif; }
+.base-btn:hover { background:var(--sea-deep); }
+
 /* DIARY */
 .diary-days { display:flex; gap:8px; margin-bottom:1rem; flex-wrap:wrap; }
 .diary-day-btn { padding:6px 14px; font-size:12px; font-weight:500; border-radius:20px; border:1.5px solid var(--sand-dark); background:var(--white); cursor:pointer; font-family:'Inter',sans-serif; color:var(--text-mid); transition:all .2s; }
@@ -373,7 +389,42 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 
 <section>
 <div class="container">
-<div class="section-label">Itinerario</div>
+<!-- CAMPAMENTO BASE -->
+<div style="margin-top:3rem">
+<div class="section-label">Campamento Base</div>
+<div class="base-card">
+  <div class="base-header">
+    <div class="base-emoji">🏠</div>
+    <div>
+      <div class="base-name">Nelva Resort</div>
+      <div class="base-location">C/ Llebeig, 4 · Cala'n Porter · 07730 Alaior, Menorca</div>
+    </div>
+  </div>
+  <div class="base-grid">
+    <div class="base-item"><div class="base-label">Check-in</div><div class="base-val">19 jul · a partir de las 14:00h</div></div>
+    <div class="base-item"><div class="base-label">Check-out</div><div class="base-val">22 jul · hasta las 11:00h</div></div>
+    <div class="base-item"><div class="base-label">Reserva</div><div class="base-val">3329 - 51317</div></div>
+    <div class="base-item"><div class="base-label">Viajeros</div><div class="base-val">8 adultos · 2 apartamentos</div></div>
+    <div class="base-item"><div class="base-label">Precio</div><div class="base-val">1.753,80 € · 3 noches</div></div>
+    <div class="base-item"><div class="base-label">Régimen</div><div class="base-val">Solo alojamiento</div></div>
+  </div>
+  <div class="base-alerts">
+    <div class="base-alert">⚠️ Cobro el primer día durante el check-in</div>
+    <div class="base-alert">⚠️ No se acepta American Express</div>
+    <div class="base-alert">🚭 Prohibido fumar en interiores</div>
+    <div class="base-alert">🐾 No se admiten mascotas</div>
+  </div>
+  <div class="base-actions">
+    <a class="base-btn" href="https://maps.google.com/?q=Nelva+Resort+Cala+en+Porter+Menorca" target="_blank">📍 Maps</a>
+    <a class="base-btn" href="tel:+34871719563">📞 871 71 95 63</a>
+    <a class="base-btn" href="mailto:reservas@nelvaresort.com">✉️ Email</a>
+    <a class="base-btn" href="https://booking.avirato.com/check-in/6ERe4SH4XCT98TTgn2Bu0ek7B09" target="_blank">✅ Check-in online</a>
+  </div>
+</div>
+</div>
+
+
+<div class="section-label" style="margin-top:2rem">Itinerario</div>
 <div class="days-nav">
   <div class="day-btn active" onclick="showDay(0)"><div class="dn">DÍA 1</div><div class="dd">Dom 19</div><div class="dt">Norte · Jaleo</div></div>
   <div class="day-btn" onclick="showDay(1)"><div class="dn">DÍA 2</div><div class="dd">Lun 20</div><div class="dt">Barco · Calas</div></div>
@@ -569,6 +620,40 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 
 </div>
 </section>
+
+<!-- CAMPAMENTO BASE -->
+<div style="margin-top:3rem">
+<div class="section-label">Campamento Base</div>
+<div class="base-card">
+  <div class="base-header">
+    <div class="base-emoji">🏠</div>
+    <div>
+      <div class="base-name">Nelva Resort</div>
+      <div class="base-location">C/ Llebeig, 4 · Cala'n Porter · 07730 Alaior, Menorca</div>
+    </div>
+  </div>
+  <div class="base-grid">
+    <div class="base-item"><div class="base-label">Check-in</div><div class="base-val">19 jul · a partir de las 14:00h</div></div>
+    <div class="base-item"><div class="base-label">Check-out</div><div class="base-val">22 jul · hasta las 11:00h</div></div>
+    <div class="base-item"><div class="base-label">Reserva</div><div class="base-val">3329 - 51317</div></div>
+    <div class="base-item"><div class="base-label">Viajeros</div><div class="base-val">8 adultos · 2 apartamentos</div></div>
+    <div class="base-item"><div class="base-label">Precio</div><div class="base-val">1.753,80 € · 3 noches</div></div>
+    <div class="base-item"><div class="base-label">Régimen</div><div class="base-val">Solo alojamiento</div></div>
+  </div>
+  <div class="base-alerts">
+    <div class="base-alert">⚠️ Cobro el primer día durante el check-in</div>
+    <div class="base-alert">⚠️ No se acepta American Express</div>
+    <div class="base-alert">🚭 Prohibido fumar en interiores</div>
+    <div class="base-alert">🐾 No se admiten mascotas</div>
+  </div>
+  <div class="base-actions">
+    <a class="base-btn" href="https://maps.google.com/?q=Nelva+Resort+Cala+en+Porter+Menorca" target="_blank">📍 Maps</a>
+    <a class="base-btn" href="tel:+34871719563">📞 871 71 95 63</a>
+    <a class="base-btn" href="mailto:reservas@nelvaresort.com">✉️ Email</a>
+    <a class="base-btn" href="https://booking.avirato.com/check-in/6ERe4SH4XCT98TTgn2Bu0ek7B09" target="_blank">✅ Check-in online</a>
+  </div>
+</div>
+</div>
 
 <!-- DIARIO -->
 <div style="margin-top:3rem">

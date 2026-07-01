@@ -308,6 +308,26 @@ section { padding:3rem 0; }
 .memories-day-title { font-size:13px; font-weight:600; color:var(--sea-mid); margin-bottom:.5rem; padding-bottom:.4rem; border-bottom:1px solid var(--sand-dark); }
 .memories-empty { font-size:13px; color:var(--text-light); font-style:italic; text-align:center; padding:1rem 0; }
 
+/* GOLDEN GLOBES */
+.awards-intro { background:var(--white); border-radius:var(--radius); border:1px solid var(--sand-dark); overflow:hidden; text-align:center; }
+.awards-hero { background:linear-gradient(135deg,#0a1628,#1a3a5c); padding:2rem 1.5rem; }
+.awards-trophy { font-size:52px; margin-bottom:.5rem; animation:float 3s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.awards-title { font-family:'Playfair Display',serif; font-size:24px; color:#ffcc44; font-weight:700; letter-spacing:1px; }
+.awards-sub { font-size:11px; color:rgba(255,255,255,.5); letter-spacing:3px; margin-top:.4rem; text-transform:uppercase; }
+.awards-btn { background:linear-gradient(135deg,#c9a227,#f5d06e); color:#0a1628; border:none; border-radius:var(--radius-sm); padding:12px 28px; font-size:14px; font-weight:700; cursor:pointer; font-family:'Inter',sans-serif; transition:all .2s; margin:1.5rem auto; display:block; letter-spacing:.5px; }
+.awards-btn:hover { transform:scale(1.03); box-shadow:0 4px 16px rgba(201,162,39,.4); }
+.awards-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+.award-card { background:var(--white); border-radius:var(--radius); border:1px solid var(--sand-dark); padding:16px; margin-bottom:10px; display:flex; gap:14px; align-items:flex-start; box-shadow:0 1px 4px rgba(0,0,0,.05); transition:transform .15s; }
+.award-card:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,.08); }
+.award-emoji { font-size:32px; flex-shrink:0; }
+.award-body { flex:1; }
+.award-category { font-size:10px; font-weight:700; letter-spacing:2px; color:var(--text-light); text-transform:uppercase; margin-bottom:4px; }
+.award-winner { font-family:'Playfair Display',serif; font-size:18px; color:#c9a227; font-weight:700; }
+.award-reason { font-size:13px; color:var(--text-mid); margin-top:4px; line-height:1.6; font-style:italic; }
+.awards-closing { background:linear-gradient(135deg,#0a1628,#1a3a5c); padding:1.5rem; text-align:center; border-radius:0 0 var(--radius) var(--radius); margin-top:1rem; }
+.awards-closing p { font-family:'Playfair Display',serif; font-size:15px; color:rgba(255,255,255,.8); font-style:italic; line-height:1.6; }
+
 /* NEWSPAPER */
 .newspaper-intro { background:var(--white); border-radius:var(--radius); padding:1.5rem; border:1px solid var(--sand-dark); text-align:center; margin-bottom:1rem; }
 .newspaper-intro p { font-size:13px; color:var(--text-mid); margin-bottom:1rem; line-height:1.6; }
@@ -724,6 +744,24 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 </div>
 </section>
 
+<!-- GOLDEN GLOBES -->
+<div style="margin-top:3rem">
+<div class="section-label">Los Golden Globes de Menorca</div>
+<div class="awards-intro">
+  <div class="awards-hero">
+    <div class="awards-trophy">🌟</div>
+    <div class="awards-title">Golden Globes de Menorca</div>
+    <div class="awards-sub">Edición especial · Calan Porter 2026</div>
+  </div>
+  <button class="awards-btn" id="awardsBtn" onclick="generateAwards()">🏆 Generar los premios</button>
+  <div id="awards-status" class="diary-status" style="text-align:center;margin-top:8px"></div>
+</div>
+<div id="awards-output" style="display:none"></div>
+</div>
+
+</div>
+</section>
+
 <!-- LIGHTBOX -->
 <div id="lightbox" onclick="closeLightbox()">
   <div id="lb-close">✕</div>
@@ -761,6 +799,7 @@ function initApp() {
   loadGallery();
   loadWeather();
   loadLeaflet();
+  checkAwardsUnlock();
 }
 
 function loadLeaflet() {
@@ -1249,6 +1288,134 @@ function saveFrase() {
     status.textContent = '✅ Frase guardada';
     setTimeout(function(){ status.textContent = ''; }, 3000);
   }).catch(function(){ status.textContent = '❌ Error al guardar'; });
+}
+
+// ── GOLDEN GLOBES ──
+var AWARDS_UNLOCK = new Date('2026-07-22T20:00:00');
+
+function checkAwardsUnlock() {
+  var now = new Date();
+  var btn = document.getElementById('awardsBtn');
+  var status = document.getElementById('awards-status');
+  if (now < AWARDS_UNLOCK) {
+    btn.disabled = true;
+    var diff = AWARDS_UNLOCK - now;
+    var days = Math.floor(diff/86400000);
+    var hours = Math.floor((diff%86400000)/3600000);
+    var mins = Math.floor((diff%3600000)/60000);
+    var secs = Math.floor((diff%60000)/1000);
+    status.textContent = '🔒 El jurado delibera… ' + days + 'd ' + String(hours).padStart(2,'0') + 'h ' + String(mins).padStart(2,'0') + 'm ' + String(secs).padStart(2,'0') + 's';
+    setTimeout(checkAwardsUnlock, 1000);
+  } else {
+    btn.disabled = false;
+    status.textContent = '🌟 ¡El jurado ha fallado! Pulsa para conocer los ganadores';
+    status.style.color = '#c9a227';
+    status.style.fontWeight = '600';
+  }
+}
+
+async function generateAwards() {
+  var now = new Date();
+  if (now < AWARDS_UNLOCK) return;
+  var btn = document.getElementById('awardsBtn');
+  var status = document.getElementById('awards-status');
+  var output = document.getElementById('awards-output');
+  btn.disabled = true;
+  status.textContent = '✨ El jurado está deliberando… un momento';
+
+  var dayNames = ['Domingo 19','Lunes 20','Martes 21','Miércoles 22'];
+  var diaryContext = '';
+  diaryEntries.forEach(function(entries, i) {
+    if (entries && entries.length > 0) {
+      diaryContext += '\n' + dayNames[i] + ':\n';
+      entries.forEach(function(e){ diaryContext += '- ' + e.author + ': "' + e.text + '"\n'; });
+    }
+  });
+  if (!diaryContext) diaryContext = 'El diario está vacío — invéntate ganadores verosímiles basados en el itinerario y los nombres del grupo.';
+
+  var prompt = `Eres el presentador de los "Golden Globes de Menorca", la ceremonia de premios más prestigiosa (y divertida) de la isla. 
+
+El grupo: Víctor, Verónica, Noemí, Gerardo, Lucía, Rocío, Alex y Álvaro. Viaje 19-22 julio 2026 en Calan Porter.
+
+Itinerario: Día 1 (Jaleo Sant Martí, caldereta de langosta, playa Cavalleria, catamarán con barra libre de pomada menorquina, cena rooftop Fornells). Día 2 (barco 4h Isla de Colom, Cala en Porter, mercadillo Cales Fonts). Día 3 (Macarella + Macarelleta, Cala Turqueta, atardecer Pont d'en Gil, observación Vía Láctea). Día 4 (Ciutadella, S'Avia Rita ensaimadas, Mercat Municipal, comida despedida Pins 46, Mahón, helados El Turronero).
+
+Diario del grupo:
+${diaryContext}
+
+Genera 9 premios en formato JSON estricto, sin markdown, solo el JSON:
+{
+  "apertura": "frase de apertura de la gala, grandilocuente y divertida (2-3 frases)",
+  "premios": [
+    {"emoji": "🌊", "categoria": "El Último en Salir del Agua", "ganador": "nombre del ganador", "razon": "motivo gracioso y específico (1-2 frases)"},
+    {"emoji": "🍽️", "categoria": "El Más Comilón / El que Más Rebañó el Plato", "ganador": "nombre", "razon": "motivo"},
+    {"emoji": "📸", "categoria": "El Fotógrafo Oficial No Oficial", "ganador": "nombre", "razon": "motivo"},
+    {"emoji": "🍹", "categoria": "El Campeón de la Pomada Menorquina", "ganador": "nombre", "razon": "motivo"},
+    {"emoji": "☀️", "categoria": "La Quemadura del Año", "ganador": "nombre", "razon": "motivo"},
+    {"emoji": "😴", "categoria": "El Rey / Reina del Madrugón", "ganador": "nombre", "razon": "motivo"},
+    {"emoji": "🏄", "categoria": "El Más Aventurero", "ganador": "nombre", "razon": "motivo"},
+    {"emoji": "😂", "categoria": "La Frase del Viaje", "ganador": "nombre — frase exacta o inventada", "razon": "contexto de cuándo y por qué"},
+    {"emoji": "🌟", "categoria": "Premio Especial del Jurado", "ganador": "nombre", "razon": "motivo épico y emotivo que cierre la gala"}
+  ],
+  "cierre": "frase de cierre emotiva y memorable de la gala (2-3 frases)"
+}`;
+
+  try {
+    var res = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:1500,
+        messages:[{role:'user', content:prompt}]
+      })
+    });
+    var data = await res.json();
+    var text = data.content && data.content[0] ? data.content[0].text : '';
+    var clean = text.replace(/```json|```/g,'').trim();
+    var a = JSON.parse(clean);
+    renderAwards(a);
+    status.textContent = '';
+  } catch(e) {
+    console.error('Awards error:', e);
+    status.textContent = '❌ Error al generar. Inténtalo de nuevo.';
+    btn.disabled = false;
+  }
+}
+
+function renderAwards(a) {
+  var output = document.getElementById('awards-output');
+  output.style.display = 'block';
+  var cardsHTML = a.premios.map(function(p) {
+    return '<div class="award-card">' +
+      '<div class="award-emoji">'+p.emoji+'</div>' +
+      '<div class="award-body">' +
+        '<div class="award-category">'+p.categoria+'</div>' +
+        '<div class="award-winner">'+p.ganador+'</div>' +
+        '<div class="award-reason">'+p.razon+'</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  output.innerHTML =
+    '<div style="background:linear-gradient(135deg,#0a1628,#1a3a5c);border-radius:var(--radius) var(--radius) 0 0;padding:1.5rem;text-align:center">' +
+      '<p style="font-family:Playfair Display,serif;font-size:15px;color:rgba(255,255,255,.8);font-style:italic;line-height:1.6">'+a.apertura+'</p>' +
+    '</div>' +
+    '<div style="padding:1rem;background:var(--white);border:1px solid var(--sand-dark);border-top:none;border-bottom:none">' +
+      cardsHTML +
+    '</div>' +
+    '<div class="awards-closing"><p>'+a.cierre+'</p></div>' +
+    '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:1rem;padding-bottom:.5rem">' +
+      '<button class="awards-btn" onclick="generateAwards()" style="margin:0;padding:8px 20px;font-size:12px">🔄 Nueva ceremonia</button>' +
+      '<button class="awards-btn" onclick="deleteAwards()" style="margin:0;padding:8px 20px;font-size:12px;background:rgba(220,50,50,0.15);color:#c0392b">✕ Borrar</button>' +
+    '</div>';
+  document.getElementById('awardsBtn').disabled = false;
+}
+
+function deleteAwards() {
+  if (!confirm('¿Borrar los premios?')) return;
+  document.getElementById('awards-output').style.display = 'none';
+  document.getElementById('awards-output').innerHTML = '';
+  document.getElementById('awardsBtn').disabled = false;
 }
 
 // ── NEWSPAPER ──

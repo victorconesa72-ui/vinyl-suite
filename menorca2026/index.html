@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html { scroll-behavior: auto; }</style>
 <title>Menorca 2026 · 19-22 Julio · Calan Porter</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="manifest" href="/menorca2026/manifest.json">
@@ -358,6 +359,7 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 </style>
 </head>
 <body>
+<script>history.scrollRestoration='manual';window.scrollTo(0,0);</script>
 
 <!-- INTRO -->
 <div id="intro">
@@ -746,6 +748,10 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 </div><!-- /main -->
 
 <script>
+// Force scroll to top on load
+window.scrollTo(0, 0);
+history.scrollRestoration = 'manual';
+
 // ── INTRO ──
 var introEl = document.getElementById('intro');
 introEl.addEventListener('click', function() {

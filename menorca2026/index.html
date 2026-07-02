@@ -359,7 +359,7 @@ footer strong { color:rgba(255,255,255,.8); font-weight:500; }
 </style>
 </head>
 <body>
-<script>history.scrollRestoration='manual';window.scrollTo(0,0);</script>
+<script>history.scrollRestoration='manual';window.scrollTo(0,0);document.documentElement.style.overflow='hidden';</script>
 
 <!-- INTRO -->
 <div id="intro">
@@ -758,6 +758,8 @@ introEl.addEventListener('click', function() {
   introEl.classList.add('intro-hiding');
   introEl.addEventListener('animationend', function() {
     introEl.style.display = 'none';
+    document.documentElement.style.overflow = '';
+    window.scrollTo(0, 0);
     document.getElementById('main').style.display = 'block';
     initApp();
   }, {once: true});

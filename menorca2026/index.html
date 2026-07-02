@@ -50,8 +50,8 @@ body { font-family:'Inter',sans-serif; background:var(--sand); color:var(--text-
 @keyframes introOut { to{opacity:0;transform:scale(1.04)} }
 
 /* MAIN */
-#main { display:none; }
-#main.visible { display:block; }
+#main { display:none; opacity:0; transition: opacity 0.3s ease; }
+#main.visible { display:block; opacity:1; }
 
 /* HERO */
 .hero { background:linear-gradient(170deg,var(--sea-deep) 0%,var(--sea-mid) 45%,var(--sea-light) 75%,var(--turquoise) 100%); min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem 1.5rem; position:relative; overflow:hidden; }
@@ -760,7 +760,9 @@ introEl.addEventListener('click', function() {
     introEl.style.display = 'none';
     document.documentElement.style.overflow = '';
     window.scrollTo(0, 0);
-    document.getElementById('main').style.display = 'block';
+    var main = document.getElementById('main');
+    main.style.display = 'block';
+    setTimeout(function(){ main.style.opacity = '1'; }, 50);
     initApp();
   }, {once: true});
 });

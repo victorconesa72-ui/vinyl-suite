@@ -110,10 +110,18 @@ select option{background:#161514}
 
 /* SPINNER & DISC */
 @keyframes sp{to{transform:rotate(360deg)}}
-.disc{border-radius:50%;background:radial-gradient(circle,#080808 24%,#1a1a1a 25%,#080808 33%,#151515 34%,#050505 58%,#111 59%);border:2px solid #1e1e1e;display:flex;align-items:center;justify-content:center}
-.disc.spin{animation:sp 1.6s linear infinite}
-.ddot{border-radius:50%;background:var(--gold)}
+@keyframes disc-spin{0%{transform:rotate(0deg)}100%{transform:rotate(1800deg)}}
+@keyframes slot-scroll{0%{transform:translateY(0)}100%{transform:translateY(-100%)}}
+@keyframes result-pop{0%{opacity:0;transform:scale(.88) translateY(12px)}60%{transform:scale(1.03) translateY(-2px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes disc-tick{0%,100%{transform:rotate(0deg)}50%{transform:rotate(8deg)}}
+.disc{border-radius:50%;background:conic-gradient(#111 0deg,#1e1e1e 30deg,#080808 60deg,#252525 90deg,#0d0d0d 120deg,#1a1a1a 150deg,#060606 180deg,#1e1e1e 210deg,#111 240deg,#252525 270deg,#0a0a0a 300deg,#1a1a1a 330deg,#111 360deg);border:2px solid #2a2a2a;display:flex;align-items:center;justify-content:center;transition:box-shadow .3s}
+.disc.spin{animation:disc-spin 2s cubic-bezier(.17,.67,.12,1) forwards;box-shadow:0 0 40px rgba(212,175,106,.25)}
+.ddot{border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold)}
 .spinner{display:inline-block;width:22px;height:22px;border:2px solid #1e1e1e;border-top-color:var(--gold);border-radius:50%;animation:sp .7s linear infinite}
+#rres.pop{animation:result-pop .45s cubic-bezier(.34,1.56,.64,1) forwards}
+#ruleta-slot{width:110px;height:110px;border-radius:50%;overflow:hidden;position:relative;border:2px solid var(--gold);box-shadow:0 0 30px rgba(212,175,106,.2)}
+#ruleta-slot-inner{display:flex;flex-direction:column;width:100%;transition:none}
+#ruleta-slot-inner img{width:110px;height:110px;object-fit:cover;flex-shrink:0}
 
 /* BUTTONS */
 .btn-g{background:var(--gold);color:#000;border:none;border-radius:0;padding:14px 48px;font-size:13px;font-weight:700;letter-spacing:.5px;cursor:pointer;text-transform:uppercase}
@@ -608,22 +616,60 @@ function fCol(){
 
 // RULETA
 function rRul(){
-  document.getElementById('p-ruleta').innerHTML='<div style="max-width:420px;margin:0 auto;text-align:center"><h2 style="font-size:22px;font-weight:800;margin-bottom:6px">¿Qué escucho hoy?</h2><p style="color:#555;font-size:13px;margin-bottom:36px">Deja que el azar elija por ti</p><div style="display:flex;justify-content:center;margin-bottom:32px"><div id="rdisc" class="disc" style="width:110px;height:110px"><div class="ddot" style="width:18px;height:18px"></div></div></div><button class="btn-g" id="rbtn" onclick="girar()">¡Gira el vinilo!</button><div id="rres" style="display:none;margin-top:36px;background:var(--card);border-radius:20px;overflow:hidden;border:1px solid #333;cursor:pointer"><div id="rimg" style="background:#111"></div><div id="rbody" style="padding:18px 20px;text-align:left"></div></div></div>';
+  const all=COL.concat(localCollection);
+  // pre-load a few cover urls for the slot animation
+  const picks=[];for(let i=0;i<8;i++)picks.push(all[Math.floor(Math.random()*all.length)]);
+  document.getElementById('p-ruleta').innerHTML=`
+  <div style="max-width:380px;margin:0 auto;text-align:center;padding-top:8px">
+    <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px">¿Qué escucho hoy?</div>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:40px;letter-spacing:.3px">El azar elige por ti</p>
+    <div style="display:flex;justify-content:center;margin-bottom:36px;position:relative">
+      <div id="rdisc" class="disc" style="width:120px;height:120px">
+        <div class="ddot" style="width:20px;height:20px"></div>
+      </div>
+    </div>
+    <button class="btn-g" id="rbtn" onclick="girar()" style="padding:16px 56px;font-size:12px;letter-spacing:1px">GIRAR</button>
+    <div id="rres" style="display:none;margin-top:40px;border-radius:16px;overflow:hidden;cursor:pointer">
+      <div id="rimg" style="background:#111;position:relative"></div>
+      <div id="rbody" style="padding:20px;text-align:left;background:var(--card)"></div>
+    </div>
+  </div>`;
 }
 function girar(){
   if(spinActive)return; spinActive=true;
   const disc=document.getElementById('rdisc'),btn=document.getElementById('rbtn'),res=document.getElementById('rres');
-  disc.classList.add('spin');btn.disabled=true;btn.textContent='Girando…';res.style.display='none';
+  const all=COL.concat(localCollection);
+  const winner=all[Math.floor(Math.random()*all.length)];
+  const color=dc(winner.y);
+  // 1. spin disc
+  disc.classList.remove('spin');void disc.offsetWidth;disc.classList.add('spin');
+  btn.disabled=true;btn.textContent='Girando…';res.style.display='none';
+  // 2. after spin, reveal result
   setTimeout(()=>{
-    const r=COL[Math.floor(Math.random()*COL.length)];
-    disc.classList.remove('spin');btn.disabled=false;btn.textContent='¡Gira el vinilo!';spinActive=false;
-    const color=dc(r.y);
-    res.style.cssText='display:block;margin-top:36px;background:var(--card);border-radius:20px;overflow:hidden;border:1px solid '+color+'44;cursor:pointer';
-    res.onclick=()=>openModal(r);
-    const rimgWrap=document.getElementById('rimg');rimgWrap.innerHTML='';
-    covData(r.id).then(d=>{const u=d.url;if(u){const img=document.createElement('img');img.src=u;img.style.cssText='width:100%;max-height:260px;object-fit:cover;display:block';rimgWrap.appendChild(img);}});
-    document.getElementById('rbody').innerHTML='<div style="font-size:19px;font-weight:800">'+esc(r.t)+'</div><div style="font-size:13px;color:#888;margin:4px 0 14px">'+esc(r.a)+'</div>'+(r.y?'<span class="tag" style="background:'+color+';color:#000">'+r.y+'</span> ':'')+' <span class="tag">'+esc(r.f||'')+'</span><div style="font-size:12px;color:var(--gold);font-weight:600;margin-top:14px">Toca para ver curiosidades →</div>';
-  },1900);
+    disc.classList.remove('spin');
+    btn.disabled=false;btn.textContent='GIRAR';spinActive=false;
+    res.style.cssText='display:block;margin-top:40px;border-radius:16px;overflow:hidden;cursor:pointer;border:1px solid '+color+'55';
+    res.classList.remove('pop');void res.offsetWidth;res.classList.add('pop');
+    res.onclick=()=>openModal(winner);
+    const rimgWrap=document.getElementById('rimg');rimgWrap.innerHTML='<div style="height:220px;background:#111;display:flex;align-items:center;justify-content:center"><div class="spinner"></div></div>';
+    covData(winner.id).then(d=>{
+      if(d.url){
+        const img=document.createElement('img');img.src=d.url;
+        img.style.cssText='width:100%;height:260px;object-fit:cover;display:block';
+        // decade stripe overlay
+        const stripe=document.createElement('div');stripe.style.cssText='position:absolute;bottom:0;left:0;right:0;height:4px;background:'+color;
+        rimgWrap.innerHTML='';rimgWrap.style.position='relative';rimgWrap.appendChild(img);rimgWrap.appendChild(stripe);
+      } else {rimgWrap.innerHTML='<div style="height:80px;background:'+color+'22"></div>';}
+    });
+    document.getElementById('rbody').innerHTML=
+      '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:20px;font-weight:700;line-height:1.2;margin-bottom:4px">'+esc(winner.t)+'</div>'+
+      '<div style="font-size:12px;color:var(--muted);margin-bottom:14px">'+esc(winner.a)+'</div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">'+
+      (winner.y?'<span class="tag" style="background:'+color+';color:#000;font-weight:700">'+winner.y+'</span>':'')+
+      (winner.f?'<span class="tag">'+esc(winner.f)+'</span>':'')+
+      '</div>'+
+      '<div style="font-size:11px;color:var(--gold);font-weight:600;letter-spacing:.5px">Toca para curiosidades →</div>';
+  },2100);
 }
 
 // STATS

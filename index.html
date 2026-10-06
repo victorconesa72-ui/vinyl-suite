@@ -551,6 +551,21 @@ function rCol(){
   srch.className='sbox';srch.id='csrch';srch.placeholder='Buscar disco o artista…';
   srch.style.marginBottom='10px';srch.oninput=fCol;srch.onkeydown=function(e){if(e.key==='Enter')srch.blur();};
   el.appendChild(srch);
+  // Format filter
+  const fmtBar=document.createElement('div');
+  fmtBar.style.cssText='display:flex;gap:6px;margin-bottom:14px';
+  const allCol0=COL.concat(localCollection);
+  const nVinyl=allCol0.filter(r=>!isCD(r.f)).length;
+  const nCD=allCol0.filter(r=>isCD(r.f)).length;
+  [['all','Todo',allCol0.length],['vinyl','Vinilo',nVinyl],['cd','CD',nCD]].forEach(([fmt,lbl,n])=>{
+    const b=document.createElement('button');
+    b.className='fmt-btn sort-btn'+(curFmt===fmt?' on':'');
+    b.dataset.fmt=fmt;
+    b.onclick=()=>setFmt(fmt);
+    b.innerHTML=lbl+'<span style="margin-left:5px;opacity:.5;font-size:9px">'+n+'</span>';
+    fmtBar.appendChild(b);
+  });
+  el.appendChild(fmtBar);
   // Sort buttons
   const sortBar=document.createElement('div');
   sortBar.style.cssText='display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none';
@@ -579,6 +594,14 @@ function rCol(){
 
 var curSort='artist';
 var colView='grid';
+var curFmt='all'; // 'all' | 'vinyl' | 'cd'
+function isVinyl(f){return !f||f.toLowerCase()==='cd'?false:true;}
+function isCD(f){return (f||'').toLowerCase()==='cd';}
+function setFmt(fmt){
+  curFmt=fmt;
+  document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.toggle('on',b.dataset.fmt===fmt));
+  fCol();
+}
 function setSort(s){
   curSort=s;
   document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('on'));
@@ -590,13 +613,16 @@ function fCol(){
   const q=(document.getElementById('csrch')?.value||'').toLowerCase();
   const allCol = COL.concat(localCollection);
   let f=q?allCol.filter(r=>(r.t+' '+r.a).toLowerCase().includes(q)):allCol.slice();
+  if(curFmt==='vinyl')f=f.filter(r=>!isCD(r.f));
+  else if(curFmt==='cd')f=f.filter(r=>isCD(r.f));
   f.sort((a,b)=>{
     if(curSort==='artist') return (a.a+a.t).localeCompare(b.a+b.t,'es');
     if(curSort==='year') return (parseInt(b.y)||0)-(parseInt(a.y)||0);
     if(curSort==='title') return a.t.localeCompare(b.t,'es');
     return (b.d||'').localeCompare(a.d||'');
   });
-  document.getElementById('cc').textContent=f.length+' discos';
+  const fmtLabel=curFmt==='vinyl'?' vinilos':curFmt==='cd'?' CDs':' discos';
+  document.getElementById('cc').textContent=f.length+fmtLabel;
   const g=document.getElementById('cgrid');g.innerHTML='';
   f.forEach(r=>{
     const color=dc(r.y);

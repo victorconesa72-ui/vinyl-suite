@@ -43,6 +43,8 @@ select option{background:#161514}
 
 /* BODY */
 #body{max-width:720px;margin:0 auto;padding:28px 20px 100px}
+#body>div{animation:tab-in .18s ease both}
+@keyframes tab-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 /* COLLECTION GRID — 2 large columns */
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px}
@@ -378,13 +380,13 @@ function dc(y){
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function loadDiary(){try{return JSON.parse(localStorage.getItem('vsd')||'[]');}catch{return[];}}
 function saveDiary(d){try{localStorage.setItem('vsd',JSON.stringify(d));}catch{}}
-let diary=loadDiary(), curTab='coleccion', spinActive=false, iaMood='', iaEra='', diaryPicked=null;
+let diary=loadDiary(), curTab='coleccion', spinActive=false, iaMood='', iaEra='', diaryPicked=null, _colScrollY=0;
 
 function go(t){
   curTab=t;
   document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',['coleccion','ruleta','stats','ia','diario','scanner'][i]===t));
   document.querySelectorAll('.btab').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
-  ['coleccion','ruleta','stats','ia','diario','scanner'].forEach(n=>document.getElementById('p-'+n).style.display=n===t?'':'none');
+  ['coleccion','ruleta','stats','ia','diario','scanner'].forEach(n=>{const el=document.getElementById('p-'+n);el.style.display=n===t?'':'none';if(n===t){el.style.animation='none';void el.offsetWidth;el.style.animation='';}}); 
   if(t==='coleccion')rCol();
   if(t==='ruleta')rRul();
   if(t==='stats')rStats();
@@ -398,7 +400,7 @@ function imgDiv(id,w,h,r,onclick){
   const d=document.createElement('div');
   d.style.cssText='width:'+w+'px;height:'+h+'px;border-radius:'+r+'px;background:#111;flex-shrink:0;overflow:hidden;'+(onclick?'cursor:pointer':'');
   if(onclick)d.onclick=onclick;
-  covData(id).then(data=>{if(data.url&&d.isConnected){const i=document.createElement('img');i.src=data.url;i.style.cssText='width:100%;height:100%;object-fit:cover;display:block';d.appendChild(i);}});
+  covData(id).then(data=>{if(data.url&&d.isConnected){const i=document.createElement('img');i.src=data.url;i.style.cssText='width:100%;height:100%;object-fit:cover;display:block';d.innerHTML='';d.appendChild(i);}});
   return d;
 }
 
@@ -447,6 +449,7 @@ function openModal(r){
       tl.innerHTML=h;
     }
   }).catch(()=>{});
+  _colScrollY=window.scrollY;
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow='hidden';
   // Parallax scroll
@@ -511,15 +514,18 @@ function renderModal(info,r){
   regBtn.onclick=function(){quickRegister(r);};
   document.getElementById('mc').appendChild(regBtn);
 }
-function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow='';}
+function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow='';if(_colScrollY!==undefined){requestAnimationFrame(()=>{window.scrollTo(0,_colScrollY);});}}
 document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal();});
 
 // COLECCIÓN
 function rCol(){
   const el=document.getElementById('p-coleccion');
   el.innerHTML='';
-  // HERO — most recently added record
-  const heroRec=COL.concat(localCollection).slice().sort((a,b)=>(b.d||'').localeCompare(a.d||''))[0];
+  // HERO — last diary entry > last added > first record
+  let heroRec=null,heroLabel='Destacado';
+  if(diary.length>0&&diary[0].record){heroRec=diary[0].record;heroLabel='Última escucha';}
+  else{const allH=COL.concat(localCollection).filter(r=>r.d).sort((a,b)=>(b.d||'').localeCompare(a.d||''));if(allH.length){heroRec=allH[0];heroLabel='Último añadido';}}
+  if(!heroRec)heroRec=COL[0];
   if(heroRec){
     const hero=document.createElement('div');hero.id='col-hero';
     hero.onclick=()=>openModal(heroRec);
@@ -527,7 +533,7 @@ function rCol(){
     const hgrad=document.createElement('div');hgrad.id='col-hero-grad';
     const hcontent=document.createElement('div');hcontent.id='col-hero-content';
     const color=dc(heroRec.y);
-    hcontent.innerHTML='<div id="col-hero-eyebrow">Último añadido</div>'
+    hcontent.innerHTML='<div id="col-hero-eyebrow">'+heroLabel+'</div>'
       +'<div id="col-hero-title">'+esc(heroRec.t)+'</div>'
       +'<div id="col-hero-artist">'+esc(heroRec.a)+'</div>'
       +'<div id="col-hero-meta"><span class="tag" style="border-color:'+color+'55;color:'+color+'">'+esc(heroRec.y||'?')+'</span><span class="tag">'+esc(heroRec.f||'')+'</span></div>';
@@ -543,7 +549,7 @@ function rCol(){
   // Search
   const srch=document.createElement('input');
   srch.className='sbox';srch.id='csrch';srch.placeholder='Buscar disco o artista…';
-  srch.style.marginBottom='10px';srch.oninput=fCol;
+  srch.style.marginBottom='10px';srch.oninput=fCol;srch.onkeydown=function(e){if(e.key==='Enter')srch.blur();};
   el.appendChild(srch);
   // Sort buttons
   const sortBar=document.createElement('div');
@@ -594,11 +600,15 @@ function fCol(){
   const g=document.getElementById('cgrid');g.innerHTML='';
   f.forEach(r=>{
     const color=dc(r.y);
-    const card=document.createElement('div');card.className='card';card.onclick=()=>openModal(r);
+    const card=document.createElement('div');card.className='card';card.onclick=()=>{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();openModal(r);};
     // Década bar
     const dbar=document.createElement('div');dbar.className='card-decade-bar';dbar.style.background=color;card.appendChild(dbar);
     const iw=document.createElement('div');iw.className='card-img-wrap';
-    const ph=document.createElement('div');ph.className='card-ph';ph.textContent='🎵';iw.appendChild(ph);
+    const ph=document.createElement('div');ph.className='card-ph';
+    const ini=(r.a||'?')[0].toUpperCase();
+    const gc=dc(r.y);
+    ph.style.cssText='background:linear-gradient(135deg,'+gc+'18 0%,#0d0c0b 60%);color:'+gc+';font-size:28px;font-family:\'Playfair Display\',Georgia,serif;font-weight:900;opacity:.9';
+    ph.textContent=ini;iw.appendChild(ph);
     covData(r.id).then(d=>{const u=d.url;if(u){const img=document.createElement('img');img.className='card-img';img.src=u;img.alt='';ph.replaceWith(img);}});
     const badge=document.createElement('span');badge.className='yr-badge';badge.style.background=color;badge.textContent=r.y||'?';
     // badge only in list view now
@@ -607,6 +617,11 @@ function fCol(){
       info.innerHTML='<div class="card-sub">'+esc(r.a)+'</div><div class="card-title">'+esc(r.t)+'</div>';
       badge.style.cssText='';
       info.appendChild(badge);
+      // decade dot in list view
+      const ddot=document.createElement('div');
+      ddot.style.cssText='position:absolute;left:0;top:0;bottom:0;width:3px;background:'+color+';border-radius:0';
+      card.style.position='relative';
+      card.appendChild(ddot);
     } else {
       info.innerHTML='<div class="card-sub">'+esc(r.a)+'</div><div class="card-title">'+esc(r.t)+'</div>'+(r.y?'<div class="card-year">'+r.y+'</div>':'');
     }
@@ -677,22 +692,23 @@ function rStats(){
   const el=document.getElementById('p-stats');
   const bA={},bD={},bL={};
   const DC={'60s':'#e63946','70s':'#f4a261','80s':'#e9c46a','90s':'#8ecae6','00s':'#a8dadc','10s':'#06d6a0','20s+':'#8338ec'};
-  COL.forEach(r=>{
+  COL.concat(localCollection).forEach(r=>{
     bA[r.a]=(bA[r.a]||0)+1;
     const y=parseInt(r.y),d=!y||isNaN(y)?'?':y<1970?'60s':y<1980?'70s':y<1990?'80s':y<2000?'90s':y<2010?'00s':y<2020?'10s':'20s+';
     bD[d]=(bD[d]||0)+1;
     const l=r.l.split(',')[0].trim();bL[l]=(bL[l]||0)+1;
   });
+  const allStats=COL.concat(localCollection);
   const topA=Object.entries(bA).sort((a,b)=>b[1]-a[1]).slice(0,10);
   const topL=Object.entries(bL).sort((a,b)=>b[1]-a[1]).slice(0,6);
   const decs=['60s','70s','80s','90s','00s','10s','20s+'].map(d=>[d,bD[d]||0]);
   const maxD=Math.max(...decs.map(d=>d[1]),1),maxA=topA[0]?.[1]||1;
-  const ys=COL.map(r=>parseInt(r.y)).filter(y=>y>1900);
+  const ys=allStats.map(r=>parseInt(r.y)).filter(y=>y>1900);
   const avgY=ys.length?Math.round(ys.reduce((a,b)=>a+b,0)/ys.length):'?';
-  const newest=COL.filter(r=>r.d).sort((a,b)=>b.d.localeCompare(a.d)).slice(0,3);
+  const newest=allStats.filter(r=>r.d).sort((a,b)=>b.d.localeCompare(a.d)).slice(0,3);
   let h='<h2 style="font-family:Playfair Display,Georgia,serif;font-size:32px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px">Tu colección</h2><p style="color:#555;font-size:12px;margin-bottom:22px">@veeteen · Discogs</p>';
   h+='<div class="stat-grid">';
-  [[COL.length,'discos','en colección'],[Object.keys(bA).length,'artistas','distintos'],[avgY,'año medio',''],[topA[0]?.[0].split(' ')[0],'artista top',topA[0]?.[1]+' discos']].forEach(([v,l,s])=>{
+  [[allStats.length,'discos','en colección'],[Object.keys(bA).length,'artistas','distintos'],[avgY,'año medio',''],[topA[0]?.[0].split(' ')[0],'artista top',topA[0]?.[1]+' discos']].forEach(([v,l,s])=>{
     h+='<div class="sbox2"><div class="sv">'+v+'</div><div class="sl">'+l+'</div>'+(s?'<div class="ss">'+s+'</div>':'')+'</div>';
   });
   h+='</div>';
@@ -782,8 +798,8 @@ function rDiario(){
 }
 function deHTML(e){
   const d=new Date(e.date).toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
-  const rc=e.record?JSON.stringify(e.record).replace(/"/g,'&quot;'):'null';
-  return '<div class="de"><div id="dei-'+e.id+'" style="width:54px;height:54px;border-radius:8px;background:#111;flex-shrink:0;overflow:hidden;cursor:pointer" '+(e.record?'onclick="diaryOpen('+e.id+')"':'')+'></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">'+esc(e.record?.t||'-')+'</div><div style="font-size:11px;color:#666">'+esc(e.record?.a||'')+'</div><div style="font-size:10px;color:#444;margin-top:2px">'+d+'</div>'+(e.nota?'<p style="font-size:12px;color:#aaa;line-height:1.5;margin:8px 0 0">'+esc(e.nota)+'</p>':'')+'</div><button onclick="delDE('+e.id+')" style="background:none;border:none;color:#444;font-size:16px;cursor:pointer">✕</button></div>';
+  const stars=e.rating?'<div style="font-size:13px;letter-spacing:1px;margin-top:4px">'+'★'.repeat(e.rating)+'<span style="color:#333">'+'★'.repeat(5-e.rating)+'</span></div>':'';
+  return '<div class="de"><div id="dei-'+e.id+'" style="width:54px;height:54px;border-radius:8px;background:#111;flex-shrink:0;overflow:hidden;cursor:pointer" '+(e.record?'onclick="diaryOpen('+e.id+')"':'')+'></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">'+esc(e.record?.t||'-')+'</div><div style="font-size:11px;color:#666">'+esc(e.record?.a||'')+'</div>'+stars+'<div style="font-size:10px;color:#444;margin-top:2px">'+d+'</div>'+(e.nota?'<p style="font-size:12px;color:#aaa;line-height:1.5;margin:8px 0 0">'+esc(e.nota)+'</p>':'')+'</div><button onclick="delDE('+e.id+')" style="background:none;border:none;color:#444;font-size:16px;cursor:pointer">✕</button></div>';
 }
 function loadDE(e){
   covData(e.record.id).then(d=>{const u=d.url;const w=document.getElementById('dei-'+e.id);if(u&&w){const img=document.createElement('img');img.src=u;img.style.cssText='width:100%;height:100%;object-fit:cover';w.appendChild(img);}});

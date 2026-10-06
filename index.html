@@ -211,6 +211,82 @@ textarea.field{resize:vertical;min-height:80px;border:1px solid var(--border);pa
 /* IA moodboard */
 .ia-chip{background:transparent;border:1px solid var(--border);color:var(--dim);border-radius:2px;padding:9px 20px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:.3px}
 .ia-chip.on{border-color:var(--gold);color:var(--gold)}
+
+/* HERO DESTACADO */
+#col-hero{position:relative;width:calc(100% + 40px);margin:-28px -20px 0;aspect-ratio:16/9;overflow:hidden;background:#050504;max-height:320px;cursor:pointer}
+#col-hero-img{width:100%;height:100%;object-fit:cover;filter:brightness(.55);transform:scale(1.04);transition:transform 6s ease}
+#col-hero:hover #col-hero-img{transform:scale(1.08)}
+#col-hero-grad{position:absolute;inset:0;background:linear-gradient(to top,#080808 0%,rgba(8,8,8,.6) 45%,rgba(8,8,8,.1) 75%,transparent 100%)}
+#col-hero-content{position:absolute;bottom:0;left:0;right:0;padding:20px 22px 24px}
+#col-hero-eyebrow{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+#col-hero-title{font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:900;line-height:1.1;letter-spacing:-.5px;color:#fff}
+#col-hero-artist{font-size:13px;color:rgba(255,255,255,.6);margin-top:5px;letter-spacing:.2px}
+#col-hero-meta{display:flex;gap:8px;align-items:center;margin-top:12px}
+
+/* BOTTOM TAB BAR */
+#hdr #tabs{display:none}  /* hide top tabs */
+#bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:50;
+  background:rgba(8,8,8,.96);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-top:1px solid var(--border);
+  padding:0 0 env(safe-area-inset-bottom,0);
+  display:flex;
+}
+#bottom-bar-inner{
+  max-width:720px;margin:0 auto;
+  display:flex;width:100%;
+}
+.btab{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;padding:10px 4px 12px;
+  background:none;border:none;cursor:pointer;
+  color:var(--dim);transition:color .2s;
+  font-size:9px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;
+}
+.btab.on{color:var(--gold)}
+.btab-icon{font-size:20px;line-height:1;display:block}
+
+/* Adjust body padding for bottom bar */
+#body{padding-bottom:90px}
+
+/* MODAL — cover full width parallax */
+#modal-inner{border-radius:0;max-height:100vh;height:100%;overflow-y:scroll;scroll-behavior:auto}
+#mhero{
+  position:sticky;top:0;
+  height:100vw;max-height:420px;
+  overflow:hidden;
+  z-index:0;
+}
+#mbg{
+  width:100%;height:100%;object-fit:cover;
+  filter:brightness(.5);
+  transform:scale(1);
+  display:block;
+  transition:none;
+}
+#mgrad{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,#0c0b0a 0%,rgba(12,11,10,.3) 60%,transparent 100%);
+}
+#minfo{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:0 22px 28px;
+}
+#mt{font-size:30px}
+#modal-inner{border-top:none}
+#mbody{
+  position:relative;z-index:1;
+  background:#0c0b0a;
+  border-radius:0;
+  padding:28px 22px 60px;
+  margin-top:-2px;
+}
+
+/* Header — hide old tabs row */
+#hdr-inner{padding-bottom:0}
+#hdr #tabs{display:none}
+
 </style>
 <script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
 </head>
@@ -230,6 +306,14 @@ textarea.field{resize:vertical;min-height:80px;border:1px solid var(--border);pa
     <button class="tab" onclick="go('diario')">📖 Diario</button>
     <button class="tab" onclick="go('scanner')">📷 Añadir</button>
   </div>
+</div></div>
+<div id="bottom-bar"><div id="bottom-bar-inner">
+  <button class="btab on" data-tab="coleccion" onclick="go('coleccion')"><span class="btab-icon">♪</span>Colección</button>
+  <button class="btab" data-tab="ruleta" onclick="go('ruleta')"><span class="btab-icon">◎</span>Ruleta</button>
+  <button class="btab" data-tab="stats" onclick="go('stats')"><span class="btab-icon">◈</span>Stats</button>
+  <button class="btab" data-tab="ia" onclick="go('ia')"><span class="btab-icon">✦</span>IA</button>
+  <button class="btab" data-tab="diario" onclick="go('diario')"><span class="btab-icon">◻</span>Diario</button>
+  <button class="btab" data-tab="scanner" onclick="go('scanner')"><span class="btab-icon">⊕</span>Añadir</button>
 </div></div>
 <div id="body">
   <div id="p-coleccion"></div>
@@ -290,6 +374,7 @@ let diary=loadDiary(), curTab='coleccion', spinActive=false, iaMood='', iaEra=''
 function go(t){
   curTab=t;
   document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',['coleccion','ruleta','stats','ia','diario','scanner'][i]===t));
+  document.querySelectorAll('.btab').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
   ['coleccion','ruleta','stats','ia','diario','scanner'].forEach(n=>document.getElementById('p-'+n).style.display=n===t?'':'none');
   if(t==='coleccion')rCol();
   if(t==='ruleta')rRul();
@@ -413,10 +498,27 @@ document.getElementById('modal').addEventListener('click',e=>{if(e.target===docu
 function rCol(){
   const el=document.getElementById('p-coleccion');
   el.innerHTML='';
+  // HERO — most recently added record
+  const heroRec=COL.concat(localCollection).slice().sort((a,b)=>(b.d||'').localeCompare(a.d||''))[0];
+  if(heroRec){
+    const hero=document.createElement('div');hero.id='col-hero';
+    hero.onclick=()=>openModal(heroRec);
+    const himg=document.createElement('img');himg.id='col-hero-img';himg.alt='';
+    const hgrad=document.createElement('div');hgrad.id='col-hero-grad';
+    const hcontent=document.createElement('div');hcontent.id='col-hero-content';
+    const color=dc(heroRec.y);
+    hcontent.innerHTML='<div id="col-hero-eyebrow">Último añadido</div>'
+      +'<div id="col-hero-title">'+esc(heroRec.t)+'</div>'
+      +'<div id="col-hero-artist">'+esc(heroRec.a)+'</div>'
+      +'<div id="col-hero-meta"><span class="tag" style="border-color:'+color+'55;color:'+color+'">'+esc(heroRec.y||'?')+'</span><span class="tag">'+esc(heroRec.f||'')+'</span></div>';
+    hero.appendChild(himg);hero.appendChild(hgrad);hero.appendChild(hcontent);
+    el.appendChild(hero);
+    covData(heroRec.id).then(d=>{if(d.url)himg.src=d.url;});
+  }
   // Header
   const hdr=document.createElement('div');
-  hdr.style.cssText='display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px';
-  hdr.innerHTML='<div style="font-family:Playfair Display,Georgia,serif;font-size:32px;font-weight:900;letter-spacing:-.5px;line-height:1">Colección</div><span id="cc" style="font-size:11px;color:var(--muted);letter-spacing:.5px"></span>';
+  hdr.style.cssText='display:flex;justify-content:space-between;align-items:baseline;margin:24px 0 14px';
+  hdr.innerHTML='<div style="font-family:Playfair Display,Georgia,serif;font-size:28px;font-weight:900;letter-spacing:-.5px;line-height:1">Colección</div><span id="cc" style="font-size:11px;color:var(--muted);letter-spacing:.5px"></span>';
   el.appendChild(hdr);
   // Search
   const srch=document.createElement('input');

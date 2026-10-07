@@ -113,6 +113,39 @@ select option{background:#161514}
 .db{width:100%;border-radius:0}
 .list-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}
 
+/* GLOBAL SEARCH */
+#gsearch-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;display:none;align-items:flex-start;justify-content:center;padding-top:env(safe-area-inset-top,0)}
+#gsearch-overlay.open{display:flex}
+#gsearch-box{width:100%;max-width:680px;margin-top:0;background:#0c0b0a;min-height:100vh;display:flex;flex-direction:column}
+#gsearch-top{padding:16px 18px 12px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:center}
+#gsearch-inp{flex:1;background:transparent;border:none;font-size:17px;color:var(--text);letter-spacing:-.2px}
+#gsearch-inp::placeholder{color:var(--dim)}
+#gsearch-close{background:none;border:1px solid var(--border);color:var(--dim);padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.5px}
+#gsearch-results{flex:1;overflow-y:auto;padding:8px 0}
+.gs-item{display:flex;gap:12px;align-items:center;padding:12px 18px;cursor:pointer;border-bottom:1px solid rgba(39,37,34,.5)}
+.gs-item:active{background:rgba(255,255,255,.03)}
+.gs-info{flex:1;min-width:0}
+.gs-title{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gs-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.gs-year{font-size:10px;font-weight:700;padding:2px 8px;border-radius:2px;flex-shrink:0;color:#000}
+.gs-empty{text-align:center;padding:60px 20px;color:var(--dim);font-size:14px}
+
+/* FAB */
+#fab{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom,0));right:18px;z-index:90;width:52px;height:52px;border-radius:50%;background:var(--gold);color:#000;font-size:24px;font-weight:300;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(212,175,106,.35);display:flex;align-items:center;justify-content:center;line-height:1;transition:transform .15s,box-shadow .15s}
+#fab:active{transform:scale(.93)}
+#fab-modal{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:190;display:none;align-items:flex-end;justify-content:center}
+#fab-modal.open{display:flex}
+#fab-inner{background:#0c0b0a;width:100%;max-width:680px;padding:24px 20px 36px;border-top:1px solid var(--border);animation:su .3s cubic-bezier(.16,1,.3,1)}
+#fab-srch-hits{display:none;max-height:220px;overflow-y:auto;margin-top:8px;border:1px solid var(--border)}
+.fab-hit{display:flex;gap:10px;align-items:center;padding:10px 12px;cursor:pointer;border-bottom:1px solid var(--border)}
+.fab-hit:last-child{border-bottom:none}
+.fab-hit:active{background:rgba(255,255,255,.04)}
+.fab-hit-info{flex:1;min-width:0;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fab-hit-sub{font-size:11px;color:var(--muted)}
+.fab-stars{display:flex;gap:10px;margin-bottom:16px}
+.fab-star{background:none;border:none;font-size:26px;cursor:pointer;color:#2a2a2a;padding:0;transition:color .1s}
+.fab-star.on{color:var(--gold)}
+
 /* SPINNER & DISC */
 @keyframes sp{to{transform:rotate(360deg)}}
 @keyframes disc-spin{0%{transform:rotate(0deg)}100%{transform:rotate(1800deg)}}
@@ -226,6 +259,36 @@ textarea.field{resize:vertical;min-height:80px;border:1px solid var(--border);pa
 .ia-chip{background:transparent;border:1px solid var(--border);color:var(--dim);border-radius:2px;padding:9px 20px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:.3px}
 .ia-chip.on{border-color:var(--gold);color:var(--gold)}
 
+/* ARTIST VIEW */
+.artist-group{border-bottom:1px solid var(--border)}
+.artist-hdr{display:flex;gap:12px;align-items:center;padding:14px 0;cursor:pointer}
+.artist-hdr:active{opacity:.7}
+.artist-thumb{width:44px;height:44px;border-radius:50%;background:#111;overflow:hidden;flex-shrink:0;font-size:18px;display:flex;align-items:center;justify-content:center;color:var(--gold)}
+.artist-name{flex:1;font-family:'Playfair Display',Georgia,serif;font-size:16px;font-weight:700;letter-spacing:-.2px}
+.artist-count{font-size:11px;color:var(--muted)}
+.artist-chevron{font-size:12px;color:var(--dim);transition:transform .2s}
+.artist-chevron.open{transform:rotate(90deg)}
+.artist-discs{display:none;padding-left:56px;padding-bottom:8px}
+.artist-discs.open{display:block}
+.artist-disc-row{display:flex;gap:10px;align-items:center;padding:8px 0;cursor:pointer;border-top:1px solid rgba(39,37,34,.5)}
+.artist-disc-row:active{opacity:.7}
+.artist-disc-info{flex:1;min-width:0}
+.artist-disc-title{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.artist-disc-meta{font-size:11px;color:var(--muted);margin-top:1px}
+
+/* TIMELINE */
+.tl-month{margin-bottom:20px}
+.tl-month-hdr{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.tl-month-line{flex:1;height:1px;background:var(--border)}
+.tl-entry{display:flex;gap:12px;align-items:center;padding:8px 0;cursor:pointer;border-bottom:1px solid rgba(39,37,34,.5)}
+.tl-entry:last-child{border-bottom:none}
+.tl-entry:active{opacity:.7}
+
+/* RULETA CTX */
+.ctx-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px;justify-content:center}
+.ctx-chip{background:transparent;border:1px solid var(--border);color:var(--dim);border-radius:2px;padding:9px 20px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:.3px}
+.ctx-chip.on{border-color:var(--gold);color:var(--gold);background:rgba(212,175,106,.07)}
+
 /* HERO DESTACADO */
 #col-hero{position:relative;width:calc(100% + 40px);margin:-28px -20px 0;aspect-ratio:16/9;overflow:hidden;background:#050504;max-height:320px;cursor:pointer}
 #col-hero-img{width:100%;height:100%;object-fit:cover;filter:brightness(.55);transform:scale(1.04);transition:transform 6s ease}
@@ -311,6 +374,7 @@ textarea.field{resize:vertical;min-height:80px;border:1px solid var(--border);pa
       <div class="wordmark">Vinyl<em>Suite</em></div>
       <div id="hdr-count" class="hdr-count">200 discos · @veeteen</div>
     </div>
+    <button onclick="openGSearch()" style="margin-left:auto;background:none;border:1px solid var(--border);color:var(--dim);width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0" title="Buscar">⌕</button>
   </div>
   <div id="tabs">
     <button class="tab on" onclick="go('coleccion')">🎵 Colección</button>
@@ -337,6 +401,29 @@ textarea.field{resize:vertical;min-height:80px;border:1px solid var(--border);pa
   <div id="p-diario" style="display:none"></div>
   <div id="p-scanner" style="display:none"></div>
 </div>
+<!-- GLOBAL SEARCH -->
+<div id="gsearch-overlay"><div id="gsearch-box">
+  <div id="gsearch-top">
+    <input id="gsearch-inp" placeholder="Buscar en tu colección…" oninput="gsFilter()" autocomplete="off" autocorrect="off"/>
+    <button id="gsearch-close" onclick="closeGSearch()">✕ Cerrar</button>
+  </div>
+  <div id="gsearch-results"></div>
+</div></div>
+
+<!-- FAB -->
+<button id="fab" onclick="openFAB()" title="Registrar escucha">+</button>
+<div id="fab-modal"><div id="fab-inner">
+  <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px">REGISTRAR ESCUCHA</div>
+  <input class="sbox" id="fab-srch" placeholder="Buscar disco…" oninput="fabSearch()" autocomplete="off" style="margin-bottom:0"/>
+  <div id="fab-srch-hits"></div>
+  <div id="fab-picked" style="display:none;padding:10px 0 2px;font-size:13px;font-weight:700;color:var(--text)"></div>
+  <div style="font-size:9px;font-weight:700;letter-spacing:1px;color:var(--dim);margin:14px 0 8px">VALORACIÓN</div>
+  <div class="fab-stars" id="fab-stars"></div>
+  <textarea class="fld" id="fab-nota" placeholder="Notas…" style="min-height:60px;margin-bottom:16px"></textarea>
+  <button class="btn-f" id="fab-save" onclick="saveFAB()" disabled style="background:#222;color:#555;box-shadow:none">Guardar</button>
+  <button onclick="closeFAB()" style="width:100%;margin-top:10px;background:none;border:none;color:var(--dim);font-size:12px;font-weight:700;cursor:pointer;padding:8px;letter-spacing:.5px">CANCELAR</button>
+</div></div>
+
 <div id="modal"><div id="modal-inner">
   <div id="mhero">
     <img id="mbg" src="" alt=""/>
@@ -582,15 +669,15 @@ function rCol(){
   el.appendChild(sortBar);
   // View toggle
   const viewToggle=document.createElement('div');viewToggle.className='view-toggle';
-  [['grid','⊞'],['list','☰']].forEach(function(pair){
+  [['grid','⊞','Cuadrícula'],['list','☰','Lista'],['artist','◉','Por artista']].forEach(function(pair){
     const b=document.createElement('button');b.className='view-btn'+(colView===pair[0]?' on':'');
-    b.textContent=pair[1];b.title=pair[0]==='grid'?'Cuadrícula':'Lista';
+    b.textContent=pair[1];b.title=pair[2];
     b.onclick=function(){colView=pair[0];rCol();};viewToggle.appendChild(b);
   });
   el.appendChild(viewToggle);
   // Grid
   const grid=document.createElement('div');
-  grid.className=colView==='list'?'list-view':'grid';grid.id='cgrid';
+  grid.className=colView==='list'?'list-view':colView==='artist'?'':' grid';grid.id='cgrid';
   el.appendChild(grid);
   fCol();
 }
@@ -627,6 +714,7 @@ function fCol(){
   const fmtLabel=curFmt==='vinyl'?' vinilos':curFmt==='cd'?' CDs':' discos';
   document.getElementById('cc').textContent=f.length+fmtLabel;
   const g=document.getElementById('cgrid');g.innerHTML='';
+  if(colView==='artist'){renderArtistView(g,f);return;}
   f.forEach(r=>{
     const color=dc(r.y);
     const card=document.createElement('div');card.className='card';card.onclick=()=>{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();openModal(r);};
@@ -658,15 +746,69 @@ function fCol(){
   });
 }
 
+// ARTIST VIEW
+function renderArtistView(g,f){
+  const byA={};
+  f.forEach(r=>{
+    const key=r.a;
+    if(!byA[key])byA[key]=[];
+    byA[key].push(r);
+  });
+  const artists=Object.entries(byA).sort((a,b)=>a[0].localeCompare(b[0],'es'));
+  const openSet=new Set(window._openArtists||[]);
+  artists.forEach(([artist,discs])=>{
+    const grp=document.createElement('div');grp.className='artist-group';
+    const color=dc(discs.sort((a,b)=>(parseInt(b.y)||0)-(parseInt(a.y)||0))[0]?.y);
+    const hdr=document.createElement('div');hdr.className='artist-hdr';
+    const thumb=document.createElement('div');thumb.className='artist-thumb';
+    thumb.style.background='linear-gradient(135deg,'+color+'22 0%,#111 60%)';
+    thumb.style.color=color;
+    thumb.textContent=artist[0].toUpperCase();
+    // load first disc thumb
+    covData(discs[0].id).then(d=>{if(d.url){const i=document.createElement('img');i.src=d.url;i.style.cssText='width:100%;height:100%;object-fit:cover';thumb.innerHTML='';thumb.appendChild(i);}});
+    const nameEl=document.createElement('div');nameEl.style.flex='1';
+    nameEl.innerHTML='<div class="artist-name">'+esc(artist)+'</div><div class="artist-count">'+discs.length+' disco'+(discs.length!==1?'s':'')+'</div>';
+    const chev=document.createElement('span');chev.className='artist-chevron'+(openSet.has(artist)?' open':'');chev.textContent='›';
+    hdr.appendChild(thumb);hdr.appendChild(nameEl);hdr.appendChild(chev);
+    const discList=document.createElement('div');discList.className='artist-discs'+(openSet.has(artist)?' open':'');
+    discs.forEach(r=>{
+      const row=document.createElement('div');row.className='artist-disc-row';
+      const dcolor=dc(r.y);
+      const img=document.createElement('div');img.style.cssText='width:36px;height:36px;border-radius:4px;background:#111;overflow:hidden;flex-shrink:0';
+      covData(r.id).then(d=>{if(d.url){const i=document.createElement('img');i.src=d.url;i.style.cssText='width:100%;height:100%;object-fit:cover';img.appendChild(i);}});
+      const info=document.createElement('div');info.className='artist-disc-info';
+      info.innerHTML='<div class="artist-disc-title">'+esc(r.t)+'</div><div class="artist-disc-meta"><span style="color:'+dcolor+';font-weight:700">'+esc(r.y||'?')+'</span>'+(r.f?' · '+esc(r.f):'')+'</div>';
+      row.appendChild(img);row.appendChild(info);
+      row.onclick=()=>openModal(r);
+      discList.appendChild(row);
+    });
+    hdr.onclick=()=>{
+      const isOpen=discList.classList.toggle('open');
+      chev.classList.toggle('open',isOpen);
+      if(isOpen)openSet.add(artist);else openSet.delete(artist);
+      window._openArtists=[...openSet];
+    };
+    grp.appendChild(hdr);grp.appendChild(discList);
+    g.appendChild(grp);
+  });
+}
+
+var rulCtx='';
 // RULETA
 function rRul(){
-  const all=COL.concat(localCollection);
-  // pre-load a few cover urls for the slot animation
-  const picks=[];for(let i=0;i<8;i++)picks.push(all[Math.floor(Math.random()*all.length)]);
   document.getElementById('p-ruleta').innerHTML=`
-  <div style="max-width:380px;margin:0 auto;text-align:center;padding-top:8px">
+  <div style="max-width:420px;margin:0 auto;text-align:center;padding-top:8px">
     <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px">¿Qué escucho hoy?</div>
-    <p style="color:var(--muted);font-size:12px;margin-bottom:40px;letter-spacing:.3px">El azar elige por ti</p>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:28px;letter-spacing:.3px">Elige el momento y deja que el azar decida</p>
+    <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px">CONTEXTO</div>
+    <div class="ctx-chips" id="ctx-chips">
+      <button class="ctx-chip${rulCtx==='visita'?' on':''}" onclick="setCtx('visita')">🍷 Visita</button>
+      <button class="ctx-chip${rulCtx==='trabajo'?' on':''}" onclick="setCtx('trabajo')">💼 Trabajo</button>
+      <button class="ctx-chip${rulCtx==='concentracion'?' on':''}" onclick="setCtx('concentracion')">🎯 Concentración</button>
+      <button class="ctx-chip${rulCtx==='noche'?' on':''}" onclick="setCtx('noche')">🌙 Noche</button>
+      <button class="ctx-chip${rulCtx==='ejercicio'?' on':''}" onclick="setCtx('ejercicio')">⚡ Energía</button>
+      <button class="ctx-chip${rulCtx==='relajar'?' on':''}" onclick="setCtx('relajar')">☁️ Relajar</button>
+    </div>
     <div style="display:flex;justify-content:center;margin-bottom:36px;position:relative">
       <div id="rdisc" class="disc" style="width:120px;height:120px">
         <div class="ddot" style="width:20px;height:20px"></div>
@@ -679,11 +821,21 @@ function rRul(){
     </div>
   </div>`;
 }
+function setCtx(c){
+  rulCtx=rulCtx===c?'':c;
+  document.querySelectorAll('.ctx-chip').forEach(b=>b.classList.toggle('on',b.textContent.includes({visita:'Visita',trabajo:'Trabajo',concentracion:'Concentración',noche:'Noche',ejercicio:'Energía',relajar:'Relajar'}[c]||c)&&rulCtx===c));
+}
 function girar(){
   if(spinActive)return; spinActive=true;
   const disc=document.getElementById('rdisc'),btn=document.getElementById('rbtn'),res=document.getElementById('rres');
   const all=COL.concat(localCollection);
-  const winner=all[Math.floor(Math.random()*all.length)];
+  // Context-weighted selection
+  let pool=all;
+  if(rulCtx==='noche'){pool=all.filter(r=>['Jazz','Soul','R&B','Blues','Chill'].some(g=>r.l&&r.l.toLowerCase().includes(g.toLowerCase()))||parseInt(r.y)<1990);if(!pool.length)pool=all;}
+  else if(rulCtx==='ejercicio'||rulCtx==='energía'){pool=all.filter(r=>parseInt(r.y)>=1975&&parseInt(r.y)<=2005);if(!pool.length)pool=all;}
+  else if(rulCtx==='relajar'){pool=all.filter(r=>parseInt(r.y)<1995);if(!pool.length)pool=all;}
+  else if(rulCtx==='visita'){pool=all.filter(r=>diary.filter(e=>e.record&&e.record.id===r.id).length>0||parseInt(r.y)>=1980&&parseInt(r.y)<=2000);if(!pool.length)pool=all;}
+  const winner=pool[Math.floor(Math.random()*pool.length)];
   const color=dc(winner.y);
   // 1. spin disc
   disc.classList.remove('spin');void disc.offsetWidth;disc.classList.add('spin');
@@ -810,6 +962,7 @@ async function askIA(){
   btn.disabled=false;btn.textContent='✦ Recomiéndame algo';
 }
 
+var diaryMode='list'; // 'list' | 'timeline'
 // DIARIO
 function diaryOpen(id){
   var e=diary.find(function(x){return x.id===id;});
@@ -817,13 +970,75 @@ function diaryOpen(id){
 }
 function rDiario(){
   const el=document.getElementById('p-diario');
-  let h='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px"><div><h2 style="font-family:Playfair Display,Georgia,serif;font-size:32px;font-weight:900;letter-spacing:-.5px;margin:0">Diario</h2><p style="color:#555;font-size:12px;margin-top:3px">'+diary.length+' sesión'+(diary.length!==1?'es':'')+' guardada'+(diary.length!==1?'s':'')+'</p></div><button class="btn-f" style="width:auto;padding:9px 16px;font-size:12px;border-radius:10px" onclick="tDForm()">+ Registrar</button></div>';
-  h+='<div id="dform-wrap" style="display:none"></div><div id="dentries">';
-  if(!diary.length)h+='<div class="empty"><div style="font-size:48px;margin-bottom:12px">📖</div><div style="font-size:14px">Sin sesiones aún</div><div style="font-size:12px;color:#333;margin-top:4px">Pulsa "+ Registrar" después de cada escucha</div></div>';
-  else diary.forEach(e=>h+=deHTML(e));
+  let h='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">';
+  h+='<div><h2 style="font-family:Playfair Display,Georgia,serif;font-size:32px;font-weight:900;letter-spacing:-.5px;margin:0">Diario</h2><p style="color:#555;font-size:12px;margin-top:3px">'+diary.length+' sesión'+(diary.length!==1?'es':'')+' guardada'+(diary.length!==1?'s':'')+'</p></div>';
+  h+='<button class="btn-f" style="width:auto;padding:9px 16px;font-size:12px;border-radius:10px" onclick="tDForm()">+ Registrar</button></div>';
+  // view toggle
+  h+='<div style="display:flex;gap:6px;margin-bottom:20px">';
+  h+='<button class="view-btn'+(diaryMode==='list'?' on':'')+'" onclick="diaryMode=\'list\';rDiario()">☰ Lista</button>';
+  h+='<button class="view-btn'+(diaryMode==='timeline'?' on':'')+'" onclick="diaryMode=\'timeline\';rDiario()">◈ Timeline</button>';
   h+='</div>';
+  h+='<div id="dform-wrap" style="display:none"></div>';
+  if(diaryMode==='timeline'){
+    h+=buildTimeline();
+  } else {
+    h+='<div id="dentries">';
+    if(!diary.length)h+='<div class="empty"><div style="font-size:48px;margin-bottom:12px">📖</div><div style="font-size:14px">Sin sesiones aún</div><div style="font-size:12px;color:#333;margin-top:4px">Pulsa "+ Registrar" después de cada escucha</div></div>';
+    else diary.forEach(e=>h+=deHTML(e));
+    h+='</div>';
+  }
   el.innerHTML=h;
-  diary.forEach(e=>{if(e.record)loadDE(e);});
+  if(diaryMode==='list') diary.forEach(e=>{if(e.record)loadDE(e);});
+}
+function buildTimeline(){
+  if(!diary.length)return'<div class="empty"><div style="font-size:48px;margin-bottom:12px">📖</div><div style="font-size:14px">Sin sesiones aún</div></div>';
+  // Group by month
+  const months={};
+  diary.forEach(e=>{
+    const d=new Date(e.date);
+    const k=d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0');
+    if(!months[k])months[k]=[];
+    months[k].push(e);
+  });
+  const mKeys=Object.keys(months).sort((a,b)=>b.localeCompare(a));
+  let h='';
+  const mNames=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  mKeys.forEach(k=>{
+    const [y,m]=k.split('-');
+    const label=mNames[parseInt(m)-1]+' '+y;
+    const entries=months[k];
+    // Top artists this month
+    const artCount={};entries.forEach(e=>{if(e.record){artCount[e.record.a]=(artCount[e.record.a]||0)+1;}});
+    const topArt=Object.entries(artCount).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([a])=>a).join(', ');
+    h+='<div class="tl-month">';
+    h+='<div class="tl-month-hdr"><span>'+label+'</span><span style="color:var(--dim);font-weight:400">'+entries.length+' escucha'+(entries.length!==1?'s':'')+'</span><div class="tl-month-line"></div></div>';
+    if(topArt)h+='<div style="font-size:11px;color:var(--muted);margin-bottom:10px">'+topArt+'</div>';
+    entries.forEach(e=>{
+      const d=new Date(e.date);
+      const dayLabel=d.toLocaleDateString('es-ES',{weekday:'short',day:'numeric'});
+      const stars=e.rating?'★'.repeat(e.rating):'';
+      h+='<div class="tl-entry" onclick="diaryOpen('+e.id+')">';
+      h+='<div id="tl-img-'+e.id+'" style="width:44px;height:44px;border-radius:6px;background:#111;overflow:hidden;flex-shrink:0"></div>';
+      h+='<div style="flex:1;min-width:0">';
+      h+='<div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(e.record?.t||'-')+'</div>';
+      h+='<div style="font-size:11px;color:var(--muted)">'+esc(e.record?.a||'')+'</div>';
+      if(stars)h+='<div style="font-size:11px;color:var(--gold);letter-spacing:1px">'+stars+'</div>';
+      h+='</div>';
+      h+='<div style="font-size:10px;color:var(--dim);flex-shrink:0;text-align:right">'+dayLabel+'</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+  });
+  // After render, load images
+  setTimeout(()=>{
+    diary.forEach(e=>{
+      if(!e.record)return;
+      const el=document.getElementById('tl-img-'+e.id);
+      if(!el)return;
+      covData(e.record.id).then(d=>{if(d.url&&el){const i=document.createElement('img');i.src=d.url;i.style.cssText='width:100%;height:100%;object-fit:cover';el.appendChild(i);}});
+    });
+  },50);
+  return h;
 }
 function deHTML(e){
   const d=new Date(e.date).toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
@@ -840,7 +1055,11 @@ function tDForm(){
   const w=document.getElementById('dform-wrap');
   if(!dFormOpen){w.style.display='none';return;}
   w.style.display='block';
-  w.innerHTML='<div class="dform"><div style="font-size:10px;color:#666;font-weight:700;letter-spacing:1px;margin-bottom:10px">BUSCA EL DISCO</div><input class="field" id="dsrch" placeholder="Título o artista…" oninput="fDSearch()"/><div class="hgrid" id="dhits" style="display:none"></div><div id="dpicked" style="display:none"></div><textarea class="field" id="dnota" placeholder="¿Cómo fue? ¿Dónde estabas? ¿Qué sentiste?…"></textarea><button class="btn-f" id="dsavebtn" disabled style="background:#222;color:#555;box-shadow:none" onclick="saveDE()">Guardar sesión</button></div>';
+  w.innerHTML='<div class="dform"><div style="font-size:10px;color:#666;font-weight:700;letter-spacing:1px;margin-bottom:10px">BUSCA EL DISCO</div><input class="field" id="dsrch" placeholder="Título o artista…" oninput="fDSearch()"/><div class="hgrid" id="dhits" style="display:none"></div><div id="dpicked" style="display:none"></div><div style="font-size:9px;color:#666;font-weight:700;letter-spacing:1px;margin-bottom:8px">VALORACIÓN</div><div class="stars" id="dstars" style="margin-bottom:14px"></div><textarea class="field" id="dnota" placeholder="¿Cómo fue? ¿Dónde estabas? ¿Qué sentiste?…"></textarea><button class="btn-f" id="dsavebtn" disabled style="background:#222;color:#555;box-shadow:none" onclick="saveDE()">Guardar sesión</button></div>';
+  let dRating=0;
+  const dStars=document.getElementById('dstars');
+  for(let i=1;i<=5;i++){(function(n){const s=document.createElement('button');s.className='star';s.textContent='☆';s.onclick=function(){dRating=n;document.querySelectorAll('#dstars .star').forEach((x,j)=>{x.classList.toggle('on',j<n);x.textContent=j<n?'★':'☆';});};dStars.appendChild(s);})(i);}
+  w._dRating=()=>dRating;
 }
 function fDSearch(){
   const q=document.getElementById('dsrch').value.toLowerCase();
@@ -868,7 +1087,9 @@ function selDP(r){
 }
 function saveDE(){
   if(!diaryPicked)return;
-  const entry={id:Date.now(),record:diaryPicked,nota:document.getElementById('dnota').value,date:new Date().toISOString()};
+  const w=document.getElementById('dform-wrap');
+  const rating=w&&w._dRating?w._dRating():0;
+  const entry={id:Date.now(),record:diaryPicked,rating:rating,nota:document.getElementById('dnota').value,date:new Date().toISOString()};
   diary=[entry,...diary];saveDiary(diary);dFormOpen=false;diaryPicked=null;rDiario();
 }
 
@@ -1152,6 +1373,114 @@ function saveQuickEntry(){
   const form=document.getElementById('modal-reg-form');
   if(form){form.innerHTML='<div style="text-align:center;padding:14px;color:#f4a261;font-weight:700">✅ Escucha registrada!</div>';setTimeout(function(){form.style.display='none';},1500);}
 }
+
+// GLOBAL SEARCH
+function openGSearch(){
+  const ov=document.getElementById('gsearch-overlay');
+  ov.classList.add('open');
+  document.body.style.overflow='hidden';
+  const inp=document.getElementById('gsearch-inp');
+  inp.value='';
+  document.getElementById('gsearch-results').innerHTML='<div class="gs-empty">Escribe para buscar…</div>';
+  setTimeout(()=>inp.focus(),80);
+}
+function closeGSearch(){
+  document.getElementById('gsearch-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function gsFilter(){
+  const q=(document.getElementById('gsearch-inp').value||'').toLowerCase();
+  const res=document.getElementById('gsearch-results');
+  if(!q){res.innerHTML='<div class="gs-empty">Escribe para buscar…</div>';return;}
+  const all=COL.concat(localCollection);
+  const f=all.filter(r=>(r.t+' '+r.a).toLowerCase().includes(q)).slice(0,30);
+  if(!f.length){res.innerHTML='<div class="gs-empty">Sin resultados para "'+esc(q)+'"</div>';return;}
+  res.innerHTML='';
+  f.forEach(r=>{
+    const color=dc(r.y);
+    const item=document.createElement('div');item.className='gs-item';
+    const img=document.createElement('div');img.style.cssText='width:44px;height:44px;border-radius:4px;background:#111;overflow:hidden;flex-shrink:0';
+    covData(r.id).then(d=>{if(d.url){const i=document.createElement('img');i.src=d.url;i.style.cssText='width:100%;height:100%;object-fit:cover';img.appendChild(i);}});
+    const info=document.createElement('div');info.className='gs-info';
+    info.innerHTML='<div class="gs-title">'+esc(r.t)+'</div><div class="gs-sub">'+esc(r.a)+(r.f?' · '+esc(r.f):'')+'</div>';
+    const yr=document.createElement('span');yr.className='gs-year';yr.style.background=color;yr.textContent=r.y||'?';
+    item.appendChild(img);item.appendChild(info);item.appendChild(yr);
+    item.onclick=()=>{closeGSearch();setTimeout(()=>openModal(r),100);};
+    res.appendChild(item);
+  });
+}
+// Keyboard shortcut Ctrl+K / Cmd+K
+document.addEventListener('keydown',function(e){
+  if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();openGSearch();}
+  if(e.key==='Escape'){
+    if(document.getElementById('gsearch-overlay').classList.contains('open'))closeGSearch();
+    if(document.getElementById('fab-modal').classList.contains('open'))closeFAB();
+  }
+});
+document.getElementById('gsearch-overlay').addEventListener('click',function(e){if(e.target===this)closeGSearch();});
+
+// FAB — registro rápido
+var fabRecord=null,fabRating=0;
+function openFAB(){
+  fabRecord=null;fabRating=0;
+  document.getElementById('fab-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.getElementById('fab-srch').value='';
+  document.getElementById('fab-srch-hits').style.display='none';
+  document.getElementById('fab-srch-hits').innerHTML='';
+  document.getElementById('fab-picked').style.display='none';
+  document.getElementById('fab-nota').value='';
+  document.getElementById('fab-save').disabled=true;
+  document.getElementById('fab-save').style.cssText='background:#222;color:#555;box-shadow:none';
+  // stars
+  const stars=document.getElementById('fab-stars');stars.innerHTML='';
+  for(let i=1;i<=5;i++){(function(n){const s=document.createElement('button');s.className='fab-star';s.textContent='☆';s.onclick=function(){fabRating=n;document.querySelectorAll('#fab-stars .fab-star').forEach((x,j)=>{x.classList.toggle('on',j<n);x.textContent=j<n?'★':'☆';});};stars.appendChild(s);})(i);}
+  setTimeout(()=>document.getElementById('fab-srch').focus(),80);
+}
+function closeFAB(){
+  document.getElementById('fab-modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+function fabSearch(){
+  const q=(document.getElementById('fab-srch').value||'').toLowerCase();
+  const hits=document.getElementById('fab-srch-hits');
+  if(!q){hits.style.display='none';hits.innerHTML='';return;}
+  const all=COL.concat(localCollection);
+  const f=all.filter(r=>(r.t+' '+r.a).toLowerCase().includes(q)).slice(0,8);
+  if(!f.length){hits.style.display='none';return;}
+  hits.style.display='block';hits.innerHTML='';
+  f.forEach(r=>{
+    const item=document.createElement('div');item.className='fab-hit';
+    const img=document.createElement('div');img.style.cssText='width:36px;height:36px;border-radius:4px;background:#111;overflow:hidden;flex-shrink:0';
+    covData(r.id).then(d=>{if(d.url){const i=document.createElement('img');i.src=d.url;i.style.cssText='width:100%;height:100%;object-fit:cover';img.appendChild(i);}});
+    const info=document.createElement('div');info.className='fab-hit-info';
+    info.innerHTML=esc(r.t)+'<div class="fab-hit-sub">'+esc(r.a)+'</div>';
+    item.appendChild(img);item.appendChild(info);
+    item.onclick=()=>selectFABRecord(r);
+    hits.appendChild(item);
+  });
+}
+function selectFABRecord(r){
+  fabRecord=r;
+  document.getElementById('fab-srch').value=r.t;
+  document.getElementById('fab-srch-hits').style.display='none';
+  const picked=document.getElementById('fab-picked');
+  picked.style.display='block';
+  picked.innerHTML='<span style="color:var(--gold)">✓</span> '+esc(r.t)+' <span style="color:var(--muted)">· '+esc(r.a)+'</span>';
+  const btn=document.getElementById('fab-save');btn.disabled=false;btn.style.cssText='';
+}
+function saveFAB(){
+  if(!fabRecord)return;
+  const entry={id:Date.now(),record:fabRecord,rating:fabRating,nota:document.getElementById('fab-nota').value,date:new Date().toISOString()};
+  diary=[entry,...diary];saveDiary(diary);
+  closeFAB();
+  // flash confirmation
+  const fab=document.getElementById('fab');
+  fab.textContent='✓';fab.style.background='#06d6a0';
+  setTimeout(()=>{fab.textContent='+';fab.style.background='var(--gold)';},1500);
+  if(curTab==='diario')rDiario();
+}
+document.getElementById('fab-modal').addEventListener('click',function(e){if(e.target===this)closeFAB();});
 
 // Init
 rCol();

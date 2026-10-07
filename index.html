@@ -132,6 +132,9 @@ select option{background:#161514}
 
 /* FAB */
 #fab{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom,0));right:18px;z-index:90;width:52px;height:52px;border-radius:50%;background:var(--gold);color:#000;font-size:24px;font-weight:300;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(212,175,106,.35);display:flex;align-items:center;justify-content:center;line-height:1;transition:transform .15s,box-shadow .15s}
+#back-top{position:fixed;bottom:calc(142px + env(safe-area-inset-bottom,0));right:18px;z-index:89;width:40px;height:40px;border-radius:50%;background:#1a1917;border:1px solid var(--border);color:var(--dim);font-size:16px;cursor:pointer;display:none;align-items:center;justify-content:center;transition:opacity .2s,transform .15s}
+#back-top.visible{display:flex}
+#back-top:active{transform:scale(.9)}
 #fab:active{transform:scale(.93)}
 #fab-modal{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:190;display:none;align-items:flex-end;justify-content:center}
 #fab-modal.open{display:flex}
@@ -412,6 +415,7 @@ textarea.field{resize:vertical;min-height:80px;border:1px solid var(--border);pa
 
 <!-- FAB -->
 <button id="fab" onclick="openFAB()" title="Registrar escucha">+</button>
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Volver arriba">↑</button>
 <div id="fab-modal"><div id="fab-inner">
   <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px">REGISTRAR ESCUCHA</div>
   <input class="sbox" id="fab-srch" placeholder="Buscar disco…" oninput="fabSearch()" autocomplete="off" style="margin-bottom:0"/>
@@ -1482,6 +1486,12 @@ function saveFAB(){
   if(curTab==='diario')rDiario();
 }
 document.getElementById('fab-modal').addEventListener('click',function(e){if(e.target===this)closeFAB();});
+
+// Scroll-to-top button
+window.addEventListener('scroll',function(){
+  const btn=document.getElementById('back-top');
+  if(btn)btn.classList.toggle('visible',window.scrollY>320);
+},{ passive:true });
 
 // Init
 rCol();

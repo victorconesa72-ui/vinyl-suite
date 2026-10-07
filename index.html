@@ -560,14 +560,14 @@ function openModal(r){
     .then(x=>x.json()).then(d=>{
       if(d.id){document.getElementById('spotify-iframe').src='https://open.spotify.com/embed/album/'+d.id+'?utm_source=generator&theme=0';document.getElementById('spotify-wrap').style.display='block';}
     }).catch(()=>{});
-  const p='Eres un experto en música. Busca información sobre el álbum "'+r.t+'" de '+r.a+(r.y?' ('+r.y+')':'')+'.\nResponde SOLO en JSON sin markdown:\n{"descripcion":"2-3 frases","curiosidades":["c1","c2","c3"],"grabacion":"dónde/cuándo/productor","legado":"impacto cultural"}';
+  const p='Eres un experto en música con acceso a búsqueda web. Busca información actualizada sobre el álbum "'+r.t+'" de '+r.a+(r.y?' ('+r.y+')':'')+'.\nUsa la herramienta de búsqueda si necesitas información reciente. Responde SOLO en JSON sin markdown:\n{"descripcion":"2-3 frases","curiosidades":["c1","c2","c3"],"grabacion":"dónde/cuándo/productor","legado":"impacto cultural"}';
   console.log('Calling curiosidades API...');
   try {
     fetch('/api/curiosidades',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-opus-4-5',max_tokens:600,messages:[{role:'user',content:p}]})
+      body:JSON.stringify({model:'claude-opus-4-5',max_tokens:1500,tools:[{type:'web_search_20250305',name:'web_search',max_uses:3}],messages:[{role:'user',content:p}]})
     }).then(x=>{console.log('Status:',x.status);return x.json();}).then(d=>{
       console.log('Response:',d);
-      const txt=(d.content||[]).map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+      const txt=(d.content||[]).filter(b=>b.type==='text').map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
       try{renderModal(JSON.parse(txt),r);}catch(e){console.log('Parse error:',e);document.getElementById('mc').innerHTML='<p style="color:#555;text-align:center">No se pudo cargar.</p>';}
     }).catch(e=>{console.log('Fetch error:',e);document.getElementById('mc').innerHTML='<p style="color:#555;text-align:center">Error de conexión.</p>';});
   } catch(e) { console.log('Outer error:',e); }

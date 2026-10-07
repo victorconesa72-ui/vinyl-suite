@@ -477,7 +477,7 @@ function go(t){
   document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',['coleccion','ruleta','stats','ia','diario','scanner'][i]===t));
   document.querySelectorAll('.btab').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
   ['coleccion','ruleta','stats','ia','diario','scanner'].forEach(n=>{const el=document.getElementById('p-'+n);el.style.display=n===t?'':'none';if(n===t){el.style.animation='none';void el.offsetWidth;el.style.animation='';}}); 
-  if(t==='coleccion')rCol();
+  if(t==='coleccion'){diary=loadDiary();rCol();}
   if(t==='ruleta')rRul();
   if(t==='stats')rStats();
   if(t==='ia')rIA();
@@ -613,7 +613,8 @@ function rCol(){
   el.innerHTML='';
   // HERO — last diary entry > last added > first record
   let heroRec=null,heroLabel='Destacado';
-  if(diary.length>0&&diary[0].record){heroRec=diary[0].record;heroLabel='Última escucha';}
+  const lastListen=diary.find(e=>e&&e.record&&e.record.t);
+  if(lastListen){heroRec=lastListen.record;heroLabel='Última escucha';}
   else{const allH=COL.concat(localCollection).filter(r=>r.d).sort((a,b)=>(b.d||'').localeCompare(a.d||''));if(allH.length){heroRec=allH[0];heroLabel='Último añadido';}}
   if(!heroRec)heroRec=COL[0];
   if(heroRec){

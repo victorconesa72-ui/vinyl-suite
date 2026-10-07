@@ -135,6 +135,13 @@ select option{background:#161514}
 #back-top{position:fixed;bottom:calc(142px + env(safe-area-inset-bottom,0));right:18px;z-index:89;width:40px;height:40px;border-radius:50%;background:#1a1917;border:1px solid var(--border);color:var(--dim);font-size:16px;cursor:pointer;display:none;align-items:center;justify-content:center;transition:opacity .2s,transform .15s}
 #back-top.visible{display:flex}
 #back-top:active{transform:scale(.9)}
+/* FORGOTTEN RECORD TOAST */
+#forgotten-toast{position:fixed;bottom:calc(148px + env(safe-area-inset-bottom,0));left:50%;transform:translateX(-50%) translateY(20px);z-index:88;background:#1a1917;border:1px solid var(--border);border-left:3px solid var(--gold);max-width:320px;width:calc(100% - 36px);padding:12px 14px;display:none;opacity:0;transition:opacity .3s,transform .3s;cursor:pointer}
+#forgotten-toast.show{display:block;opacity:1;transform:translateX(-50%) translateY(0)}
+#forgotten-toast .ft-label{font-size:9px;font-weight:700;letter-spacing:1.2px;color:var(--gold);margin-bottom:4px}
+#forgotten-toast .ft-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#forgotten-toast .ft-sub{font-size:11px;color:var(--muted);margin-top:2px}
+#forgotten-toast .ft-close{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--dim);font-size:13px;cursor:pointer;padding:2px 4px}
 #fab:active{transform:scale(.93)}
 #fab-modal{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:190;display:none;align-items:flex-end;justify-content:center}
 #fab-modal.open{display:flex}
@@ -416,6 +423,12 @@ textarea.field{resize:vertical;min-height:80px;border:1px solid var(--border);pa
 <!-- FAB -->
 <button id="fab" onclick="openFAB()" title="Registrar escucha">+</button>
 <button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Volver arriba">↑</button>
+<div id="forgotten-toast" onclick="forgottenTap()">
+  <div class="ft-label">✦ OLVIDADO</div>
+  <div class="ft-title" id="ft-title"></div>
+  <div class="ft-sub" id="ft-sub"></div>
+  <button class="ft-close" onclick="event.stopPropagation();forgottenDismiss()">✕</button>
+</div>
 <div id="fab-modal"><div id="fab-inner">
   <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px">REGISTRAR ESCUCHA</div>
   <input class="sbox" id="fab-srch" placeholder="Buscar disco…" oninput="fabSearch()" autocomplete="off" style="margin-bottom:0"/>
@@ -1487,6 +1500,44 @@ function saveFAB(){
 }
 document.getElementById('fab-modal').addEventListener('click',function(e){if(e.target===this)closeFAB();});
 
+// FORGOTTEN RECORD
+var _forgottenRec=null;
+function checkForgotten(){
+  if(diary.length<5)return; // need some history first
+  const played=localStorage.getItem('vs_forgotten_seen');
+  if(played===String(new Date().toDateString()))return; // once per day
+  const all=COL.concat(localCollection);
+  // build last-played map
+  const lastPlayed={};
+  diary.forEach(e=>{if(e.record&&e.record.id){if(!lastPlayed[e.record.id]||e.date>lastPlayed[e.record.id])lastPlayed[e.record.id]=e.date;}});
+  // candidates: played at least once but not in last 90 days
+  const now=Date.now();
+  const ninetyDays=90*24*60*60*1000;
+  const candidates=all.filter(r=>lastPlayed[r.id]&&(now-new Date(lastPlayed[r.id]).getTime())>ninetyDays);
+  if(!candidates.length)return;
+  // pick the one with oldest last play
+  candidates.sort((a,b)=>new Date(lastPlayed[a.id])-new Date(lastPlayed[b.id]));
+  _forgottenRec=candidates[0];
+  const months=Math.round((now-new Date(lastPlayed[_forgottenRec.id]).getTime())/(30*24*60*60*1000));
+  document.getElementById('ft-title').textContent=_forgottenRec.t;
+  document.getElementById('ft-sub').textContent=_forgottenRec.a+' · hace '+months+' '+( months===1?'mes':'meses');
+  const toast=document.getElementById('forgotten-toast');
+  toast.style.display='block';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>toast.classList.add('show')));
+  setTimeout(()=>forgottenDismiss(),12000);
+}
+function forgottenDismiss(){
+  const toast=document.getElementById('forgotten-toast');
+  toast.classList.remove('show');
+  setTimeout(()=>toast.style.display='none',300);
+  localStorage.setItem('vs_forgotten_seen',new Date().toDateString());
+}
+function forgottenTap(){
+  if(!_forgottenRec)return;
+  forgottenDismiss();
+  openModal(_forgottenRec);
+}
+
 // Scroll-to-top button
 window.addEventListener('scroll',function(){
   const btn=document.getElementById('back-top');
@@ -1495,6 +1546,7 @@ window.addEventListener('scroll',function(){
 
 // Init
 rCol();
+setTimeout(checkForgotten, 2000);
 </script>
 </body>
 </html>

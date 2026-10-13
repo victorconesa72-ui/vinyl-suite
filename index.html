@@ -701,7 +701,10 @@ async function sendToClock(r,quiet){
   try{
     await clkFetch('/api/v1/apps/pushed/'+CLK_APP,'PUT',app);
     await clkFetch('/api/v1/notifications','POST',note);
-    if(mine){btn.className='clk-send ok';btn.textContent='✓ En el reloj';}
+    if(mine){
+      const logged=logClockListen(r);
+      btn.className='clk-send ok';btn.textContent=(logged?'✓ En reloj y diario':'✓ En el reloj');
+    }
     else if(quiet)clkToast('📟 '+artist+' — '+r.t+' en el reloj',2500);
   }catch(e){
     if(mine){btn.className='clk-send err';btn.textContent='✕ Reintentar';}
@@ -716,6 +719,17 @@ async function clearClock(){
     btn.className='clk-send';btn.textContent='📟 Sonando ahora';
     clkToast('Disco retirado del reloj',2500);
   }catch(e){clkToast(clkErrMsg(e),7000);}
+}
+// Sending a record to the clock also logs it as a listen in the diary.
+// Skipped if the same record was already logged in the last 45 minutes
+// (e.g. pressed twice, or already registered by hand before sending).
+function logClockListen(r){
+  const last=diary.find(e=>e&&e.record);
+  if(last&&last.record.id===r.id&&Date.now()-new Date(last.date).getTime()<45*60*1000)return false;
+  const entry={id:Date.now(),record:r,rating:0,nota:'',date:new Date().toISOString(),via:'reloj'};
+  diary=[entry].concat(diary);saveDiary(diary);
+  if(typeof curTab!=='undefined'&&curTab==='diario')rDiario();
+  return true;
 }
 function clkAuto(record){const c=clkCfg();if(c.host&&c.auto)sendToClock(record,true);}
 

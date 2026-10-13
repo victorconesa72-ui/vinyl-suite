@@ -693,10 +693,10 @@ async function sendToClock(r,quiet){
   // Pushed app: stays in the rotation for 2 hours, then removes itself
   const app={
     text:[{text:artist+' ',color:'#D4AF6A'},{text:'· '+r.t+(r.y?' ('+r.y+')':''),color:'#FFFFFF'}],
-    durationMs:15000,lifetimeMs:2*60*60*1000,lifetimeExpiry:'remove'
+    durationMs:30000,scroll:{mode:'loop',speed:55,gap:16},lifetimeMs:2*60*60*1000,lifetimeExpiry:'remove'
   };
   // One-off notification so the record shows up right away
-  const note={text:[{text:'♪ ',color:'#D4AF6A'},{text:artist+' — '+r.t,color:'#FFFFFF'}],repeat:1,stack:false};
+  const note={text:[{text:'♪ ',color:'#D4AF6A'},{text:artist+' — '+r.t,color:'#FFFFFF'}],repeat:1,stack:false,scroll:{speed:55}};
   if(cover){app.icon=cover;note.icon=cover;}
   try{
     await clkFetch('/api/v1/apps/pushed/'+CLK_APP,'PUT',app);

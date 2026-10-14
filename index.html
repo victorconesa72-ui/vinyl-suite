@@ -815,8 +815,8 @@ function rCol(){
 var curSort='artist';
 var colView='grid';
 var curFmt='all'; // 'all' | 'vinyl' | 'cd'
-function isVinyl(f){return !f||f.toLowerCase()==='cd'?false:true;}
-function isCD(f){return (f||'').toLowerCase()==='cd';}
+function isCD(f){return (f||'').toUpperCase().includes('CD');}
+function isVinyl(f){return !isCD(f);}
 function setFmt(fmt){
   curFmt=fmt;
   document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.toggle('on',b.dataset.fmt===fmt));

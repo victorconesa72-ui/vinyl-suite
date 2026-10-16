@@ -819,16 +819,30 @@ function openModal(r){
     }
     if(d.images&&d.images.length>1){
       const gal=document.getElementById('mgallery');
+      let curImgIdx=0;
+      const allImgs=d.images;
+      function goToImg(idx){
+        curImgIdx=(idx+allImgs.length)%allImgs.length;
+        mainImg.src=allImgs[curImgIdx];
+        document.getElementById('mbg').src=allImgs[curImgIdx];
+        document.querySelectorAll('.gallery-img').forEach((x,i)=>x.classList.toggle('active',i===curImgIdx));
+        gal.children[curImgIdx]&&gal.children[curImgIdx].scrollIntoView({inline:'center',behavior:'smooth',block:'nearest'});
+      }
+      // Swipe en imagen principal
+      let _tx=0;
+      mainImg.addEventListener('touchstart',e=>{_tx=e.touches[0].clientX;},{passive:true});
+      mainImg.addEventListener('touchend',e=>{
+        const dx=e.changedTouches[0].clientX-_tx;
+        if(Math.abs(dx)>40)goToImg(curImgIdx+(dx<0?1:-1));
+      },{passive:true});
+      // Click para avanzar
+      mainImg.style.cursor='pointer';
+      mainImg.onclick=()=>goToImg(curImgIdx+1);
       d.images.forEach((url,i)=>{
         const img=document.createElement('img');
         img.className='gallery-img'+(i===0?' active':'');
         img.src=url;img.alt='';
-        img.onclick=()=>{
-          mainImg.src=url;
-          document.getElementById('mbg').src=url;
-          document.querySelectorAll('.gallery-img').forEach(x=>x.classList.remove('active'));
-          img.classList.add('active');
-        };
+        img.onclick=()=>goToImg(i);
         gal.appendChild(img);
       });
     }

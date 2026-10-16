@@ -1196,7 +1196,8 @@ function rRul(){
   document.getElementById('p-ruleta').innerHTML=`
   <div style="max-width:420px;margin:0 auto;text-align:center;padding-top:8px">
     <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px">¿Qué escucho hoy?</div>
-    <p style="color:var(--muted);font-size:12px;margin-bottom:28px;letter-spacing:.3px">Elige el momento y deja que el azar decida</p>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:10px;letter-spacing:.3px">Elige el momento y deja que el azar decida</p>
+    <div style="margin-bottom:18px"><span style="font-size:10px;font-weight:600;letter-spacing:.8px;color:${curFmt==='vinyl'?'#a0c4a0':curFmt==='cd'?'#a0b8d4':'var(--dim)'};border:1px solid ${curFmt==='vinyl'?'#a0c4a055':curFmt==='cd'?'#a0b8d455':'var(--border)'};padding:3px 10px;border-radius:20px">${curFmt==='vinyl'?'🎵 Solo vinilos':curFmt==='cd'?'💿 Solo CDs':'🎵💿 Toda la colección'}</span></div>
     <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px">CONTEXTO</div>
     <div class="ctx-chips" id="ctx-chips">
       <button class="ctx-chip${rulCtx==='visita'?' on':''}" onclick="setCtx('visita')">🍷 Visita</button>
@@ -1225,7 +1226,9 @@ function setCtx(c){
 function girar(){
   if(spinActive)return; spinActive=true;
   const disc=document.getElementById('rdisc'),btn=document.getElementById('rbtn'),res=document.getElementById('rres');
-  const all=COL.concat(localCollection);
+  let all=COL.concat(localCollection);
+  if(curFmt==='vinyl')all=all.filter(r=>!isCD(r.f));
+  else if(curFmt==='cd')all=all.filter(r=>isCD(r.f));
   // Context-weighted selection
   let pool=all;
   if(rulCtx==='noche'){pool=all.filter(r=>['Jazz','Soul','R&B','Blues','Chill'].some(g=>r.l&&r.l.toLowerCase().includes(g.toLowerCase()))||parseInt(r.y)<1990);if(!pool.length)pool=all;}

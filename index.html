@@ -1887,7 +1887,7 @@ document.getElementById('fab-modal').addEventListener('click',function(e){if(e.t
 // FORGOTTEN RECORD
 var _forgottenRec=null;
 function checkForgotten(){
-  if(diary.length<5)return; // need some history first
+  if(diary.length<2)return; // need some history first
   const played=localStorage.getItem('vs_forgotten_seen');
   if(played===String(new Date().toDateString()))return; // once per day
   const all=COL.concat(localCollection);
@@ -1896,7 +1896,7 @@ function checkForgotten(){
   diary.forEach(e=>{if(e.record&&e.record.id){if(!lastPlayed[e.record.id]||e.date>lastPlayed[e.record.id])lastPlayed[e.record.id]=e.date;}});
   // candidates: played at least once but not in last 90 days
   const now=Date.now();
-  const ninetyDays=90*24*60*60*1000;
+  const ninetyDays=30*24*60*60*1000;
   const candidates=all.filter(r=>lastPlayed[r.id]&&(now-new Date(lastPlayed[r.id]).getTime())>ninetyDays);
   if(!candidates.length)return;
   // pick the one with oldest last play

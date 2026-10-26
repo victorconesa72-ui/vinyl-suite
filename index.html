@@ -775,15 +775,45 @@ const COL=[{"a":"a-ha","t":"Hunting High And Low","y":1985,"id":176226,"l":"Warn
     {"a":"La Unión","t":"Grandes Éxitos 1984 / 2000","y":2000,"id":3379400,"f":"CD","l":"WEA","d":"2026-10-16"},
     {"a":"Alejandro Sanz","t":"Básico","y":0,"id":35471809,"f":"CD","l":"WEA","d":"2026-10-16"}];
 
+// Cover cache: memory (CC) + localStorage (LC_*)
 const CC={};
-async function covData(id){
-  if(CC[id]!==undefined)return CC[id];
+const LC_PREFIX='vs_cov_';
+const LC_MAX=600; // max entries in localStorage cache
+function lcGet(id){try{const v=localStorage.getItem(LC_PREFIX+id);return v?JSON.parse(v):undefined;}catch{return undefined;}}
+function lcSet(id,data){try{
+  // Evict oldest if over limit (simple: just clear all when >LC_MAX)
+  const keys=Object.keys(localStorage).filter(k=>k.startsWith(LC_PREFIX));
+  if(keys.length>=LC_MAX){keys.slice(0,100).forEach(k=>localStorage.removeItem(k));}
+  localStorage.setItem(LC_PREFIX+id,JSON.stringify({url:data.url,images:data.images}));
+}catch{}}
+
+// Request queue: max 4 concurrent, 80ms between dispatches
+const _cq=[];let _cInFlight=0;const _cMaxFlight=4;
+function _cDrain(){
+  while(_cInFlight<_cMaxFlight&&_cq.length){
+    _cInFlight++;
+    const{id,resolve}=_cq.shift();
+    _fetchCov(id).then(d=>{_cInFlight--;resolve(d);setTimeout(_cDrain,80);});
+  }
+}
+async function _fetchCov(id){
+  const cached=lcGet(id);
+  if(cached){CC[id]={url:cached.url||null,images:cached.images||[],tracklist:[]};return CC[id];}
   try{
     const r=await fetch('/api/covers?id='+id);
+    if(!r.ok)throw new Error(r.status);
     const d=await r.json();
     CC[id]={url:d.url||null,images:d.images||[],tracklist:d.tracklist||[]};
+    if(d.url)lcSet(id,CC[id]);
     return CC[id];
   }catch{CC[id]={url:null,images:[],tracklist:[]};return CC[id];}
+}
+async function covData(id){
+  if(CC[id]!==undefined)return CC[id];
+  // Check localStorage synchronously before queuing
+  const cached=lcGet(id);
+  if(cached){CC[id]={url:cached.url||null,images:cached.images||[],tracklist:[]};return CC[id];}
+  return new Promise(resolve=>{_cq.push({id,resolve});_cDrain();});
 }
 async function cov(id){
   const d=await covData(id);return d.url;

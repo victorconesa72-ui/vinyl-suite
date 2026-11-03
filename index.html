@@ -796,7 +796,7 @@ function _cDrain(){
     _fetchCov(id).then(d=>{_cInFlight--;resolve(d);setTimeout(_cDrain,80);});
   }
 }
-async function _fetchCov(id){
+async function _fetchCov(id,attempt=0){
   const cached=lcGet(id);
   if(cached){CC[id]={url:cached.url||null,images:cached.images||[],tracklist:[]};return CC[id];}
   try{
@@ -806,7 +806,16 @@ async function _fetchCov(id){
     CC[id]={url:d.url||null,images:d.images||[],tracklist:d.tracklist||[]};
     if(d.url)lcSet(id,CC[id]);
     return CC[id];
-  }catch{CC[id]={url:null,images:[],tracklist:[]};return CC[id];}
+  }catch(e){
+    // Retry once after delay (rate limiting); only cache null on final failure
+    if(attempt<2){
+      await new Promise(r=>setTimeout(r,1500+attempt*1500));
+      return _fetchCov(id,attempt+1);
+    }
+    // Don't cache null in localStorage — let it retry next session
+    CC[id]={url:null,images:[],tracklist:[]};
+    return CC[id];
+  }
 }
 async function covData(id){
   if(CC[id]!==undefined)return CC[id];

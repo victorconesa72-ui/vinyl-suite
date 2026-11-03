@@ -22,6 +22,9 @@ export default async function handler(req) {
         'User-Agent': 'VinylSuite/1.0'
       }
     });
+    if (!r.ok) {
+      return new Response(JSON.stringify({ url: null, images: [], tracklist: [], error: r.status }), { headers });
+    }
     const d = await r.json();
     const images = (d.images || []).map(img => img.uri).filter(Boolean);
     const tracklist = (d.tracklist || []).map(t => ({

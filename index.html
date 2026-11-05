@@ -411,6 +411,40 @@ textarea.field{resize:vertical;min-height:80px;border:1px solid var(--border);pa
 .sort-btn,.view-btn,.chip,.ctx-chip,.ia-chip,.tag,.history-pill,.yr-badge,.gs-year{border-radius:var(--r-pill)}
 .sort-btn,.chip,.ctx-chip,.ia-chip{padding-left:16px;padding-right:16px}
 textarea.field,.fld{border-radius:var(--r-btn)}
+
+/* Toast */
+#vs-toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0));transform:translateX(-50%) translateY(10px);z-index:300;background:#1a1917;border:1px solid var(--border);color:var(--text);font-size:13px;font-weight:600;padding:11px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;white-space:nowrap}
+#vs-toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+/* Stats de escucha */
+.hm-wrap{overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.hm-wrap::-webkit-scrollbar{display:none}
+.hm{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,11px);gap:3px;width:max-content}
+.hm-c{display:block;width:11px;height:11px;border-radius:3px;background:#211F1C}
+.hm-c.l1{background:#4A3D26}.hm-c.l2{background:#7A643A}.hm-c.l3{background:#B0915A}.hm-c.l4{background:#E8C98A}
+.hm-leg{display:flex;align-items:center;gap:4px;justify-content:flex-end;margin-top:10px;font-size:10px;color:var(--dim)}
+.hm-leg span{margin:0 4px}
+.tp-row{display:flex;align-items:center;gap:12px;padding:8px 0;cursor:pointer;border-bottom:1px solid var(--border)}
+.tp-row:last-child{border-bottom:none}
+.tp-n{width:16px;font-family:'Playfair Display',Georgia,serif;font-weight:900;color:var(--gold);font-size:15px;text-align:center}
+.tp-info{flex:1;min-width:0}
+.tp-t{font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tp-a{font-size:11px;color:var(--muted)}
+.tp-c{font-size:12px;font-weight:700;color:var(--gold)}
+.ss-note{font-size:11px;color:var(--dim);margin:-18px 0 22px}
+/* Cara B */
+#cara-b{max-width:420px;margin:44px auto 0;padding-top:28px;border-top:1px solid var(--border)}
+.cb-k{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--gold)}
+.cb-t{font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:900;letter-spacing:-.4px;margin:6px 0 2px}
+.cb-s{font-size:12px;color:var(--muted);margin-top:4px}
+.cb-row{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:16px 0 14px;padding-bottom:4px}
+.cb-row::-webkit-scrollbar{display:none}
+.cb-row>div{border-radius:var(--cover-r)!important}
+.cb-reto{margin-top:14px;background:var(--card);border-radius:var(--r-panel);padding:14px 16px;font-size:12.5px;color:var(--text)}
+.cb-reto label{display:flex;gap:10px;align-items:flex-start;cursor:pointer;line-height:1.5}
+.cb-reto input{accent-color:var(--gold);width:16px;height:16px;margin-top:2px;flex-shrink:0}
+.cb-prog{height:4px;border-radius:4px;background:#211F1C;margin:12px 0 4px;overflow:hidden}
+.cb-prog div{height:100%;background:var(--gold)}
+.btn-ghost{width:100%;padding:13px;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--text);cursor:pointer;border-radius:var(--r-btn)}
 </style>
 <script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
 </head>
@@ -458,7 +492,7 @@ textarea.field,.fld{border-radius:var(--r-btn)}
 </div></div>
 
 <!-- FAB -->
-<button id="fab" onclick="openFAB()" title="Registrar escucha">+</button>
+<div id="vs-toast"></div>
 <button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Volver arriba">↑</button>
 <div id="forgotten-toast" onclick="forgottenTap()">
   <div class="ft-label">✦ OLVIDADO</div>
@@ -873,7 +907,7 @@ function go(t){
   document.querySelectorAll('.btab').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
   ['coleccion','ruleta','stats','ia','diario','scanner'].forEach(n=>{const el=document.getElementById('p-'+n);el.style.display=n===t?'':'none';if(n===t){el.style.animation='none';void el.offsetWidth;el.style.animation='';}}); 
   if(t==='coleccion'){diary=loadDiary();rCol();}
-  if(t==='ruleta')rRul();
+  if(t==='ruleta'){rRul();renderCaraB();}
   if(t==='stats')rStats();
   if(t==='ia')rIA();
   if(t==='diario')rDiario();
@@ -1402,6 +1436,7 @@ function rStats(){
     h+='<div class="sbox2"><div class="sv">'+v+'</div><div class="sl">'+l+'</div>'+(s?'<div class="ss">'+s+'</div>':'')+'</div>';
   });
   h+='</div>';
+  h+=statsListenHTML();
   h+='<div class="sbox2" style="margin-bottom:12px"><div class="section-hdr">POR DÉCADA</div><div class="dec-bars">';
   decs.forEach(([d,n])=>{
     const hh=maxD>0?Math.max((n/maxD)*60,n>0?4:0):0;
@@ -1424,7 +1459,113 @@ function rStats(){
     row.innerHTML+='<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(r.t)+'</div><div style="font-size:11px;color:#555">'+esc(r.a)+'</div></div><div style="font-size:10px;color:#444;flex-shrink:0">'+r.d+'</div>';
     nw.appendChild(row);
   });
+  statsListenAfter();
 }
+
+// ═══ ESCUCHAS: rachas, calendario, los más puestos y Cara B ═══
+const DAY=86400000, SLEEP_DAYS=180;
+function vsToast(m){const t=document.getElementById('vs-toast');if(!t)return;t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),1800);}
+function allRecs(){return COL.concat(localCollection);}
+function recById(id){id=String(id);return allRecs().find(r=>String(r.id)===id);}
+function dayKey(d){d=new Date(d);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function diaryOk(){return diary.filter(e=>e&&e.record&&e.date);}
+function fmtN(n,dec){return Number(n).toLocaleString('es-ES',{maximumFractionDigits:dec||0,minimumFractionDigits:dec||0});}
+function parseDur(s){if(!s)return 0;const p=String(s).split(':').map(Number);if(p.some(isNaN))return 0;return (p.length===3?p[0]*3600+p[1]*60+p[2]:p[0]*60+(p[1]||0))*1000;}
+function recDurMs(id){const c=CC[id];if(c&&c.tracklist&&c.tracklist.length){const t=c.tracklist.reduce((a,x)=>a+parseDur(x.duration),0);if(t)return t;}return 0;}
+function streaks(entries){
+  const days=[...new Set(entries.map(e=>dayKey(e.date)))].sort();
+  let best=0,run=0,prev=null;
+  days.forEach(d=>{const t=new Date(d).getTime();run=(prev&&t-prev<=DAY*1.5)?run+1:1;best=Math.max(best,run);prev=t;});
+  const set=new Set(days);let cur=0;const c=new Date();if(!set.has(dayKey(c)))c.setDate(c.getDate()-1);
+  while(set.has(dayKey(c))){cur++;c.setDate(c.getDate()-1);}
+  return {cur,best};
+}
+function playCounts(entries){
+  const m=new Map();entries.forEach(e=>{const k=String(e.record.id);const v=m.get(k);if(v)v.n++;else m.set(k,{r:recById(k)||e.record,n:1});});
+  return [...m.values()].sort((a,b)=>b.n-a.n);
+}
+function heatmapHTML(entries){
+  const counts={};entries.forEach(e=>{const k=dayKey(e.date);counts[k]=(counts[k]||0)+1;});
+  const end=new Date();end.setHours(0,0,0,0);
+  const start=new Date(end);start.setDate(start.getDate()-7*52-((end.getDay()+6)%7));
+  let h='<div class="hm-wrap" id="hm-wrap"><div class="hm">';
+  for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){
+    const n=counts[dayKey(d)]||0,lv=n===0?0:n===1?1:n===2?2:n<=4?3:4;
+    h+='<i class="hm-c l'+lv+'" title="'+d.toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'})+(n?' · '+n:'')+'"></i>';
+  }
+  return h+'</div></div>';
+}
+function statsListenHTML(){
+  const ent=diaryOk(),yr=new Date().getFullYear();
+  const yearE=ent.filter(e=>new Date(e.date).getFullYear()===yr);
+  let known=0;const ms=yearE.reduce((a,e)=>{const d=recDurMs(e.record.id);if(d)known++;return a+(d||42*60000);},0);
+  const hours=ms/3600000;
+  const st=streaks(ent);
+  const distinct=new Set(yearE.map(e=>String(e.record.id))).size;
+  const pct=allRecs().length?Math.round(distinct/allRecs().length*100):0;
+  let h='<h3 style="font-family:Playfair Display,Georgia,serif;font-size:22px;font-weight:900;letter-spacing:-.3px;margin:-4px 0 14px">Tus escuchas</h3>';
+  h+='<div class="stat-grid">';
+  [[yearE.length,'escuchas',String(yr)],[(known<yearE.length?'≈':'')+(hours<10?fmtN(hours,1):fmtN(Math.round(hours))),'horas',String(yr)],
+   [st.cur,'días de racha','mejor racha: '+st.best],[distinct,'discos distintos',pct+'% de tu colección en '+yr]].forEach(([v,l,sub])=>{
+    h+='<div class="sbox2"><div class="sv">'+v+'</div><div class="sl">'+l+'</div><div class="ss">'+sub+'</div></div>';
+  });
+  h+='</div>';
+  if(yearE.length&&known<yearE.length)h+='<div class="ss-note">Las horas se estiman con 42 min por disco cuando no se conoce la duración.</div>';
+  h+='<div class="sbox2" style="margin-bottom:12px"><div class="section-hdr">CALENDARIO DE ESCUCHAS</div>'+heatmapHTML(ent)
+    +'<div class="hm-leg"><span>Menos</span><i class="hm-c l0"></i><i class="hm-c l1"></i><i class="hm-c l2"></i><i class="hm-c l3"></i><i class="hm-c l4"></i><span>Más</span></div></div>';
+  const top=playCounts(ent).slice(0,5);
+  if(top.length){
+    h+='<div class="sbox2" style="margin-bottom:28px"><div class="section-hdr">LOS MÁS PUESTOS</div><div id="tp-wrap">';
+    top.forEach(({r,n},i)=>{
+      h+='<div class="tp-row" data-id="'+esc(String(r.id))+'"><span class="tp-n">'+(i+1)+'</span><span class="tp-img"></span>'
+        +'<div class="tp-info"><div class="tp-t">'+esc(r.t)+'</div><div class="tp-a">'+esc(r.a)+'</div></div><span class="tp-c">'+n+'×</span></div>';
+    });
+    h+='</div></div>';
+  }
+  return h;
+}
+function statsListenAfter(){
+  const w=document.getElementById('hm-wrap');if(w)w.scrollLeft=w.scrollWidth;
+  document.querySelectorAll('#tp-wrap .tp-row').forEach(row=>{
+    const r=recById(row.dataset.id);if(!r)return;
+    row.onclick=()=>openModal(r);
+    row.querySelector('.tp-img').replaceWith(imgDiv(r.id,40,40,10));
+  });
+}
+function lastPlayed(){const m=new Map();diaryOk().forEach(e=>{const k=String(e.record.id),t=new Date(e.date).getTime();if(!m.has(k)||t>m.get(k))m.set(k,t);});return m;}
+function dormant(){
+  const lp=lastPlayed(),now=Date.now(),all=allRecs();
+  const never=all.filter(r=>!lp.has(String(r.id))).sort((a,b)=>(a.d||'').localeCompare(b.d||''));
+  const stale=all.filter(r=>lp.has(String(r.id))&&now-lp.get(String(r.id))>SLEEP_DAYS*DAY).sort((a,b)=>lp.get(String(a.id))-lp.get(String(b.id)));
+  return {never,stale,all:[...stale,...never]};
+}
+function rescuedThisWeek(){
+  const now=new Date(),mon=new Date(now);mon.setHours(0,0,0,0);mon.setDate(mon.getDate()-((now.getDay()+6)%7));
+  const sorted=diaryOk().slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const prevOf=new Map();let n=0;
+  sorted.forEach(e=>{const k=String(e.record.id),t=new Date(e.date).getTime(),prev=prevOf.get(k);
+    if(t>=mon.getTime()&&(prev===undefined||t-prev>SLEEP_DAYS*DAY))n++;prevOf.set(k,t);});
+  return n;
+}
+function retoOn(){try{return localStorage.getItem('vs_reto')==='1';}catch{return false;}}
+function toggleReto(){try{localStorage.setItem('vs_reto',retoOn()?'0':'1');}catch{}renderCaraB();}
+function renderCaraB(){
+  const host=document.getElementById('p-ruleta');if(!host)return;
+  let box=document.getElementById('cara-b');
+  if(!box){box=document.createElement('div');box.id='cara-b';host.appendChild(box);}
+  const d=dormant();
+  if(!d.all.length){box.remove();return;}
+  const res=rescuedThisWeek(),on=retoOn();
+  box.innerHTML='<div class="cb-k">CARA B</div><div class="cb-t">Discos que esperan su turno</div>'
+    +'<div class="cb-s">'+d.never.length+' sin estrenar · '+d.stale.length+' sin sonar en 6 meses</div>'
+    +'<div class="cb-row" id="cb-row"></div>'
+    +'<button class="btn-ghost" onclick="rescueOne()">🎲 Rescatar uno al azar</button>'
+    +'<div class="cb-reto"><label><input type="checkbox" '+(on?'checked':'')+' onchange="toggleReto()"> Reto semanal: rescatar un disco dormido cada semana</label>'
+    +(on?'<div class="cb-prog"><div style="width:'+Math.min(100,res*100)+'%"></div></div><div class="cb-s">'+(res>=1?'¡Reto cumplido esta semana! ✦':'Esta semana: '+res+' de 1')+'</div>':'')+'</div>';
+  const row=document.getElementById('cb-row');
+  d.all.slice(0,14).forEach(r=>{const c=imgDiv(r.id,86,86,14,()=>openModal(r));c.title=r.a+' — '+r.t;row.appendChild(c);});
+}
+function rescueOne(){const d=dormant().all;if(d.length)openModal(d[Math.floor(Math.random()*d.length)]);}
 
 // IA
 function rIA(){
@@ -1853,27 +1994,10 @@ function renderLocalCollection(el){
 
 
 function quickRegister(record){
-  regRecord=record;regRating=0;
-  const existing=document.getElementById('modal-reg-form');
-  if(existing){existing.style.display=existing.style.display==='none'?'block':'none';return;}
-  const form=document.createElement('div');form.id='modal-reg-form';form.className='mini-reg';
-  const title=document.createElement('div');title.className='mini-reg-title';title.textContent='REGISTRAR ESTA ESCUCHA';
-  const rlbl=document.createElement('div');rlbl.style.cssText='font-size:10px;color:#666;font-weight:700;letter-spacing:1px;margin-bottom:6px';rlbl.textContent='VALORACIÓN';
-  const stars=document.createElement('div');stars.className='stars';stars.id='qreg-stars';
-  for(var i=1;i<=5;i++){
-    (function(n){const s=document.createElement('button');s.className='star';s.textContent='☆';s.onclick=function(){setQRating(n);};stars.appendChild(s);})(i);
-  }
-  const nota=document.createElement('textarea');nota.className='fld';nota.id='qnota';nota.placeholder='Notas opcionales...';nota.style.marginTop='10px';
-  const btn=document.createElement('button');btn.className='btn-f';btn.textContent='Guardar escucha';btn.onclick=saveQuickEntry;
-  form.appendChild(title);form.appendChild(rlbl);form.appendChild(stars);form.appendChild(nota);form.appendChild(btn);
-  const mc=document.getElementById('mc');if(mc&&mc.parentNode)mc.parentNode.insertBefore(form,mc);
+  // Hoja inferior con el disco ya elegido: estrellas y Guardar siempre a la vista
+  openFAB();selectFABRecord(record);
+  setTimeout(()=>{const n=document.getElementById('fab-srch');if(n)n.blur();},120);
 }
-
-function setQRating(n){
-  regRating=n;
-  document.querySelectorAll('#qreg-stars .star').forEach(function(s,i){s.classList.toggle('on',i<n);s.textContent=i<n?'★':'☆';});
-}
-
 function saveQuickEntry(){
   if(!regRecord)return;
   const nota=document.getElementById('qnota');
@@ -1985,11 +2109,10 @@ function saveFAB(){
   diary=[entry,...diary];saveDiary(diary);
   clkAuto(fabRecord);
   closeFAB();
-  // flash confirmation
-  const fab=document.getElementById('fab');
-  fab.textContent='✓';fab.style.background='#06d6a0';
-  setTimeout(()=>{fab.textContent='+';fab.style.background='var(--gold)';},1500);
+  vsToast('✓ Escucha registrada');
   if(curTab==='diario')rDiario();
+  if(curTab==='stats')rStats();
+  if(curTab==='ruleta')renderCaraB();
 }
 document.getElementById('fab-modal').addEventListener('click',function(e){if(e.target===this)closeFAB();});
 

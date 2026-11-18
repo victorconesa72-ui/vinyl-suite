@@ -463,6 +463,24 @@ textarea.field,.fld{border-radius:var(--r-btn)}
 .hm-rec>div{flex-shrink:0}
 .hm-rt{font-size:12.5px;font-weight:600;display:flex;flex-direction:column;min-width:0}
 .hm-rt small{font-size:11px;color:var(--muted);font-weight:400}
+/* Efemérides */
+.today{margin:22px 0 4px;background:var(--card);border-radius:var(--r-panel,16px);padding:16px 16px 8px}
+.today .slbl{margin-bottom:8px}
+.today-it{display:flex;gap:12px;align-items:center;width:100%;background:none;border:none;border-top:1px solid var(--border);padding:10px 0;text-align:left;color:var(--text);font:inherit;cursor:pointer}
+.today-it:first-of-type{border-top:none}
+.today-txt{font-size:13px;line-height:1.45;font-weight:600}
+.today-txt span{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:2px}
+/* Tu año en discos */
+.wr-open{margin-bottom:22px}
+#wrapped{position:fixed;inset:0;z-index:395;background:var(--bg,#0A0908);overflow-y:auto;padding:calc(14px + env(safe-area-inset-top,0)) 20px calc(24px + env(safe-area-inset-bottom,0))}
+#wrapped[hidden]{display:none}
+.wr-card{max-width:440px;margin:0 auto}
+.wr-top{display:flex;justify-content:flex-end;margin-bottom:10px}
+.wr-x{width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:none;color:var(--text);font-size:16px;cursor:pointer}
+.wr-tabs{display:flex;gap:8px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+.wr-img{width:100%;border-radius:18px;display:block;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.wr-btns{display:flex;gap:10px;margin-top:16px}
+.wr-btns>*{flex:1}
 </style>
 <script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
 </head>
@@ -511,6 +529,7 @@ textarea.field,.fld{border-radius:var(--r-btn)}
 
 <!-- FAB -->
 <div id="vs-toast"></div>
+<div id="wrapped" hidden></div>
 <button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Volver arriba">↑</button>
 <div id="forgotten-toast" onclick="forgottenTap()">
   <div class="ft-label">✦ OLVIDADO</div>
@@ -1189,6 +1208,7 @@ function rCol(){
     el.appendChild(hero);
     covData(heroRec.id).then(d=>{if(d.url)himg.src=d.url;});
   }
+  const tc=todayCard();if(tc)el.appendChild(tc);
   // Header
   const hdr=document.createElement('div');
   hdr.style.cssText='display:flex;justify-content:space-between;align-items:baseline;margin:24px 0 14px';
@@ -1565,7 +1585,8 @@ function statsListenHTML(){
   const st=streaks(ent);
   const distinct=new Set(yearE.map(e=>String(e.record.id))).size;
   const pct=allRecs().length?Math.round(distinct/allRecs().length*100):0;
-  let h='<h3 style="font-family:Playfair Display,Georgia,serif;font-size:22px;font-weight:900;letter-spacing:-.3px;margin:-4px 0 14px">Tus escuchas</h3>';
+  let h='<button class="btn-f wr-open" onclick="openWrapped(\'year\')">✦ Tu '+yr+' en discos</button>';
+  h+='<h3 style="font-family:Playfair Display,Georgia,serif;font-size:22px;font-weight:900;letter-spacing:-.3px;margin:0 0 14px">Tus escuchas</h3>';
   h+='<div class="stat-grid">';
   [[yearE.length,'escuchas',String(yr)],[(known<yearE.length?'≈':'')+(hours<10?fmtN(hours,1):fmtN(Math.round(hours))),'horas',String(yr)],
    [st.cur,'días de racha','mejor racha: '+st.best],[distinct,'discos distintos',pct+'% de tu colección en '+yr]].forEach(([v,l,sub])=>{
@@ -1630,6 +1651,159 @@ function renderCaraB(){
   d.all.slice(0,14).forEach(r=>{const c=imgDiv(r.id,86,86,14,()=>openModal(r));c.title=r.a+' — '+r.t;row.appendChild(c);});
 }
 function rescueOne(){const d=dormant().all;if(d.length)openModal(d[Math.floor(Math.random()*d.length)]);}
+
+// ═══ EFEMÉRIDES Y TU AÑO EN DISCOS ═══
+// Fecha original de cada álbum (no la de la reedición): se busca en MusicBrainz en segundo plano,
+// 1 petición por segundo, y se guarda en este navegador (vs_rel) para no repetirla.
+const MBW='https://musicbrainz.org/ws/2';
+function relCache(){try{return JSON.parse(localStorage.getItem('vs_rel')||'{}');}catch{return{};}}
+function relSave(c){try{localStorage.setItem('vs_rel',JSON.stringify(c));}catch{}}
+function cleanArtist(a){return String(a||'').replace(/\s*\(\d+\)/g,'').trim();}
+function relDate(r){const c=relCache()[r.id];return c&&c.d||'';}
+let _relRunning=false;
+async function relDatesPending(){
+  if(_relRunning)return;_relRunning=true;
+  const cache=relCache(),now=Date.now(),MONTH=30*DAY;
+  const todo=allRecs().filter(r=>{const c=cache[r.id];return !c||(!c.d&&now-(c.at||0)>MONTH);});
+  let found=0;
+  for(const r of todo){
+    try{
+      const q='artist:"'+cleanArtist(r.a).replace(/"/g,'')+'" AND releasegroup:"'+String(r.t).replace(/"/g,'')+'"';
+      const res=await fetch(MBW+'/release-group/?limit=3&fmt=json&query='+encodeURIComponent(q),{headers:{Accept:'application/json'}});
+      if(res.status===503){await new Promise(x=>setTimeout(x,3000));continue;}
+      if(!res.ok)break;
+      const g=((await res.json())['release-groups']||[]).find(x=>(x.score||0)>=90&&/^\d{4}-\d{2}-\d{2}$/.test(x['first-release-date']||''));
+      cache[r.id]={d:g?g['first-release-date']:'',at:now};
+      if(g)found++;
+      if(found&&found%10===0)relSave(cache);
+    }catch{break;}
+    await new Promise(x=>setTimeout(x,1100));
+  }
+  relSave(cache);_relRunning=false;
+  if(found&&curTab==='coleccion'){const old=document.getElementById('today-card');if(old){const n=todayCard();if(n)old.replaceWith(n);}else rCol();}
+  checkEfemeride();
+}
+function todayItems(){
+  const now=new Date(),md=dayKey(now).slice(5),yr=now.getFullYear(),out=[];
+  allRecs().forEach(r=>{
+    const m=/^(\d{4})-(\d{2}-\d{2})$/.exec(relDate(r));
+    if(m&&m[2]===md&&+m[1]<yr){const n=yr-m[1];out.push({r,w:3,txt:'«'+r.t+'» cumple '+n+' año'+(n!==1?'s':'')+' hoy'});}
+  });
+  const seen=new Set();
+  diaryOk().forEach(e=>{
+    const id=String(e.record.id);if(seen.has(id))return;const d=new Date(e.date);
+    if(dayKey(d).slice(5)===md&&d.getFullYear()<yr){seen.add(id);const n=yr-d.getFullYear();out.push({r:recById(id)||e.record,w:2,txt:'Hace '+n+' año'+(n!==1?'s':'')+' escuchabas «'+e.record.t+'»'});}
+  });
+  allRecs().forEach(r=>{
+    if(!r.d||r.d.slice(5)!==md)return;const y=+r.d.slice(0,4);
+    if(y<yr){const n=yr-y;out.push({r,w:1,txt:'Hace '+n+' año'+(n!==1?'s':'')+' llegó a tu colección «'+r.t+'»'});}
+  });
+  return out.sort((a,b)=>b.w-a.w).slice(0,3);
+}
+function todayCard(){
+  const items=todayItems();if(!items.length)return null;
+  const el=document.createElement('div');el.className='today';el.id='today-card';
+  el.innerHTML='<div class="slbl">HOY EN TU COLECCIÓN</div>';
+  items.forEach(x=>{
+    const b=document.createElement('button');b.className='today-it';b.onclick=()=>openModal(x.r);
+    b.appendChild(imgDiv(x.r.id,44,44,8));
+    const tx=document.createElement('div');tx.className='today-txt';tx.innerHTML=esc(x.txt)+'<span>'+esc(x.r.a)+'</span>';b.appendChild(tx);
+    el.appendChild(b);
+  });
+  return el;
+}
+// Aviso del día: si un disco cumple años hoy, se muestra una vez (en lugar del "olvidado")
+var _efeShown=false;
+function checkEfemeride(){
+  if(_efeShown)return false;
+  try{if(localStorage.getItem('vs_efe_seen')===new Date().toDateString())return false;}catch{}
+  const it=todayItems().find(x=>x.w===3);if(!it)return false;
+  _efeShown=true;_forgottenRec=it.r;
+  const toast=document.getElementById('forgotten-toast');
+  toast.querySelector('.ft-label').textContent='✦ EFEMÉRIDE';
+  document.getElementById('ft-title').textContent=it.txt;
+  document.getElementById('ft-sub').textContent=it.r.a+' · ¿lo pones hoy?';
+  toast.style.display='block';requestAnimationFrame(()=>requestAnimationFrame(()=>toast.classList.add('show')));
+  try{localStorage.setItem('vs_efe_seen',new Date().toDateString());}catch{}
+  setTimeout(()=>{toast.classList.remove('show');setTimeout(()=>{toast.style.display='none';toast.querySelector('.ft-label').textContent='✦ OLVIDADO';},300);},12000);
+  return true;
+}
+
+// ─── Tu año (o tu mes) en discos ───
+let _wrPeriod='year',_wrBlob=null,_wrNoCover=false;
+function wrRange(p){
+  const n=new Date();
+  if(p==='month')return [new Date(n.getFullYear(),n.getMonth(),1),new Date(n.getFullYear(),n.getMonth()+1,1)];
+  if(p==='lastmonth')return [new Date(n.getFullYear(),n.getMonth()-1,1),new Date(n.getFullYear(),n.getMonth(),1)];
+  return [new Date(n.getFullYear(),0,1),new Date(n.getFullYear()+1,0,1)];
+}
+function wrData(p){
+  const [a,b]=wrRange(p);
+  const E=diaryOk().filter(e=>new Date(e.date)>=a&&new Date(e.date)<b);
+  const plays=playCounts(E);
+  const top=plays.length?plays.filter(x=>x.n===plays[0].n).map(x=>x.r).sort((x,y)=>{
+    const rx=Math.max(...E.filter(e=>String(e.record.id)===String(x.id)).map(e=>e.rating||0)),ry=Math.max(...E.filter(e=>String(e.record.id)===String(y.id)).map(e=>e.rating||0));return ry-rx;})[0]:null;
+  const cnt=f=>{const m={};E.forEach(e=>{const r=recById(e.record.id)||e.record;const k=f(r);if(k)m[k]=(m[k]||0)+1;});return Object.entries(m).sort((x,y)=>y[1]-x[1])[0]?.[0]||null;};
+  const yearOf=r=>{const d=relDate(r);return d?+d.slice(0,4):parseInt(r.y)||0;};
+  const dec=r=>{const y=yearOf(r);return y?(y<2000?'años '+String(y).slice(2,3)+'0':y<2010?'años 2000':y<2020?'años 2010':'años 2020'):null;};
+  const ms=E.reduce((s,e)=>s+(recDurMs(e.record.id)||42*60000),0);
+  const label=p==='year'?String(a.getFullYear()):a.toLocaleDateString('es-ES',{month:'long'});
+  return {E,label,listens:E.length,ms,distinct:plays.length,top,topN:plays[0]?.n||0,decade:cnt(dec),artist:cnt(r=>cleanArtist(r.a)),streak:streaks(E).best};
+}
+function openWrapped(p){
+  _wrPeriod=p||'year';_wrNoCover=false;
+  const el=document.getElementById('wrapped');el.hidden=false;document.body.style.overflow='hidden';
+  el.innerHTML='<div class="wr-card"><div class="wr-top"><button class="wr-x" onclick="closeWrapped()" aria-label="Cerrar">✕</button></div>'
+    +'<div class="wr-tabs">'+[['month','Este mes'],['lastmonth','Mes pasado'],['year','Este año']].map(([k,l])=>'<button class="chip'+(k===_wrPeriod?' on':'')+'" onclick="openWrapped(\''+k+'\')">'+l+'</button>').join('')+'</div>'
+    +'<div id="wr-body"><div style="text-align:center;padding:60px 0"><div class="spinner"></div></div></div></div>';
+  drawWrapped();
+}
+function closeWrapped(){const el=document.getElementById('wrapped');el.hidden=true;el.innerHTML='';document.body.style.overflow='';}
+function wrImg(src){if(src&&/discogs\.com/.test(src))src='/api/img?u='+encodeURIComponent(src);return new Promise(res=>{if(!src)return res(null);const i=new Image();i.crossOrigin='anonymous';const t=setTimeout(()=>res(null),6000);i.onload=()=>{clearTimeout(t);res(i);};i.onerror=()=>{clearTimeout(t);res(null);};i.src=src;});}
+function wrFit(x,s,w){s=String(s||'');if(x.measureText(s).width<=w)return s;while(s.length>1&&x.measureText(s+'…').width>w)s=s.slice(0,-1);return s+'…';}
+function wrHours(ms){const h=ms/3600000;return h<10?fmtN(h,1):fmtN(Math.round(h));}
+async function drawWrapped(){
+  const d=wrData(_wrPeriod),body=document.getElementById('wr-body');if(!body)return;
+  if(!d.listens){body.innerHTML='<div class="empty" style="padding:50px 10px;text-align:center;color:var(--muted)"><div style="font-size:15px;color:var(--text);margin-bottom:8px">Aún no hay escuchas en este periodo</div><div style="font-size:12.5px;line-height:1.6">Registra tus escuchas desde la ficha de cada disco y aquí aparecerá tu resumen.</div></div>';return;}
+  try{await document.fonts.load('900 100px "Playfair Display"');await document.fonts.load('700 40px Inter');}catch{}
+  const W=1080,H=1920,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  const TXT='#F2EEE6',GOLD='#D4AF6A',MUT='#9A958C',BG='#0A0908',PF='"Playfair Display",Georgia,serif';
+  x.fillStyle=BG;x.fillRect(0,0,W,H);
+  x.strokeStyle='rgba(212,175,106,.06)';x.lineWidth=2;for(let r=200;r<1300;r+=26){x.beginPath();x.arc(W/2,H*0.56,r,0,Math.PI*2);x.stroke();}
+  x.textBaseline='alphabetic';x.fillStyle=TXT;x.font='900 84px '+PF;x.fillText('Vinyl',90,180);
+  const vw=x.measureText('Vinyl ').width;x.fillStyle=GOLD;x.font='italic 900 84px '+PF;x.fillText('Suite',90+vw,180);
+  x.fillStyle=GOLD;x.font='700 34px Inter';
+  const per=_wrPeriod==='year'?'TU '+d.label+' EN DISCOS':'TU '+d.label.toUpperCase()+' EN DISCOS';
+  x.fillText(per.split('').join(String.fromCharCode(8202)),92,320);
+  x.fillStyle=TXT;x.font='900 230px '+PF;x.fillText(wrHours(d.ms)+' h',80,590);
+  x.fillStyle=MUT;x.font='500 42px Inter';x.fillText('de música en tu tocadiscos',92,662);
+  const stat=(v,l,px)=>{x.fillStyle=TXT;x.font='900 112px '+PF;x.fillText(String(v),px,850);x.fillStyle=MUT;x.font='600 32px Inter';x.fillText(l,px+4,902);};
+  stat(d.listens,'escuchas',90);stat(d.distinct,'discos distintos',420);stat(d.streak,'días de racha',790);
+  const cs=520,cx=(W-cs)/2,cy=975;
+  let src=null;if(!_wrNoCover&&d.top){try{src=(await covData(d.top.id)).url;}catch{}}
+  const img=await wrImg(src);
+  x.save();x.beginPath();x.roundRect?x.roundRect(cx,cy,cs,cs,18):x.rect(cx,cy,cs,cs);x.clip();
+  if(img)x.drawImage(img,cx,cy,cs,cs);else{x.fillStyle='#17140F';x.fillRect(cx,cy,cs,cs);x.fillStyle=GOLD;x.font='900 260px '+PF;x.textAlign='center';x.fillText((d.top?.a||'?')[0].toUpperCase(),W/2,cy+cs/2+90);x.textAlign='left';}
+  x.restore();
+  x.textAlign='center';x.fillStyle=GOLD;x.font='700 32px Inter';
+  x.fillText((_wrPeriod==='year'?'TU DISCO DEL AÑO':'TU DISCO DEL MES')+' · '+d.topN+'×',W/2,cy+cs+72);
+  x.fillStyle=TXT;x.font='900 72px '+PF;x.fillText(wrFit(x,d.top.t,W-160),W/2,cy+cs+156);
+  x.fillStyle=MUT;x.font='500 42px Inter';x.fillText(wrFit(x,cleanArtist(d.top.a),W-160),W/2,cy+cs+216);
+  const bits=[d.decade,d.artist].filter(Boolean);
+  x.strokeStyle='rgba(212,175,106,.18)';x.beginPath();x.moveTo(140,1785);x.lineTo(W-140,1785);x.stroke();
+  x.fillStyle=TXT;x.font='600 36px Inter';x.fillText(wrFit(x,bits.join('  ·  '),W-160),W/2,1845);x.textAlign='left';
+  let url;
+  try{_wrBlob=await new Promise((r,k)=>{try{c.toBlob(r,'image/png');}catch(e){k(e);}});url=URL.createObjectURL(_wrBlob);}
+  catch(e){if(!_wrNoCover){_wrNoCover=true;return drawWrapped();}body.innerHTML='<p style="color:#e63946;text-align:center">No se pudo crear la imagen.</p>';return;}
+  body.innerHTML='<img class="wr-img" src="'+url+'" alt="'+esc(per)+'">'
+    +'<div class="wr-btns"><button class="btn-f" onclick="shareWrapped()">Compartir</button><button class="btn-ghost" onclick="downloadWrapped()">Descargar</button></div>';
+}
+async function shareWrapped(){
+  if(!_wrBlob)return;const f=new File([_wrBlob],'vinyl-suite-'+_wrPeriod+'.png',{type:'image/png'});
+  try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Vinyl Suite'});return;}}catch(e){if(e&&e.name==='AbortError')return;}
+  downloadWrapped();
+}
+function downloadWrapped(){if(!_wrBlob)return;const a=document.createElement('a');a.href=URL.createObjectURL(_wrBlob);a.download='vinyl-suite-'+_wrPeriod+'.png';document.body.appendChild(a);a.click();a.remove();}
 
 // IA
 function rIA(){
@@ -2226,7 +2400,8 @@ window.addEventListener('scroll',function(){
 
 // Init
 rCol();
-setTimeout(checkForgotten, 2000);
+setTimeout(()=>{if(!checkEfemeride())checkForgotten();},2000);
+setTimeout(relDatesPending,6000);
 </script>
 </body>
 </html>

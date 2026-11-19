@@ -943,6 +943,7 @@ function go(t){
   document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',['coleccion','ruleta','stats','ia','diario','scanner'][i]===t));
   document.querySelectorAll('.btab').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
   ['coleccion','ruleta','stats','ia','diario','scanner'].forEach(n=>{const el=document.getElementById('p-'+n);el.style.display=n===t?'':'none';if(n===t){el.style.animation='none';void el.offsetWidth;el.style.animation='';}}); 
+  updateHdrCount();
   if(t==='coleccion'){diary=loadDiary();rCol();}
   if(t==='ruleta'){rRul();renderCaraB();}
   if(t==='stats')rStats();
@@ -1805,6 +1806,8 @@ async function shareWrapped(){
 }
 function downloadWrapped(){if(!_wrBlob)return;const a=document.createElement('a');a.href=URL.createObjectURL(_wrBlob);a.download='vinyl-suite-'+_wrPeriod+'.png';document.body.appendChild(a);a.click();a.remove();}
 
+// Cabecera: número real de discos (colección de Discogs + añadidos a mano)
+function updateHdrCount(){const h=document.getElementById('hdr-count');if(h)h.textContent=allRecs().length+' discos · @veeteen';}
 // IA
 function rIA(){
   const moods=['Chill','Energético','Melancólico','Fiesta','Íntimo','Épico','Nocturno','Alegre'];
@@ -1992,6 +1995,7 @@ function loadLocalCol(){
   try{return JSON.parse(localStorage.getItem('vs_local_col')||'[]');}catch{return[];}
 }
 function saveLocalCol(c){
+  setTimeout(()=>{try{updateHdrCount();}catch{}},0);
   try{localStorage.setItem('vs_local_col',JSON.stringify(c));}catch{}
 }
 localCollection = loadLocalCol();
@@ -2400,6 +2404,7 @@ window.addEventListener('scroll',function(){
 
 // Init
 rCol();
+updateHdrCount();
 setTimeout(()=>{if(!checkEfemeride())checkForgotten();},2000);
 setTimeout(relDatesPending,6000);
 </script>

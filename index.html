@@ -1164,6 +1164,8 @@ async function sendToClock(r,quiet){
   const note={text:[{text:'♪ ',color:'#D4AF6A'},{text:artist+' — '+r.t,color:'#FFFFFF'}],repeat:1,stack:false,scroll:{speed:55}};
   if(cover){app.icon=cover;note.icon=cover;}
   try{
+    // If the clock roulette has a record fixed, let it go: the newest choice wins
+    clkFetch('/api/v1/apps/ruleta/data','PATCH',{liberar:Date.now()%1000000000}).catch(()=>{});
     await clkFetch('/api/v1/apps/pushed/'+CLK_APP,'PUT',app);
     await clkFetch('/api/v1/notifications','POST',note);
     if(mine){
@@ -1221,6 +1223,8 @@ async function checkRuleta(){
     const r=COL.find(x=>x.id===Number(s.value));
     if(!r)return;
     const logged=logClockListen(r);
+    // The roulette now shows what is playing: remove our own 'now playing' app
+    clkFetch('/api/v1/apps/'+CLK_APP,'DELETE').catch(()=>{});
     clkToast('🎲 La ruleta eligió '+cleanArtist(r.a)+' — '+r.t+(logged?' · apuntado en el diario':''),4500);
   }catch(e){/* clock off or not reachable: nothing to do */}
   finally{_ruletaBusy=false;}

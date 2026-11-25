@@ -1198,6 +1198,38 @@ function logClockListen(r){
 }
 function clkAuto(record){const c=clkCfg();if(c.host&&c.auto)sendToClock(record,true);}
 
+// Records chosen with the clock's roulette ("ruleta" script) are logged in the diary.
+// The script publishes {sonando: discogs id, marca: unique stamp} at /api/v1/scripts/shared;
+// each stamp is processed once.
+const RULETA_KEY='vs_ruleta_marca';
+let _ruletaBusy=false;
+async function checkRuleta(){
+  if(_ruletaBusy||!clkCfg().host||document.visibilityState!=='visible')return;
+  _ruletaBusy=true;
+  try{
+    const res=await clkFetch('/api/v1/scripts/shared','GET');
+    const list=await res.json();
+    const get=k=>(list||[]).find(x=>x.owner==='ruleta'&&x.key===k);
+    const s=get('sonando'),m=get('marca');
+    if(!s||!m)return;
+    const marca=String(m.value);
+    let prev=null;try{prev=localStorage.getItem(RULETA_KEY);}catch{}
+    if(prev===marca)return;
+    try{localStorage.setItem(RULETA_KEY,marca);}catch{}
+    // Only picks from the last 6 hours count
+    if(s.ageMs>6*60*60*1000)return;
+    const r=COL.find(x=>x.id===Number(s.value));
+    if(!r)return;
+    const logged=logClockListen(r);
+    clkToast('🎲 La ruleta eligió '+cleanArtist(r.a)+' — '+r.t+(logged?' · apuntado en el diario':''),4500);
+  }catch(e){/* clock off or not reachable: nothing to do */}
+  finally{_ruletaBusy=false;}
+}
+document.addEventListener('visibilitychange',checkRuleta);
+window.addEventListener('focus',checkRuleta);
+setInterval(checkRuleta,60000);
+setTimeout(checkRuleta,1500);
+
 function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow='';if(_colScrollY!==undefined){requestAnimationFrame(()=>{window.scrollTo(0,_colScrollY);});}}
 document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal();});
 

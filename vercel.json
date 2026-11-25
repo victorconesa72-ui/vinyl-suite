@@ -18,5 +18,10 @@
         }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/efemeride.js": {
+      "maxDuration": 60
+    }
+  }
 }
